@@ -5,6 +5,14 @@
     "id": "mlCommonsDashboards"
   },
   "version": "2.19.3.0",
+  "opensearchDashboards": {
+    "version": "2.19.3",
+    "templateVersion": "2.19.3"
+  },
+  "wazuh": {
+    "version": "4.14.0",
+    "revision": "00"
+  },
   "scripts": {
     "build": "yarn plugin-helpers build",
     "plugin-helpers": "node ../../scripts/plugin_helpers",
