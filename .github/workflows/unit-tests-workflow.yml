@@ -8,6 +8,7 @@ env:
 jobs:
   Get-CI-Image-Tag:
     uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@main
+    if: github.event.pull_request.draft == false
     with:
       product: opensearch-dashboards
 
