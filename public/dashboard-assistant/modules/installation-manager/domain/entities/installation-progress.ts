@@ -109,13 +109,8 @@ export class InstallationProgress {
     }
   }
 
-  public subscribe(
-    observerOrNext?:
-      | Partial<Observer<void>>
-      | ((value: void) => void)
-      | undefined,
-  ): () => void {
-    const unsubscribe = this.subject$.subscribe(observerOrNext);
+  public subscribe(next: (value: void) => void): () => void {
+    const unsubscribe = this.subject$.subscribe(next);
     return () => {
       unsubscribe.unsubscribe();
     };
