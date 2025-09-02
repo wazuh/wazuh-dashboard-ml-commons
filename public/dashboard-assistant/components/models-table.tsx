@@ -12,7 +12,6 @@ import {
   EuiFlyoutBody,
   EuiIcon,
 } from '@elastic/eui';
-import { formatUINumber } from '../../../../main/public/react-services/format-number';
 import { ModelTestResult } from './model-test-result';
 import {
   useModelTest,
@@ -27,6 +26,7 @@ import { ModelStatus } from '../modules/model/domain/enums/model-status';
 import StatusIcon from './status-icon';
 import { DashboardAssistantNavigationService } from '../services/dashboard-assistant-navigation-service';
 import { UseCases } from '../setup';
+import { formatNumber } from '../../utils/format-number';
 
 interface Model {
   id: string;
@@ -304,7 +304,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
                 {isLoading ? (
                   <EuiLoadingSpinner size='s' />
                 ) : (
-                  <span>({formatUINumber(models.length)})</span>
+                  <span>({formatNumber(models.length)})</span>
                 )}
               </h1>
             </EuiTitle>
