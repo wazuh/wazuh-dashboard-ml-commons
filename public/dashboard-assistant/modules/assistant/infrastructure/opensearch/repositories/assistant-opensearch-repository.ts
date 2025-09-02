@@ -7,7 +7,7 @@ export class AssistantOpenSearchRepository implements AssistantRepository {
 
   public async getConfig(): Promise<any> {
     try {
-      const response = await this.httpClient.proxyRequest.post.WithGet(
+      const response = await this.httpClient.proxyRequest.get(
         '/.plugins-ml-config/_doc/os_chat',
       );
       return response;

@@ -28,8 +28,9 @@ import { getRegisterAgentCommandByModelIdUseCase } from './modules/agent/applica
 import { AssistantRepository } from './modules/assistant/application/ports/assistant-repository';
 import { getConfigUseCase } from './modules/assistant/application/use-cases/get-config';
 import { AssistantOpenSearchRepository } from './modules/assistant/infrastructure/opensearch/repositories/assistant-opensearch-repository';
+import { InnerHttpProvider } from "../apis/inner_http_provider";
 
-export const httpClient = new HttpWithProxyClient();
+export const httpClient = new HttpWithProxyClient(InnerHttpProvider.getHttp());
 
 // Factory function to create real repositories with HttpClient
 export class Repositories {

@@ -1,42 +1,28 @@
-import { GenericRequest } from '../../../../../../../main/public/react-services';
-import { HttpMethod } from '../../../../../../../main/common/enums/http-method';
 import { IHttpClient } from '../domain/entities/http-client';
+import { CoreStart } from 'opensearch-dashboards/public';
+import { HttpMethod } from '../../domain/enum/http-method';
 
 export class HttpWithProxyClient implements IHttpClient {
+  constructor(private http: CoreStart['http']) { }
+
   private buildProxyUrl = (method: HttpMethod, path: string) =>
     `/api/console/proxy?method=${method}&path=${path}`;
 
   get proxyRequest() {
     return {
-      post: Object.assign(
-        (url: string, data?: any, config?: Record<string, any>) =>
-          this.post(this.buildProxyUrl(HttpMethod.POST, url), data, config),
-        {
-          WithPut: (url: string, data?: any, config?: Record<string, any>) =>
-            this.post(this.buildProxyUrl(HttpMethod.PUT, url), data, config),
-          WithDelete: (url: string, config?: Record<string, any>) =>
-            this.post(this.buildProxyUrl(HttpMethod.DELETE, url), config),
-          WithGet: (url: string, config?: Record<string, any>) =>
-            this.post(this.buildProxyUrl(HttpMethod.GET, url), config),
-        },
-      ),
-      get: (url: string, config?: Record<string, any>) =>
-        this.get(this.buildProxyUrl(HttpMethod.GET, url), config),
-      put: (url: string, data?: any, config?: Record<string, any>) =>
-        this.put(this.buildProxyUrl(HttpMethod.PUT, url), data, config),
-      delete: (url: string, config?: Record<string, any>) =>
-        this.delete(this.buildProxyUrl(HttpMethod.DELETE, url), config),
+      post: (url: string, data?: any) =>
+        this.post(this.buildProxyUrl(HttpMethod.POST, url), data),
+      get: (url: string) => this.post(this.buildProxyUrl(HttpMethod.GET, url)),
+      put: (url: string, data?: any) =>
+        this.post(this.buildProxyUrl(HttpMethod.PUT, url), data),
+      delete: (url: string) =>
+        this.post(this.buildProxyUrl(HttpMethod.DELETE, url)),
     };
   }
 
-  async get<T = any>(url: string, config?: Record<string, any>): Promise<T> {
+  async get<T = any>(url: string): Promise<T> {
     try {
-      const response = await GenericRequest.request<{ data: T }>(
-        HttpMethod.GET,
-        url,
-        null,
-        true,
-      );
+      const response = await this.http.get<{ data: T }>(url);
       return response.data;
     } catch (error) {
       throw error;
@@ -49,45 +35,26 @@ export class HttpWithProxyClient implements IHttpClient {
     config?: Record<string, any>,
   ): Promise<T> {
     try {
-      const response = await GenericRequest.request<{ data: T }>(
-        HttpMethod.POST,
-        url,
-        data,
-        true,
-      );
-      return response.data;
+      const response = await this.http.post<T>(url, data);
+      return response.body as T;
     } catch (error) {
       throw error;
     }
   }
 
-  async put<T = any>(
-    url: string,
-    data?: any,
-    config?: Record<string, any>,
-  ): Promise<T> {
+  async put<T = any>(url: string, data?: any): Promise<T> {
     try {
-      const response = await GenericRequest.request<{ data: T }>(
-        HttpMethod.PUT,
-        url,
-        data,
-        true,
-      );
-      return response.data;
+      const response = await this.http.put<T>(url, data);
+      return response.body as T;
     } catch (error) {
       throw error;
     }
   }
 
-  async delete<T = any>(url: string, config?: Record<string, any>): Promise<T> {
+  async delete<T = any>(url: string): Promise<T> {
     try {
-      const response = await GenericRequest.request<{ data: T }>(
-        HttpMethod.DELETE,
-        url,
-        null,
-        true,
-      );
-      return response.data;
+      const response = await this.http.delete<T>(url);
+      return response;
     } catch (error) {
       throw error;
     }

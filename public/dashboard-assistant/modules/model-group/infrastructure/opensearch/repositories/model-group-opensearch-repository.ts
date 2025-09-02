@@ -22,7 +22,7 @@ export class ModelGroupOpenSearchRepository implements ModelGroupRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.httpClient.proxyRequest.post.WithDelete(
+    await this.httpClient.proxyRequest.delete(
       `/_plugins/_ml/model_groups/${id}`,
     );
   }

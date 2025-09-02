@@ -10,7 +10,7 @@ export class MLCommonsSettingsHttpClientRepository
   constructor(private readonly httpClient: IHttpClient) {}
 
   public async persist(dto: CreateMLCommonsDto): Promise<boolean> {
-    const response = await this.httpClient.proxyRequest.post.WithPut(
+    const response = await this.httpClient.proxyRequest.put(
       '/_cluster/settings',
       {
         persistent: {

@@ -81,7 +81,7 @@ export class ModelOpenSearchRepository implements ModelRepository {
   public async delete(id: string): Promise<void> {
     await this.undeploy(id);
 
-    await this.httpClient.proxyRequest.post.WithDelete(
+    await this.httpClient.proxyRequest.delete(
       `/_plugins/_ml/models/${id}`,
     );
   }

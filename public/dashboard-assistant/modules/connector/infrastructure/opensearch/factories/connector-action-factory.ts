@@ -1,4 +1,4 @@
-import { HttpMethod } from '../../../../../../../../main/common/enums/http-method';
+import { HttpMethod } from '../../../../common/domain/enum/http-method';
 import { ConnectorAction } from '../../../domain/entities/connector-action';
 
 export class ConnectorActionFactory {

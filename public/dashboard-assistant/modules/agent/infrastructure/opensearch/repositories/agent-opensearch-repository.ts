@@ -65,7 +65,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.httpClient.proxyRequest.post.WithDelete(
+    await this.httpClient.proxyRequest.delete(
       `/_plugins/_ml/agents/${id}`,
     );
   }
@@ -93,7 +93,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
       },
     };
 
-    await this.httpClient.proxyRequest.post.WithPut(
+    await this.httpClient.proxyRequest.put(
       '/.plugins-ml-config/_doc/os_chat',
       data,
     );
