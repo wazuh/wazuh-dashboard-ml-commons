@@ -26,11 +26,11 @@ export class AssistantNavigationService {
     });
   }
 
-  static home() {
+  static goHome() {
     this.navigationService.navigate(routerPaths.root);
   }
 
-  static get registerModel() {
+  static getRegisterModelUrl() {
     return this.getRedirectUrl(routerPaths.registerModel);
   }
 }

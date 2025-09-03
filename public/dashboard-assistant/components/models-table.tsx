@@ -24,9 +24,9 @@ import RegisterAgentCommand from './register-agent-command';
 import { useFlyout } from '../hooks/use-flyout';
 import { ModelStatus } from '../modules/model/domain/enums/model-status';
 import StatusIcon from './status-icon';
-import { assistantNavigationService } from '../setup';
 import { formatNumber } from '../../utils/format-number';
 import { getUseCases } from "../services/ml-use-cases.service";
+import { AssistantNavigationService } from "../services/assistant-navigation.service";
 
 interface Model {
   id: string;
@@ -274,7 +274,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
           <EuiButtonEmpty
             color='primary'
             iconType='plusInCircle'
-            href={assistantNavigationService.registerModel}
+            href={AssistantNavigationService.getRegisterModelUrl()}
           >
             Add model
           </EuiButtonEmpty>
