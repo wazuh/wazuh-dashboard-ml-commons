@@ -16,16 +16,11 @@ import {
 } from '@elastic/eui';
 import { ModelForm } from '.';
 import { DeploymentStatus } from '.';
-import { getWzCurrentAppID } from '../../../../main/public/kibana-services';
-import { dashboardAssistant } from '../../../../main/public/utils/applications';
 import { ProviderModelConfig } from '../provider-model-config';
 import { useAssistantInstallation } from '../modules/installation-manager/hooks/use-assistant-installation';
 import { ModelFormData } from './types';
-import { DashboardAssistantNavigationService } from '../services/dashboard-assistant-navigation-service';
-import { withGlobalBreadcrumb } from '../../../../main/public/components/common/hocs';
-import NavigationService from '../../../../main/public/react-services/navigation-service';
-import { SECTIONS } from '../../../../main/public/sections';
-import { ToastProvider, useToast } from '../hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
+import { AssistantNavigationService } from "../services/assistant-navigation.service";
 
 interface FormConfig {
   title: string;
@@ -50,8 +45,7 @@ const ModelRegisterComponent = ({
   formConfig,
 }: ModelRegisterProps) => {
   const [isDeployed, setIsDeployed] = useState(false);
-  const { addSuccessToast, addErrorToast, addInfoToast, toasts, removeToast } =
-    useToast();
+  const { addSuccessToast, addErrorToast } = useToast();
   const {
     install,
     setModel,
@@ -131,9 +125,7 @@ const ModelRegisterComponent = ({
   };
 
   const navigateToHomeIfCurrentApp = () => {
-    if (getWzCurrentAppID() === dashboardAssistant.id) {
-      DashboardAssistantNavigationService.Home();
-    }
+    AssistantNavigationService.goHome();
   };
 
   return (
@@ -224,23 +216,8 @@ const ModelRegisterComponent = ({
           </EuiFlyoutBody>
         </EuiFlyout>
       )}
-      <EuiGlobalToastList
-        toasts={toasts}
-        dismissToast={removeToast}
-        toastLifeTimeMs={6000}
-      />
     </>
   );
 };
 
-export const ModelRegister = withGlobalBreadcrumb(() => [
-  {
-    text: 'Dashboard Assistant',
-    href: NavigationService.getInstance().getUrlForApp(dashboardAssistant.id, {
-      path: `#/${SECTIONS.ASSISTANT}`,
-    }),
-  },
-  {
-    text: 'Register model',
-  },
-])(ModelRegisterComponent);
+export const ModelRegister = ModelRegisterComponent;
