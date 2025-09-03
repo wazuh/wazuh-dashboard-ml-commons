@@ -1,13 +1,16 @@
 import { AxiosError } from 'axios';
-import { IHttpClient } from '../../../../common/http/domain/entities/http-client';
+import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { AssistantRepository } from '../../../application/ports/assistant-repository';
 
 export class AssistantOpenSearchRepository implements AssistantRepository {
-  constructor(private readonly httpClient: IHttpClient) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient,
+  ) {}
 
   public async getConfig(): Promise<any> {
     try {
-      const response = await this.httpClient.proxyRequest.get(
+      const response = await this.proxyHttpClient.get(
         '/.plugins-ml-config/_doc/os_chat',
       );
       return response;

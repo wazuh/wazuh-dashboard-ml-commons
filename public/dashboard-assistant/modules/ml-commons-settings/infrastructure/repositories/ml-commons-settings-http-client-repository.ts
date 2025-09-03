@@ -1,4 +1,4 @@
-import { IHttpClient } from '../../../common/http/domain/entities/http-client';
+import { HttpClient } from '../../../common/http/domain/entities/http-client';
 import { CreateMLCommonsDto } from '../../application/dtos/create-ml-commons-dto';
 import { MLCommonsSettingsCreateFactory } from '../factories/ml-commons-settings-factory';
 import { MLCommonsSettingsRepository } from '../../application/ports/ml-commons-settings-repository';
@@ -7,17 +7,17 @@ import { ClusterSettings } from '../../domain/entities/cluster-settings';
 export class MLCommonsSettingsHttpClientRepository
   implements MLCommonsSettingsRepository
 {
-  constructor(private readonly httpClient: IHttpClient) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient,
+  ) {}
 
   public async persist(dto: CreateMLCommonsDto): Promise<boolean> {
-    const response = await this.httpClient.proxyRequest.put(
-      '/_cluster/settings',
-      {
-        persistent: {
-          plugins: MLCommonsSettingsCreateFactory.create(dto),
-        },
-      } as ClusterSettings,
-    );
+    const response = await this.proxyHttpClient.put('/_cluster/settings', {
+      persistent: {
+        plugins: MLCommonsSettingsCreateFactory.create(dto),
+      },
+    } as ClusterSettings);
 
     if (response.acknowledged) {
       return true;
@@ -28,7 +28,7 @@ export class MLCommonsSettingsHttpClientRepository
 
   public async retrieve(): Promise<any> {
     try {
-      return await this.httpClient.proxyRequest.post(
+      return await this.proxyHttpClient.post(
         '/_cluster/settings?include_defaults=true',
       );
     } catch (error) {

@@ -1,4 +1,4 @@
-import { IHttpClient } from '../../../../common/http/domain/entities/http-client';
+import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
 import { CreateConnectorDto } from '../../../application/dtos/create-connector-dto';
 import { ConnectorOpenSearchCreateFactory } from '../factories/connector-opensearch-create-factory';
@@ -9,13 +9,16 @@ import { ConnectorOpenSearchMapper } from '../mapper/connector-opensearch-mapper
 import { ConnectorOpenSearchResponseDto } from '../dtos/connector-opensearch-response-dto';
 
 export class ConnectorOpenSearchRepository implements ConnectorRepository {
-  constructor(private readonly httpClient: IHttpClient) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient,
+  ) {}
 
   public async create(connectorDto: CreateConnectorDto): Promise<Connector> {
     const connectorOpensearchCreateDto =
       ConnectorOpenSearchCreateFactory.create(connectorDto);
     const response =
-      await this.httpClient.proxyRequest.post<ConnectorOpenSearchResponseCreateDto>(
+      await this.proxyHttpClient.post<ConnectorOpenSearchResponseCreateDto>(
         '/_plugins/_ml/connectors/_create',
         connectorOpensearchCreateDto,
       );
@@ -26,9 +29,7 @@ export class ConnectorOpenSearchRepository implements ConnectorRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.httpClient.proxyRequest.delete(
-      `/_plugins/_ml/connectors/${id}`,
-    );
+    await this.proxyHttpClient.delete(`/_plugins/_ml/connectors/${id}`);
   }
 
   public async getAll(): Promise<Connector[]> {
@@ -38,7 +39,7 @@ export class ConnectorOpenSearchRepository implements ConnectorRepository {
         size: 25,
       };
 
-      const response = await this.httpClient.proxyRequest.post<
+      const response = await this.proxyHttpClient.post<
         OpenSearchResponseDto<ConnectorOpenSearchResponseDto>
       >('/_plugins/_ml/connectors/_search', searchPayload);
 

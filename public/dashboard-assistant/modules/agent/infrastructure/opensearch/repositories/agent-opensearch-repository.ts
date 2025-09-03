@@ -1,4 +1,4 @@
-import { IHttpClient } from '../../../../common/http/domain/entities/http-client';
+import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { CreateAgentDto } from '../../../application/dtos/create-agent-dto';
 import { AgentOpenSearchRequestFactory } from '../factories/agent-opensearch-request-factory';
 import { AgentRepository } from '../../../application/ports/agent-repository';
@@ -9,13 +9,16 @@ import { AgentOpenSearchResponseCreateDto } from '../dtos/agent-opensearch-respo
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
 
 export class AgentOpenSearchRepository implements AgentRepository {
-  constructor(private readonly httpClient: IHttpClient) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient,
+  ) {}
 
   public async create(agentDto: CreateAgentDto) {
     const agentOpenSearchRequest =
       AgentOpenSearchRequestFactory.create(agentDto);
     const response =
-      await this.httpClient.proxyRequest.post<AgentOpenSearchResponseCreateDto>(
+      await this.proxyHttpClient.post<AgentOpenSearchResponseCreateDto>(
         '/_plugins/_ml/agents/_register',
         agentOpenSearchRequest,
       );
@@ -44,7 +47,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
 
     const {
       hits: { hits },
-    } = await this.httpClient.proxyRequest.post<
+    } = await this.proxyHttpClient.post<
       OpenSearchResponseDto<AgentOpenSearchResponseDto>
     >('/_plugins/_ml/agents/_search', searchPayload);
 
@@ -65,7 +68,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.httpClient.proxyRequest.delete(
+    await this.proxyHttpClient.delete(
       `/_plugins/_ml/agents/${id}`,
     );
   }
@@ -78,7 +81,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async execute(id: string, parameters: any): Promise<any> {
-    return await this.httpClient.proxyRequest.post(
+    return await this.proxyHttpClient.post(
       `/_plugins/_ml/agents/${id}/_execute`,
       parameters,
     );
@@ -93,7 +96,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
       },
     };
 
-    await this.httpClient.proxyRequest.put(
+    await this.proxyHttpClient.put(
       '/.plugins-ml-config/_doc/os_chat',
       data,
     );
@@ -113,7 +116,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
         size: 25,
       };
 
-      const response = await this.httpClient.proxyRequest.post<
+      const response = await this.proxyHttpClient.post<
         OpenSearchResponseDto<AgentOpenSearchResponseDto>
       >('/_plugins/_ml/agents/_search', searchPayload);
 
