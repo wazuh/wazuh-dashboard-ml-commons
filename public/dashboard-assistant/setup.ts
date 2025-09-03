@@ -2,7 +2,6 @@ import { InstallationProgress } from './modules/installation-manager/domain';
 import { AgentRepository } from './modules/agent/application/ports/agent-repository';
 import { createAgentUseCase } from './modules/agent/application/use-cases/create-agent';
 import { registerAgentUseCase } from './modules/agent/application/use-cases/register-agent';
-import { useAgentByModelIdUseCase } from './modules/agent/application/use-cases/use-agent-by-model-id';
 import { AgentOpenSearchRepository } from './modules/agent/infrastructure/opensearch/repositories/agent-opensearch-repository';
 import { HttpWithProxyClient } from './modules/common/http/infrastructure/http-with-proxy-client';
 import { ConnectorRepository } from './modules/connector/application/ports/connector-repository';
@@ -18,7 +17,6 @@ import { ModelGroupOpenSearchRepository } from './modules/model-group/infrastruc
 import { ModelRepository } from './modules/model/application/ports/model-repository';
 import { createModelUseCase } from './modules/model/application/use-cases/create-model';
 import { deleteModelWithRelatedEntitiesUseCase } from './modules/model/application/use-cases/delete-model-with-related-entities';
-import { deleteModelUseCase } from './modules/model/application/use-cases/delete-model';
 import { getModelsUseCase } from './modules/model/application/use-cases/get-models';
 import { getModelsComposedUseCase } from './modules/model/application/use-cases/get-models-composed';
 import { testModelConnectionUseCase } from './modules/model/application/use-cases/test-model-connection';
@@ -71,7 +69,6 @@ export class UseCases {
     Repositories.agentRepository,
     Repositories.assistantRepository,
   );
-  static deleteModel = deleteModelUseCase(Repositories.modelRepository);
   static deleteModelWithRelatedEntities = deleteModelWithRelatedEntitiesUseCase(
     Repositories.modelRepository,
     Repositories.connectorRepository,
@@ -80,9 +77,6 @@ export class UseCases {
   );
   static testModelConnection = testModelConnectionUseCase(
     Repositories.modelRepository,
-  );
-  static useAgentByModelId = useAgentByModelIdUseCase(
-    Repositories.agentRepository,
   );
   static getConfig = getConfigUseCase(Repositories.assistantRepository);
   static installDashboardAssistant = (
