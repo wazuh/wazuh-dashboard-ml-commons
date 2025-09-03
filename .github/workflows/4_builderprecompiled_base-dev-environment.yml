@@ -20,26 +20,26 @@ on:
       reference:
         required: true
         type: string
-        default: "4.14.0"
+        default: '4.14.0'
         description: Git reference (branch, tag, or commit SHA) to build from.
       command:
         required: true
         type: string
-        default: "yarn build"
+        default: 'yarn build'
         description: Command to run in the environment.
       docker_run_extra_args:
         type: string
-        default: ""
+        default: ''
         description: Additional parameters for the docker run command.
         required: false
       artifact_name:
         type: string
-        default: ""
+        default: ''
         description: Artifact name (will be automatically suffixed with .zip).
         required: false
       artifact_path:
         type: string
-        default: ""
+        default: ''
         description: Folder to include in the archive.
         required: false
       notify_jest_coverage_summary:
@@ -103,4 +103,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./wazuh-dashboard-ml-commons/target/test-coverage/coverage-summary.json
-          title: "Code coverage (Jest)"
+          title: 'Code coverage (Jest)'
