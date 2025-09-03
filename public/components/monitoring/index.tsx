@@ -11,6 +11,7 @@ import {
   EuiFlexItem,
   EuiText,
   EuiFilterGroup,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import React, { useState, useRef, useCallback } from 'react';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -105,23 +106,54 @@ export const Monitoring = (props: MonitoringProps) => {
       <EuiPanel>
         {!useNewPageHeader && (
           <>
-            <EuiText size="s">
-              <h2>
-                <FormattedMessage
-                  id="machineLearning.aiModels.table.header.title"
-                  defaultMessage="Models {records}"
-                  values={{
-                    records:
-                      pageStatus === 'normal' ? (
-                        <EuiTextColor aria-label="total number of results" color="subdued">
-                          ({pagination?.totalRecords ?? 0})
-                        </EuiTextColor>
-                      ) : undefined,
-                  }}
-                />
-              </h2>
-            </EuiText>
-            <EuiSpacer size="m" />
+            <EuiFlexGroup
+              justifyContent='spaceBetween'
+              alignItems='center'
+              gutterSize='none'
+            >
+              <EuiFlexItem>
+                <EuiText size='s'>
+                  <h2>
+                    <FormattedMessage
+                      id='machineLearning.aiModels.table.header.title'
+                      defaultMessage='Models {records}'
+                      values={{
+                        records:
+                          pageStatus === 'normal' ? (
+                            <EuiTextColor
+                              aria-label='total number of results'
+                              color='subdued'
+                            >
+                              ({pagination?.totalRecords ?? 0})
+                            </EuiTextColor>
+                          ) : undefined,
+                      }}
+                    />
+                  </h2>
+                </EuiText>
+              </EuiFlexItem>
+
+              <EuiFlexItem>
+                <EuiFlexGroup justifyContent='flexEnd' gutterSize='none'>
+                  <EuiFlexItem key='add-model' grow={false}>
+                    <EuiButtonEmpty
+                      color='primary'
+                      iconType='plusInCircle'
+                      // FIXME: replace with navigation service
+                      href={''}
+                    >
+                      Add model
+                    </EuiButtonEmpty>
+                  </EuiFlexItem>
+                  <EuiFlexItem key='refresh' grow={false}>
+                    <EuiButtonEmpty iconType='refresh' onClick={reload}>
+                      Refresh
+                    </EuiButtonEmpty>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+            <EuiSpacer size='m' />
           </>
         )}
         {pageStatus !== 'empty' && (
