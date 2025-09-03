@@ -16,34 +16,34 @@ This implementation follows Clean Architecture, SOLID principles, and design pat
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Presentation Layer                 │
-│  (React Components, Hooks, UI State Management)       │
-│  - ModelRegister, ModelsTable, ModelForm              │
-│  - DeploymentStatus, ModelTestResult                  │
-│  - useAssistantInstallation, useModels, useModelTest  │
+│                    Presentation Layer                       │
+│  (React Components, Hooks, UI State Management)             │
+│  - ModelRegister, ModelsTable, ModelForm                    │
+│  - DeploymentStatus, ModelTestResult                        │
+│  - useAssistantInstallation, useModels, useModelTest        │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                   Application Layer                   │
-│  (Use Cases, Installation Manager, Business Logic)    │
-│  - installDashboardAssistantUseCase                   │
-│  - createModelUseCase, createConnectorUseCase         │
-│  - InstallationManager, Installation Steps            │
+│                   Application Layer                         │
+│  (Use Cases, Installation Manager, Business Logic)          │
+│  - installDashboardAssistantUseCase                         │
+│  - createModelUseCase, createConnectorUseCase               │
+│  - InstallationManager, Installation Steps                  │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                    Domain Layer                       │
-│  (Entities, Value Objects, Domain Services)           │
-│  - Model, Connector, Agent, ModelGroup                │
-│  - Installation Types, Prediction Types               │
+│                    Domain Layer                             │
+│  (Entities, Value Objects, Domain Services)                 │
+│  - Model, Connector, Agent, ModelGroup                      │
+│  - Installation Types, Prediction Types                     │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌───────────────────────────────────────────────────────────────────┐
-│                 Infrastructure Layer                        │
-│  (Repositories, HTTP Clients, External APIs)                │
-│  - ModelOpenSearchRepository, ConnectorOpenSearchRepository │
-│  - HttpWithProxyClient, AgentOpenSearchRepository           │
-│  - MLCommonsSettingsHttpClientRepository                    │
+│                 Infrastructure Layer                              │
+│  (Repositories, HTTP Clients, External APIs)                      │
+│  - ModelOpenSearchRepository, ConnectorOpenSearchRepository       │
+│  - HttpWithProxyClient, AgentOpenSearchRepository                 │
+│  - MLCommonsSettingsHttpClientRepository                          │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
@@ -573,38 +573,38 @@ DIR="/etc/wazuh-indexer/certs"; curl --cacert $DIR/root-ca.pem --cert $DIR/admin
 
 ```
 dashboard-assistant/
-├── components/                 # React components
-│   ├── model-form.tsx         # Model configuration form
-│   ├── models-table.tsx       # Models management table
-│   ├── deployment-status.tsx  # Installation progress
-│   ├── model-test-result.tsx  # Test results display
-│   ├── model-form-schema.ts   # Form validation schema
-│   ├── types/                 # Component type definitions
-│   └── utils/                 # Utility functions
-├── modules/                   # Domain modules
-│   ├── agent/                 # Agent management
-│   │   ├── application/       # Use cases and ports
-│   │   ├── domain/           # Entities and enums
-│   │   └── infrastructure/   # Repositories
-│   ├── connector/            # Connector management
-│   ├── model/                # Model management
-│   │   ├── application/      # Use cases, DTOs, mappers
-│   │   ├── domain/          # Entities, enums, types
-│   │   ├── hooks/           # React hooks
-│   │   └── infrastructure/ # OpenSearch repositories
-│   ├── model-group/         # Model group management
-│   ├── ml-commons-settings/ # ML Commons configuration
-│   ├── installation-manager/ # Installation orchestration
-│   │   ├── application/     # Use cases
-│   │   ├── domain/         # Types and entities
-│   │   ├── hooks/          # Installation hooks
-│   │   └── infrastructure/ # Installation steps
-│   └── common/             # Shared infrastructure
-├── hooks/                  # Custom React hooks
-├── provider-model-config.ts # AI provider configurations
-├── setup.ts               # Dependency injection setup
-├── model-register.tsx     # Main registration component
-└── README.md             # This documentation
+├── components/                           # React components
+│   ├── model-form.tsx                    # Model configuration form
+│   ├── models-table.tsx                  # Models management table
+│   ├── deployment-status.tsx             # Installation progress
+│   ├── model-test-result.tsx             # Test results display
+│   ├── model-form-schema.ts              # Form validation schema
+│   ├── types/                            # Component type definitions
+│   └── utils/                            # Utility functions
+├── modules/                              # Domain modules
+│   ├── agent/                            # Agent management
+│   │   ├── application/                  # Use cases and ports
+│   │   ├── domain/                       # Entities and enums
+│   │   └── infrastructure/               # Repositories
+│   ├── connector/                        # Connector management
+│   ├── model/                            # Model management
+│   │   ├── application/                  # Use cases, DTOs, mappers
+│   │   ├── domain/                       # Entities, enums, types
+│   │   ├── hooks/                        # React hooks
+│   │   └── infrastructure/               # OpenSearch repositories
+│   ├── model-group/                      # Model group management
+│   ├── ml-commons-settings/              # ML Commons configuration
+│   ├── installation-manager/             # Installation orchestration
+│   │   ├── application/                  # Use cases
+│   │   ├── domain/                       # Types and entities
+│   │   ├── hooks/                        # Installation hooks
+│   │   └── infrastructure/               # Installation steps
+│   └── common/                           # Shared infrastructure
+├── hooks/                                # Custom React hooks
+├── provider-model-config.ts              # AI provider configurations
+├── setup.ts                              # Dependency injection setup
+├── model-register.tsx                    # Main registration component
+└── README.md                             # This documentation
 ```
 
 ## 🚀 Getting Started
