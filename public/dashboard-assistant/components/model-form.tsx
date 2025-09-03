@@ -72,12 +72,11 @@ export const ModelForm = ({
     }));
   };
 
-  const updateFormDataOnChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    key: keyof typeof formData,
-  ) => {
-    setFormData(prev => ({ ...prev, [key]: e.target.value }));
-  };
+  const updateFormDataOnChange =
+    (key: keyof typeof formData) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData(prev => ({ ...prev, [key]: e.target.value }));
+    };
 
   return (
     <EuiForm>
@@ -99,9 +98,7 @@ export const ModelForm = ({
           fullWidth
           options={modelsOptions}
           value={formData.model}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            updateFormDataOnChange(event, 'model')
-          }
+          onChange={updateFormDataOnChange('model')}
           hasNoInitialSelection
           disabled={!formData.modelProvider || disabled}
         />
@@ -113,9 +110,7 @@ export const ModelForm = ({
         <EuiFieldText
           fullWidth
           value={formData.apiUrl}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            updateFormDataOnChange(event, 'apiUrl')
-          }
+          onChange={updateFormDataOnChange('apiUrl')}
           placeholder='Enter API URL'
           disabled={disabled}
         />
@@ -128,9 +123,7 @@ export const ModelForm = ({
           fullWidth
           type='password'
           value={formData.apiKey}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            updateFormDataOnChange(event, 'apiKey')
-          }
+          onChange={updateFormDataOnChange('apiKey')}
           placeholder='Enter API key'
           disabled={disabled}
         />
