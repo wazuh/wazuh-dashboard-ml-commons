@@ -1,4 +1,3 @@
-import { UseCases } from '../../../../setup';
 import { modelProviderConfigs } from '../../../../provider-model-config';
 import { CreateMLCommonsDto } from '../../../ml-commons-settings/application/dtos/create-ml-commons-dto';
 import {
@@ -6,6 +5,7 @@ import {
   InstallationContext,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { getUseCases } from '../../../../services/ml-use-cases.service';
 
 export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
   constructor() {
@@ -30,7 +30,7 @@ export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
     context: InstallationContext,
   ): Promise<void> {
     const dto = this.buildDto(request);
-    await UseCases.persistMlCommonsSettings(dto);
+    await getUseCases().persistMlCommonsSettings(dto);
   }
 
   getSuccessMessage(): string {

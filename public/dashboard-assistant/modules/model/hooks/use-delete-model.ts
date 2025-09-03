@@ -1,5 +1,5 @@
 import { useQuery } from '../../../hooks/use-query';
-import { UseCases } from '../../../setup';
+import { getUseCases } from "../../../services/ml-use-cases.service";
 
 export interface UseDeleteModelReturn {
   isDeleting: boolean;
@@ -11,7 +11,7 @@ export interface UseDeleteModelReturn {
 export function useDeleteModel(): UseDeleteModelReturn {
   const { isLoading, error, fetch, reset } = useQuery<void>({
     query: (modelId: string) =>
-      UseCases.deleteModelWithRelatedEntities(modelId),
+      getUseCases().deleteModelWithRelatedEntities(modelId),
     initialData: undefined as void,
     defaultErrorMessage: 'Failed to delete model',
   });

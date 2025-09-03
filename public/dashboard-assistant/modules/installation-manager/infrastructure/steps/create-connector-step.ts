@@ -1,4 +1,3 @@
-import { UseCases } from '../../../../setup';
 import { modelProviderConfigs } from '../../../../provider-model-config';
 import { CreateConnectorDto } from '../../../connector/application/dtos/create-connector-dto';
 import {
@@ -6,6 +5,7 @@ import {
   InstallationAIAssistantStep,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { getUseCases } from '../../../../services/ml-use-cases.service';
 
 export class CreateConnectorStep extends InstallationAIAssistantStep {
   constructor() {
@@ -38,7 +38,9 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
   ): Promise<void> {
-    const connector = await UseCases.createConnector(this.buildDto(request));
+    const connector = await getUseCases().createConnector(
+      this.buildDto(request),
+    );
     context.set('connectorId', connector.id);
   }
 

@@ -1,6 +1,6 @@
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useQuery } from '../../../hooks/use-query';
-import { UseCases } from '../../../setup';
+import { getUseCases } from '../../../services/ml-use-cases.service';
 
 interface AssistantConfig {
   // Define the structure of the assistant configuration based on your needs
@@ -10,7 +10,7 @@ interface AssistantConfig {
 export function useAssistantConfig() {
   const configQuery = useCallback(async (): Promise<AssistantConfig> => {
     try {
-      const config = await UseCases.getConfig();
+      const config = await getUseCases().getConfig();
       return config;
     } catch (error) {
       const errorMessage =

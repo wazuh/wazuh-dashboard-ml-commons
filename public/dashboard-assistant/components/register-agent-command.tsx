@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { EuiCodeBlock } from '@elastic/eui';
-import { UseCases } from '../setup';
+import { getUseCases } from '../services/ml-use-cases.service';
 
 interface RegisterAgentClipboardProps {
   entityId: string;
@@ -16,9 +16,9 @@ const RegisterAgentCommand = ({
   const fetchRegisterAgentCommand = async () => {
     let command = '';
     if (targetEntity === 'agent') {
-      command = await UseCases.getRegisterAgentCommand(entityId);
+      command = await getUseCases().getRegisterAgentCommand(entityId);
     } else {
-      command = await UseCases.getRegisterAgentCommandByModelId(entityId);
+      command = await getUseCases().getRegisterAgentCommandByModelId(entityId);
     }
     setCommand(command);
   };

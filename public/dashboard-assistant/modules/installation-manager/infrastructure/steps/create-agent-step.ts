@@ -1,5 +1,5 @@
 import { modelProviderConfigs } from '../../../../provider-model-config';
-import { UseCases } from '../../../../setup';
+import { getUseCases } from '../../../../services/ml-use-cases.service';
 import { CreateAgentDto } from '../../../agent/application/dtos/create-agent-dto';
 import { AgentType } from '../../../agent/domain/enums/agent-type';
 import { Tool } from '../../../agent/domain/enums/tool';
@@ -63,7 +63,7 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
   ): Promise<void> {
-    const agent = await UseCases.createAgent(
+    const agent = await getUseCases().createAgent(
       this.createAgentDto(request, context.get('modelId')),
     );
     context.set('agentId', agent.id);

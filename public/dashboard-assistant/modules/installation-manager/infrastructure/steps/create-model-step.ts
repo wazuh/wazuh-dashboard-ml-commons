@@ -1,4 +1,4 @@
-import { UseCases } from '../../../../setup';
+import { getUseCases } from "../../../../services/ml-use-cases.service";
 import { CreateModelDto } from '../../../model/application/dtos/create-model-dto';
 import {
   InstallationContext,
@@ -27,7 +27,7 @@ export class CreateModelStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
   ): Promise<void> {
-    const model = await UseCases.createModel(this.buildDto(request, context));
+    const model = await getUseCases().createModel(this.buildDto(request, context));
     context.set('modelId', model.id);
   }
 

@@ -4,8 +4,8 @@ import type {
   InstallationProgress,
 } from '../domain';
 import { InstallDashboardAssistantResponse } from '../domain';
-import { UseCases } from '../../../setup';
 import { useQuery } from '../../../hooks/use-query';
+import { getUseCases } from "../../../services/ml-use-cases.service";
 
 interface ModelConfiguration {
   model_provider: string;
@@ -52,7 +52,7 @@ export function useAssistantInstallation() {
         description: assistantModelInfo.description,
       };
 
-      const response = await UseCases.installDashboardAssistant(onProgress)(
+      const response = await getUseCases().installDashboardAssistant(onProgress)(
         request,
       );
 
@@ -64,7 +64,7 @@ export function useAssistantInstallation() {
       }
 
       if (!response.success && response.data?.modelId) {
-        UseCases.deleteModelWithRelatedEntities(response.data.modelId);
+        getUseCases().deleteModelWithRelatedEntities(response.data.modelId);
       }
 
       return InstallDashboardAssistantResponse.failure(

@@ -1,4 +1,4 @@
-import { UseCases } from '../../../../setup';
+import { getUseCases } from "../../../../services/ml-use-cases.service";
 import {
   InstallationContext,
   InstallationAIAssistantStep,
@@ -15,7 +15,7 @@ export class TestModelConnectionStep extends InstallationAIAssistantStep {
     context: InstallationContext,
   ): Promise<void> {
     // Simulate testing model connection
-    const isConnected = await UseCases.testModelConnection(
+    const isConnected = await getUseCases().testModelConnection(
       context.get('modelId'),
     );
     if (!isConnected) {

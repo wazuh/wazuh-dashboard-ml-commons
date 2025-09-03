@@ -1,4 +1,4 @@
-import { UseCases } from '../../../../setup';
+import { getUseCases } from "../../../../services/ml-use-cases.service";
 import {
   InstallationContext,
   InstallationAIAssistantStep,
@@ -15,7 +15,7 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
     context: InstallationContext,
   ): Promise<void> {
     const agentId = context.get<string>('agentId');
-    await UseCases.registerAgent(agentId);
+    await getUseCases().registerAgent(agentId);
   }
 
   public getSuccessMessage(): string {

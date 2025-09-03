@@ -24,9 +24,9 @@ import RegisterAgentCommand from './register-agent-command';
 import { useFlyout } from '../hooks/use-flyout';
 import { ModelStatus } from '../modules/model/domain/enums/model-status';
 import StatusIcon from './status-icon';
-import { DashboardAssistantNavigationService } from '../services/dashboard-assistant-navigation-service';
-import { UseCases } from '../setup';
+import { assistantNavigationService } from '../setup';
 import { formatNumber } from '../../utils/format-number';
+import { getUseCases } from "../services/ml-use-cases.service";
 
 interface Model {
   id: string;
@@ -198,7 +198,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
               return;
             }
             try {
-              await UseCases.registerAgent(model.agentId);
+              await getUseCases().registerAgent(model.agentId);
               // ToDo: Check why is needed to wait 500 ms
               await new Promise(resolve => setTimeout(resolve, 500));
               await refresh();
@@ -274,7 +274,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
           <EuiButtonEmpty
             color='primary'
             iconType='plusInCircle'
-            href={DashboardAssistantNavigationService.RegisterModel()}
+            href={assistantNavigationService.registerModel}
           >
             Add model
           </EuiButtonEmpty>

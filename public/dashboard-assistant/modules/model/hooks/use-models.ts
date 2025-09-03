@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { Model } from '../domain/entities/model';
-import { UseCases } from '../../../setup';
 import { ModelFieldDefinition } from '../../../components/types';
 import { useQuery } from '../../../hooks/use-query';
+import { getUseCases } from "../../../services/ml-use-cases.service";
 
 interface UseModelsReturn {
   models: Model[];
@@ -20,7 +20,7 @@ export function useModels(): UseModelsReturn {
     fetch,
   } = useQuery<Model[]>({
     query() {
-      return UseCases.getModels();
+      return getUseCases().getModels();
     },
     initialData: [],
     defaultErrorMessage: 'Failed to fetch models',

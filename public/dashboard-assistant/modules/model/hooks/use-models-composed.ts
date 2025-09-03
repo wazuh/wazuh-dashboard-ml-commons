@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { ModelsComposed } from '../application/dtos/models-composed';
-import { UseCases } from '../../../setup';
 import { useQuery } from '../../../hooks/use-query';
+import { getUseCases } from "../../../services/ml-use-cases.service";
 
 interface UseModelsComposed {
   models: ModelsComposed[];
@@ -13,7 +13,7 @@ interface UseModelsComposed {
 export function useModelsComposed(): UseModelsComposed {
   const { data, error, isLoading, fetch } = useQuery<ModelsComposed[]>({
     query() {
-      return UseCases.getModelsComposed();
+      return getUseCases().getModelsComposed();
     },
     initialData: [],
     defaultErrorMessage: 'Failed to fetch models data',

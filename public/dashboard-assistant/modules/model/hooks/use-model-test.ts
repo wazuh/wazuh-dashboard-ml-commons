@@ -1,7 +1,6 @@
-import { useState, useCallback } from 'react';
 import { ModelPredictResponse } from '../domain/types';
-import { UseCases } from '../../../setup';
 import { useQuery } from '../../../hooks/use-query';
+import { getUseCases } from "../../../services/ml-use-cases.service";
 
 interface UseModelTestReturn {
   isLoading: boolean;
@@ -20,7 +19,7 @@ export function useModelTest(): UseModelTestReturn {
     reset,
   } = useQuery<ModelPredictResponse | null>({
     query(model_id: string) {
-      return UseCases.testModelConnection(model_id);
+      return getUseCases().testModelConnection(model_id);
     },
     initialData: null,
     defaultErrorMessage: 'Failed to test model connection',
