@@ -19,8 +19,6 @@ import {
   MlCommonsPluginPluginSetupDependencies,
 } from './types';
 import { PLUGIN_NAME, PLUGIN_ID } from '../common';
-import { AssistantNavigationService } from './dashboard-assistant/services/assistant-navigation.service';
-import { NavigationService } from './services/navigation-service';
 import {
   setHttpClient,
   setProxyHttpClient,
@@ -104,15 +102,11 @@ export class MlCommonsPluginPlugin
     const httpClient: HttpClient = new WindowFetchHttpClient();
     setHttpClient(httpClient);
     setProxyHttpClient(new ProxyHttpClient(httpClient));
-    AssistantNavigationService.setup(
-      NavigationService.create(core.application),
-    );
     return {};
   }
 
   public stop() {
     setHttpClient(undefined);
     setProxyHttpClient(undefined);
-    AssistantNavigationService.destroy();
   }
 }
