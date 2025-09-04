@@ -25,7 +25,7 @@ import {
   setHttpClient,
   setProxyHttpClient,
 } from './dashboard-assistant/services/common';
-import { AxiosHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/axios-http-client';
+import { WindowFetchHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/window-fetch-http-client';
 import { ProxyHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/proxy-http-client';
 import type { HttpClient } from './dashboard-assistant/modules/common/http/domain/entities/http-client';
 
@@ -101,7 +101,7 @@ export class MlCommonsPluginPlugin
   }
 
   public start(core: CoreStart): MlCommonsPluginPluginStart {
-    const httpClient: HttpClient = new AxiosHttpClient();
+    const httpClient: HttpClient = new WindowFetchHttpClient();
     setHttpClient(httpClient);
     setProxyHttpClient(new ProxyHttpClient(httpClient));
     AssistantNavigationService.setup(
