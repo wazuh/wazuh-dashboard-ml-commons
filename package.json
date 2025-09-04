@@ -21,6 +21,7 @@
     "test:jest": "../../node_modules/.bin/jest --config ./test/jest.config.js",
     "prepare": "husky install"
   },
+  "dependencies": {},
   "devDependencies": {
     "@testing-library/user-event": "^14.4.3",
     "husky": "^8.0.0",
