@@ -182,7 +182,7 @@ const ModelRegisterComponent = ({
       </div>
 
       {isDeploymentVisible && (
-        <EuiFlyout onClose={onCancel} size='m' type='push'>
+        <EuiFlyout onClose={onCancel} size='s' type='push'>
           <EuiFlyoutHeader hasBorder>
             <EuiTitle size='m'>
               <h2>Model deployment</h2>

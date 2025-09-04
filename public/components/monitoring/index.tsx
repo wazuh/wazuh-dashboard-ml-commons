@@ -274,7 +274,7 @@ export const Monitoring = (props: MonitoringProps) => {
           />
         )}
         {isTestFlyoutOpen && selectedModel && (
-          <EuiFlyout onClose={closeTestFlyout} size='m'>
+          <EuiFlyout onClose={closeTestFlyout} size='s'>
             <EuiFlyoutHeader hasBorder>
               <EuiTitle size='m'>
                 <h2>Test Model: {selectedModel.name}</h2>
