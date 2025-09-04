@@ -20,7 +20,6 @@ import { ProviderModelConfig } from '../provider-model-config';
 import { useAssistantInstallation } from '../modules/installation-manager/hooks/use-assistant-installation';
 import { ModelFormData } from './types';
 import { useToast } from '../hooks/use-toast';
-import { AssistantNavigationService } from "../services/assistant-navigation.service";
 
 interface FormConfig {
   title: string;
@@ -38,38 +37,41 @@ interface ModelRegisterProps {
   disabled?: boolean;
   modelConfig?: ProviderModelConfig[];
   formConfig?: FormConfig;
+  onCancel?: () => void;
+  onDeployed?: () => void;
 }
 
 const ModelRegisterComponent = ({
   disabled = false,
   formConfig,
+  onCancel,
+  onDeployed,
 }: ModelRegisterProps) => {
   const [isDeployed, setIsDeployed] = useState(false);
   const { addSuccessToast, addErrorToast } = useToast();
   const {
-    install,
+    install: startInstallationProcess,
     setModel,
     isLoading: isInstalling,
-    result,
-    error,
-    progress,
-    isSuccess,
+    error: installationError,
+    progress: installationProgress,
+    isSuccess: isInstallationSuccessful,
   } = useAssistantInstallation();
 
   useEffect(() => {
-    if (error) {
+    if (installationError) {
       addErrorToast(
         `Error deploying model`,
-        `${error}. Rolling back current installation. Please, verify data provided and try again.`,
+        `${installationError}. Rolling back current installation. Please, verify data provided and try again.`,
       );
     }
-  }, [error]);
+  }, [installationError]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isInstallationSuccessful) {
       addSuccessToast('Model deployed successfully.');
     }
-  }, [isSuccess]);
+  }, [isInstallationSuccessful]);
 
   // Default form configuration
   const defaultFormConfig: FormConfig = {
@@ -107,25 +109,12 @@ const ModelRegisterComponent = ({
     setIsFormValid(isValid);
   }, []);
 
-  const handleCancel = () => {
-    navigateToHomeIfCurrentApp();
-  };
-
-  const handleDeploy = async () => {
+  const startModelDeployment = async () => {
     setIsDeploymentVisible(true);
     // Execute the installation using the hook
-    await install();
+    await startInstallationProcess();
 
     setIsDeployed(true);
-  };
-
-  const handleCloseDeployment = () => {
-    setIsDeploymentVisible(false);
-    navigateToHomeIfCurrentApp();
-  };
-
-  const navigateToHomeIfCurrentApp = () => {
-    AssistantNavigationService.goHome();
   };
 
   return (
@@ -170,7 +159,7 @@ const ModelRegisterComponent = ({
               <EuiFlexGroup justifyContent='flexEnd' gutterSize='m'>
                 <EuiFlexItem grow={false}>
                   <EuiButtonEmpty
-                    onClick={handleCancel}
+                    onClick={onCancel}
                     disabled={isInstalling || isDeployed}
                   >
                     {config.buttons.cancel}
@@ -179,7 +168,7 @@ const ModelRegisterComponent = ({
                 <EuiFlexItem grow={false}>
                   <EuiButton
                     fill
-                    onClick={handleDeploy}
+                    onClick={startModelDeployment}
                     disabled={!isFormValid || isInstalling || isDeployed}
                     isLoading={isInstalling}
                   >
@@ -193,7 +182,7 @@ const ModelRegisterComponent = ({
       </div>
 
       {isDeploymentVisible && (
-        <EuiFlyout onClose={handleCloseDeployment} size='m' type='push'>
+        <EuiFlyout onClose={onCancel} size='m' type='push'>
           <EuiFlyoutHeader hasBorder>
             <EuiTitle size='m'>
               <h2>Model deployment</h2>
@@ -202,13 +191,10 @@ const ModelRegisterComponent = ({
 
           <EuiFlyoutBody>
             <DeploymentStatus
-              progress={progress}
-              error={error}
-              agentId={result?.data?.agentId}
-              title='Model deployment'
-              onCheckButton={navigateToHomeIfCurrentApp}
-              showCheckButton={isSuccess}
-              onFinishedWithError={() => {
+              progress={installationProgress}
+              onDeploymentComplete={onDeployed}
+              showCheckDeploymentButton={isInstallationSuccessful}
+              onErrorDuringDeployment={() => {
                 setIsDeployed(false);
                 setIsDeploymentVisible(false);
               }}

@@ -20,22 +20,16 @@ import { StepStatus } from './types';
 
 interface DeploymentStatusProps {
   progress?: InstallationProgress;
-  agentId?: string;
-  title?: string;
-  error?: string;
-  onCheckButton?: () => void;
-  onFinishedWithError?: (error: string) => void;
-  showCheckButton?: boolean;
-  isButtonDisabled?: boolean;
+  onDeploymentComplete?: () => void;
+  onErrorDuringDeployment?: (error: string) => void;
+  showCheckDeploymentButton?: boolean;
 }
 
 export const DeploymentStatus = ({
   progress,
-  agentId,
-  onCheckButton,
-  onFinishedWithError,
-  showCheckButton = false,
-  isButtonDisabled = false,
+  onDeploymentComplete,
+  onErrorDuringDeployment,
+  showCheckDeploymentButton = false,
 }: DeploymentStatusProps) => {
   // Helper function to map installation states to UI states
   const mapToUIStatus = (executionState: ExecutionState): StepStatus => {
@@ -110,40 +104,42 @@ export const DeploymentStatus = ({
         })}
       </EuiListGroup>
       {(() => {
-        const hasErrors =
-          progress &&
-          !progress.isFinished() &&
-          progress.getFailedSteps().length > 0;
-        const isFinished = progress?.isFinished();
-        const shouldShowButton = hasErrors || showCheckButton || isFinished;
+        const hasItems = (arr: any[]) => arr && arr.length > 0;
 
-        if (!shouldShowButton) return null;
+        const hasErrors = () => {
+          const failedSteps = progress?.getFailedSteps() || [];
+          return progress && !progress.isFinished() && hasItems(failedSteps);
+        };
 
-        const handleClick = () => {
-          if (hasErrors) {
+        const handleProcessDeploymentClick = () => {
+          if (hasErrors()) {
             const failedSteps = progress?.getFailedSteps() || [];
             const errorMessage = failedSteps
               .map(step => step.error || 'Unknown error')
               .join(', ');
-            onFinishedWithError?.(errorMessage);
+            onErrorDuringDeployment?.(errorMessage);
           } else {
-            onCheckButton?.();
+            onDeploymentComplete?.();
           }
         };
 
-        const buttonText = hasErrors ? 'Try again' : 'Go to model assistants';
+        const buttonText = hasErrors() ? 'Try again' : 'Go to model assistants';
 
+        const shouldShowButton =
+          hasErrors() || showCheckDeploymentButton || progress?.isFinished();
         return (
-          <>
-            <EuiSpacer size='l' />
-            <EuiFlexGroup justifyContent='center'>
-              <EuiFlexItem grow={false}>
-                <EuiButton fill onClick={handleClick}>
-                  {buttonText}
-                </EuiButton>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </>
+          !!shouldShowButton && (
+            <>
+              <EuiSpacer size='l' />
+              <EuiFlexGroup justifyContent='center'>
+                <EuiFlexItem grow={false}>
+                  <EuiButton fill onClick={handleProcessDeploymentClick}>
+                    {buttonText}
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </>
+          )
         );
       })()}
     </>
