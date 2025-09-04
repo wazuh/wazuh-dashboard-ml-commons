@@ -102,13 +102,6 @@ export class AgentOpenSearchRepository implements AgentRepository {
     );
   }
 
-  public async getRegisterCommand(agentId: string): Promise<string> {
-    const response = await this.httpClient.get(
-      `/assistant/agent/register-command/${agentId}`,
-    );
-    return response.command;
-  }
-
   public async getAll(): Promise<Agent[]> {
     try {
       const searchPayload = {

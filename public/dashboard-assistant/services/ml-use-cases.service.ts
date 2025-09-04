@@ -1,6 +1,4 @@
 import { createAgentUseCase } from '../modules/agent/application/use-cases/create-agent';
-import { getRegisterAgentCommandUseCase } from '../modules/agent/application/use-cases/get-register-agent-command';
-import { getRegisterAgentCommandByModelIdUseCase } from '../modules/agent/application/use-cases/get-register-agent-command-by-model-id';
 import { registerAgentUseCase } from '../modules/agent/application/use-cases/register-agent';
 import { getConfigUseCase } from '../modules/assistant';
 import { createConnectorUseCase } from '../modules/connector/application/use-cases/create-connector';
@@ -26,12 +24,6 @@ class MLUseCases {
   createModel = createModelUseCase(this.repos.modelRepository);
   createAgent = createAgentUseCase(this.repos.agentRepository);
   registerAgent = registerAgentUseCase(this.repos.agentRepository);
-  getRegisterAgentCommand = getRegisterAgentCommandUseCase(
-    this.repos.agentRepository,
-  );
-  getRegisterAgentCommandByModelId = getRegisterAgentCommandByModelIdUseCase(
-    this.repos.agentRepository,
-  );
   getModels = getModelsUseCase(this.repos.modelRepository);
   getModelsComposed = getModelsComposedUseCase(
     this.repos.modelRepository,
