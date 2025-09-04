@@ -45,6 +45,8 @@ import {
 } from '@elastic/eui';
 import { ModelTestResult } from '../../dashboard-assistant/components/model-test-result';
 import { useFlyout } from '../../dashboard-assistant/hooks/use-flyout';
+import { Link } from 'react-router-dom';
+import { routerPaths } from '../../../common/router_paths';
 
 interface MonitoringProps {
   chrome: ChromeStart;
@@ -202,14 +204,14 @@ export const Monitoring = (props: MonitoringProps) => {
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent='flexEnd' gutterSize='none'>
                   <EuiFlexItem key='add-model' grow={false}>
-                    <EuiButtonEmpty
-                      color='primary'
-                      iconType='plusInCircle'
-                      // FIXME: replace with navigation service
-                      href={''}
-                    >
-                      Add model
-                    </EuiButtonEmpty>
+                    <Link to={routerPaths.registerModel}>
+                      <EuiButtonEmpty
+                        color='primary'
+                        iconType='plusInCircle'
+                      >
+                        Add model
+                      </EuiButtonEmpty>
+                    </Link>
                   </EuiFlexItem>
                   <EuiFlexItem key='refresh' grow={false}>
                     <EuiButtonEmpty iconType='refresh' onClick={reload}>
