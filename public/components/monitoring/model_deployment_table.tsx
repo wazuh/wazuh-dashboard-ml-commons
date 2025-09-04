@@ -49,6 +49,7 @@ export interface ModelDeploymentItem {
   planningWorkerNodes: string[];
   version?: string;
   agentId?: string;
+  agent_state?: ModelStatus;
   inUse?: boolean;
   createdAt?: string;
   connector?: {

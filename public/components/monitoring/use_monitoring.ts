@@ -9,6 +9,7 @@ import { APIProvider } from '../../apis/api_provider';
 import { GetAllConnectorResponse } from '../../apis/connector';
 import { DO_NOT_FETCH, useFetcher } from '../../hooks/use_fetcher';
 import { MODEL_STATE } from '../../../common';
+import { ModelStatus as AgentModelStatus } from '../../dashboard-assistant/modules/model/domain/enums/model-status';
 import { DataSourceContext } from '../../contexts';
 import { ModelDeployStatus } from './types';
 import { DATA_SOURCE_FETCHING_ID, DataSourceId, getDataSourceId } from '../../utils/data_source';
@@ -130,13 +131,14 @@ const fetchDeployedModels = async (
     dataSourceId: params.dataSourceId,
   });
 
-  // Enrich with agent/inUse/version/createdAt using assistant use cases
+  // Enrich with agent/inUse/version/createdAt/status using assistant use cases
   // Note: getModelsComposed returns all models; merge by ID for current page
   let modelsComposedMap: Record<string, {
     agentId?: string;
     inUse?: boolean;
     version?: string;
     createdAt?: string;
+    status?: string;
   }> = {};
   try {
     const modelsComposed = await getUseCases().getModelsComposed();
@@ -146,6 +148,7 @@ const fetchDeployedModels = async (
         inUse: m.inUse,
         version: m.version,
         createdAt: m.createdAt,
+        status: m.status,
       };
       return acc;
     }, {});
@@ -179,6 +182,19 @@ const fetchDeployedModels = async (
         ...rest
       }) => {
         const composed = modelsComposedMap[id] || {};
+        // derive agent status using composed data when available
+        const composedStatus = composed.status?.toLowerCase();
+        let agent_state: AgentModelStatus | undefined;
+        if (composed.agentId === undefined) {
+          agent_state = AgentModelStatus.INACTIVE;
+        } else if (composedStatus === 'active') {
+          agent_state = AgentModelStatus.ACTIVE;
+        } else if (composedStatus === 'inactive') {
+          agent_state = AgentModelStatus.INACTIVE;
+        } else if (composedStatus === 'error' || composedStatus === 'failed') {
+          agent_state = AgentModelStatus.ERROR;
+        }
+
         return {
           id,
           name,
@@ -193,6 +209,7 @@ const fetchDeployedModels = async (
           createdAt: composed.createdAt,
           agentId: composed.agentId,
           inUse: composed.inUse,
+          agent_state,
           connector: rest.connector_id
             ? externalConnectorMap[rest.connector_id] || {}
             : rest.connector,
