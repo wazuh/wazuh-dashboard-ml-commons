@@ -1,9 +1,5 @@
 import type { AgentRepository } from '../modules/agent/application/ports/agent-repository';
 import { AgentOpenSearchRepository } from '../modules/agent/infrastructure/opensearch/repositories/agent-opensearch-repository';
-import {
-  type AssistantRepository,
-  AssistantOpenSearchRepository,
-} from '../modules/assistant';
 import type { HttpClient } from '../modules/common/http/domain/entities/http-client';
 import type { ConnectorRepository } from '../modules/connector/application/ports/connector-repository';
 import { ConnectorOpenSearchRepository } from '../modules/connector/infrastructure/opensearch/repositories/connector-opensearch-repository';
@@ -23,7 +19,6 @@ class Repositories {
   private static connectorRepository?: ConnectorRepository;
   private static modelRepository?: ModelRepository;
   private static agentRepository?: AgentRepository;
-  private static assistantRepository?: AssistantRepository;
 
   private static init(httpClient: HttpClient, proxyHttpClient: HttpClient) {
     this.mlCommonsSettingsRepository ??=
@@ -44,10 +39,6 @@ class Repositories {
       httpClient,
       proxyHttpClient,
     );
-    this.assistantRepository ??= new AssistantOpenSearchRepository(
-      httpClient,
-      proxyHttpClient,
-    );
   }
 
   static getInstance(httpClient: HttpClient, proxyHttpClient: HttpClient) {
@@ -58,7 +49,6 @@ class Repositories {
       connectorRepository: this.connectorRepository!,
       modelRepository: this.modelRepository!,
       agentRepository: this.agentRepository!,
-      assistantRepository: this.assistantRepository!,
     };
   }
 }

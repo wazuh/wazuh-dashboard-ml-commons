@@ -68,9 +68,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.proxyHttpClient.delete(
-      `/_plugins/_ml/agents/${id}`,
-    );
+    await this.proxyHttpClient.delete(`/_plugins/_ml/agents/${id}`);
   }
 
   public async deleteByModelId(modelId: string): Promise<void> {
@@ -87,6 +85,26 @@ export class AgentOpenSearchRepository implements AgentRepository {
     );
   }
 
+  public async getActive(): Promise<any> {
+    try {
+      const response = await this.proxyHttpClient.get(
+        '/.plugins-ml-config/_doc/os_chat',
+      );
+      return response._source?.configuration?.agent_id;
+    } catch (err: any) {
+      if (err.status === 403) {
+        throw new Error(
+          `You don’t have the necessary permissions to access this resource.`,
+        );
+      }
+      // If this endpoint returns a 404, it does not mean that the endpoint or
+      // the route was not found, but rather that there is no agent registered
+      // yet. It may be because it was never registered and this is the first
+      // time, or because it was deleted. It existed and was deleted.
+      return undefined;
+    }
+  }
+
   public async register(agentId: string): Promise<void> {
     // Prepare the data to be sent
     const data = {
@@ -96,10 +114,7 @@ export class AgentOpenSearchRepository implements AgentRepository {
       },
     };
 
-    await this.proxyHttpClient.put(
-      '/.plugins-ml-config/_doc/os_chat',
-      data,
-    );
+    await this.proxyHttpClient.put('/.plugins-ml-config/_doc/os_chat', data);
   }
 
   public async getAll(): Promise<Agent[]> {

@@ -27,7 +27,6 @@ class MLUseCases {
   getModelsWithAgentData = composeModelsWithAgentDataUseCase(
     this.repos.modelRepository,
     this.repos.agentRepository,
-    this.repos.assistantRepository,
   );
   deleteModelWithRelatedEntities = deleteModelWithRelatedEntitiesUseCase(
     this.repos.modelRepository,
@@ -35,7 +34,9 @@ class MLUseCases {
     this.repos.modelGroupRepository,
     this.repos.agentRepository,
   );
-  validateModelConnection = validateModelConnectionUseCase(this.repos.modelRepository);
+  validateModelConnection = validateModelConnectionUseCase(
+    this.repos.modelRepository,
+  );
   beginAssistantInstallationProcess = (
     callback: (progress: InstallationProgress) => void,
   ) =>
