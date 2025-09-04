@@ -12,6 +12,7 @@ import { MODEL_STATE } from '../../../common';
 import { DataSourceContext } from '../../contexts';
 import { ModelDeployStatus } from './types';
 import { DATA_SOURCE_FETCHING_ID, DataSourceId, getDataSourceId } from '../../utils/data_source';
+import { getUseCases } from '../../dashboard-assistant/services/ml-use-cases.service';
 
 interface Params {
   nameOrId?: string;
@@ -128,6 +129,29 @@ const fetchDeployedModels = async (
     }),
     dataSourceId: params.dataSourceId,
   });
+
+  // Enrich with agent/inUse/version/createdAt using assistant use cases
+  // Note: getModelsComposed returns all models; merge by ID for current page
+  let modelsComposedMap: Record<string, {
+    agentId?: string;
+    inUse?: boolean;
+    version?: string;
+    createdAt?: string;
+  }> = {};
+  try {
+    const modelsComposed = await getUseCases().getModelsComposed();
+    modelsComposedMap = modelsComposed.reduce<typeof modelsComposedMap>((acc, m) => {
+      acc[m.id] = {
+        agentId: m.agentId,
+        inUse: m.inUse,
+        version: m.version,
+        createdAt: m.createdAt,
+      };
+      return acc;
+    }, {});
+  } catch (_e) {
+    // Fallback silently if composed data is unavailable
+  }
   const externalConnectorMap = externalConnectorsData.data.reduce<{
     [key: string]: {
       id: string;
@@ -154,6 +178,7 @@ const fetchDeployedModels = async (
         algorithm,
         ...rest
       }) => {
+        const composed = modelsComposedMap[id] || {};
         return {
           id,
           name,
@@ -164,6 +189,10 @@ const fetchDeployedModels = async (
               ? planningCount - workerCount
               : undefined,
           planningWorkerNodes,
+          version: composed.version,
+          createdAt: composed.createdAt,
+          agentId: composed.agentId,
+          inUse: composed.inUse,
           connector: rest.connector_id
             ? externalConnectorMap[rest.connector_id] || {}
             : rest.connector,
