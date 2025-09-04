@@ -23,7 +23,7 @@ import { ModelFieldDefinition } from './types';
 import RegisterAgentCommand from './register-agent-command';
 import { useFlyout } from '../hooks/use-flyout';
 import { ModelStatus } from '../modules/model/domain/enums/model-status';
-import StatusIcon from './status-icon';
+import AgentStatus from './agent-status';
 import { formatNumber } from '../../utils/format-number';
 import { getUseCases } from "../services/ml-use-cases.service";
 import { AssistantNavigationService } from "../services/assistant-navigation.service";
@@ -157,7 +157,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
       render: (status: ModelStatus) => (
         <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
           <EuiFlexItem grow={false}>
-            <StatusIcon status={status} />
+            <AgentStatus status={status} />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiText size='s'>{status}</EuiText>
@@ -368,7 +368,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
                     </EuiText>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
-                    <StatusIcon status={selectedModel.status} />
+                    <AgentStatus status={selectedModel.status} />
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <EuiText>{selectedModel.status}</EuiText>

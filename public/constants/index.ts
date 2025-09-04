@@ -1,0 +1,1 @@
+export const LONGDASH = '\u2014'; // '—' long dash character

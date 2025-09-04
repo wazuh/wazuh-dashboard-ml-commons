@@ -19,9 +19,15 @@ import {
   EuiToolTip,
   EuiCopy,
   EuiText,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiIcon,
 } from '@elastic/eui';
 
 import { MODEL_STATE } from '../../../common';
+import { LONGDASH } from '../../constants';
+import type { ModelStatus } from '../../dashboard-assistant/modules/model/domain/enums/model-status';
+import AgentStatus from '../../dashboard-assistant/components/agent-status';
 
 export interface ModelDeploymentTableSort {
   field: 'name' | 'model_state' | 'id';
@@ -96,17 +102,35 @@ export const ModelDeploymentTable = ({
         field: 'version',
         name: 'Version',
         width: '10%',
-        sortable: true,
         truncateText: true,
-        render: (version: string | undefined) => version ?? '\u2014',
+        render: (version: string | undefined) => version ?? LONGDASH,
       },
       {
         field: 'agentId',
         name: 'Agent ID',
         width: '18%',
-        sortable: true,
         truncateText: true,
-        render: (agentId: string | undefined) => agentId ?? '\u2014',
+        render: (agentId: string | undefined) => (
+          <>
+            <EuiCopy
+              textToCopy={agentId}
+              beforeMessage='Copy agent ID'
+              anchorClassName='ml-modelModelIdCell'
+            >
+              {copy => (
+                <EuiSmallButtonIcon
+                  aria-label='Copy ID to clipboard'
+                  color='text'
+                  iconType='copy'
+                  onClick={copy}
+                />
+              )}
+            </EuiCopy>
+            <EuiText className='eui-textTruncate ml-modelModelIdText' size='s'>
+              {agentId}
+            </EuiText>
+          </>
+        ),
       },
       {
         field: 'id',
@@ -125,7 +149,7 @@ export const ModelDeploymentTable = ({
         truncateText: true,
         textOnly: true,
         render: (_id: string, modelDeploymentItem: ModelDeploymentItem) => {
-          return modelDeploymentItem.connector?.name || '\u2014';
+          return modelDeploymentItem.connector?.name || LONGDASH;
         },
       },
       {
@@ -136,35 +160,46 @@ export const ModelDeploymentTable = ({
         truncateText: true,
         render: (
           _model_state: string,
-          { planningNodesCount, respondingNodesCount, notRespondingNodesCount }: ModelDeploymentItem
+          {
+            planningNodesCount,
+            respondingNodesCount,
+            notRespondingNodesCount,
+          }: ModelDeploymentItem,
         ) => {
           if (
             planningNodesCount === undefined ||
             respondingNodesCount === undefined ||
             notRespondingNodesCount === undefined
           ) {
-            return '\u2014';
+            return LONGDASH;
           }
           if (respondingNodesCount === 0) {
             return (
-              <EuiHealth className="ml-modelStatusCell" color="danger">
-                <div className="eui-textTruncate">Not responding</div>
+              <EuiHealth className='ml-modelStatusCell' color='danger'>
+                <div className='eui-textTruncate'>Not responding</div>
               </EuiHealth>
             );
           }
           if (notRespondingNodesCount === 0) {
             return (
-              <EuiHealth className="ml-modelStatusCell" color="success">
-                <div className="eui-textTruncate">Responding</div>
+              <EuiHealth className='ml-modelStatusCell' color='success'>
+                <div className='eui-textTruncate'>Responding</div>
               </EuiHealth>
             );
           }
           return (
-            <EuiHealth className="ml-modelStatusCell" color="warning">
-              <div className="eui-textTruncate">Partially responding</div>
+            <EuiHealth className='ml-modelStatusCell' color='warning'>
+              <div className='eui-textTruncate'>Partially responding</div>
             </EuiHealth>
           );
         },
+      },
+      {
+        field: 'agent_state',
+        name: 'Agent Status',
+        width: '14%',
+        truncateText: true,
+        render: (status: ModelStatus) => <AgentStatus status={status} />,
       },
       {
         field: 'id',
@@ -174,21 +209,21 @@ export const ModelDeploymentTable = ({
         render: (id: string) => (
           <>
             <EuiCopy
-              className="ml-modelModelIdCellTextWrapper"
+              className='ml-modelModelIdCellTextWrapper'
               textToCopy={id}
-              beforeMessage="Copy model ID"
-              anchorClassName="ml-modelModelIdCell"
+              beforeMessage='Copy model ID'
+              anchorClassName='ml-modelModelIdCell'
             >
-              {(copy) => (
+              {copy => (
                 <EuiSmallButtonIcon
-                  aria-label="Copy ID to clipboard"
-                  color="text"
-                  iconType="copy"
+                  aria-label='Copy ID to clipboard'
+                  color='text'
+                  iconType='copy'
                   onClick={copy}
                 />
               )}
             </EuiCopy>
-            <EuiText className="eui-textTruncate ml-modelModelIdText" size="s">
+            <EuiText className='eui-textTruncate ml-modelModelIdText' size='s'>
               {id}
             </EuiText>
           </>
@@ -198,24 +233,24 @@ export const ModelDeploymentTable = ({
         field: 'inUse',
         name: 'In use',
         width: '10%',
-        sortable: true,
         render: (inUse: boolean | undefined) =>
           inUse ? (
-            <EuiHealth color="success">
-              <div className="eui-textTruncate">Yes</div>
-            </EuiHealth>
+            <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
+              <EuiFlexItem grow={false}>
+                <EuiIcon type={'check'} color={'success'} size='m' />
+              </EuiFlexItem>
+            </EuiFlexGroup>
           ) : (
-            '\u2014'
+            LONGDASH
           ),
       },
       {
         field: 'createdAt',
         name: 'Created',
         width: '12%',
-        sortable: true,
         truncateText: true,
         render: (createdAt: string | undefined) =>
-          createdAt ? new Date(createdAt).toLocaleDateString() : '\u2014',
+          createdAt ? new Date(createdAt).toLocaleDateString() : LONGDASH,
       },
       {
         field: 'id',
@@ -223,42 +258,43 @@ export const ModelDeploymentTable = ({
         align: 'right' as const,
         width: '12%',
         render: (id: string, modelDeploymentItem: ModelDeploymentItem) => {
-          const canUse = !!modelDeploymentItem.agentId && !modelDeploymentItem.inUse;
+          const canUse =
+            !!modelDeploymentItem.agentId && !modelDeploymentItem.inUse;
           const canDelete = !modelDeploymentItem.inUse;
           return (
             <>
-              <EuiToolTip content="Use model">
+              <EuiToolTip content='Use model'>
                 <EuiSmallButtonIcon
                   onClick={() => onUseModel?.(modelDeploymentItem)}
-                  role="button"
-                  aria-label="use model"
-                  iconType="plusInCircle"
+                  role='button'
+                  aria-label='use model'
+                  iconType='plusInCircle'
                   isDisabled={!canUse}
                 />
               </EuiToolTip>
-              <EuiToolTip content="View status details">
+              <EuiToolTip content='View status details'>
                 <EuiSmallButtonIcon
                   onClick={() => onViewDetail?.(modelDeploymentItem)}
-                  role="button"
-                  aria-label="view detail"
-                  iconType="inspect"
+                  role='button'
+                  aria-label='view detail'
+                  iconType='inspect'
                 />
               </EuiToolTip>
-              <EuiToolTip content="Test model connection">
+              <EuiToolTip content='Test model connection'>
                 <EuiSmallButtonIcon
                   onClick={() => onTestModel?.(modelDeploymentItem)}
-                  role="button"
-                  aria-label="test model"
-                  iconType="play"
+                  role='button'
+                  aria-label='test model'
+                  iconType='play'
                 />
               </EuiToolTip>
-              <EuiToolTip content="Delete model">
+              <EuiToolTip content='Delete model'>
                 <EuiSmallButtonIcon
                   onClick={() => onDeleteModel?.(modelDeploymentItem)}
-                  role="button"
-                  aria-label="delete model"
-                  iconType="trash"
-                  color="danger"
+                  role='button'
+                  aria-label='delete model'
+                  iconType='trash'
+                  color='danger'
                   isDisabled={!canDelete}
                 />
               </EuiToolTip>
@@ -267,7 +303,7 @@ export const ModelDeploymentTable = ({
         },
       },
     ],
-    [onViewDetail, onUseModel, onTestModel, onDeleteModel]
+    [onViewDetail, onUseModel, onTestModel, onDeleteModel],
   );
   const sorting = useMemo(() => ({ sort }), [sort]);
 
@@ -282,19 +318,26 @@ export const ModelDeploymentTable = ({
             showPerPageOptions: true,
           }
         : undefined,
-    [paginationInProps]
+    [paginationInProps],
   );
 
   const handleChange = useCallback(
     (criteria: Criteria<ModelDeploymentItem>) => {
       onChange({
         ...(criteria.page
-          ? { pagination: { currentPage: criteria.page.index + 1, pageSize: criteria.page.size } }
+          ? {
+              pagination: {
+                currentPage: criteria.page.index + 1,
+                pageSize: criteria.page.size,
+              },
+            }
           : {}),
-        ...(criteria.sort ? { sort: criteria.sort as ModelDeploymentTableSort } : {}),
+        ...(criteria.sort
+          ? { sort: criteria.sort as ModelDeploymentTableSort }
+          : {}),
       });
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -304,22 +347,22 @@ export const ModelDeploymentTable = ({
           <EuiEmptyPrompt
             style={{ maxWidth: 528 }}
             body={
-              <EuiText size="s">
-                <EuiSpacer size="l" />
+              <EuiText size='s'>
+                <EuiSpacer size='l' />
                 Deployed models will appear here. For more information, see{' '}
                 <EuiLink
-                  role="link"
-                  href="https://opensearch.org/docs/latest/ml-commons-plugin/ml-dashboard/"
+                  role='link'
+                  href='https://opensearch.org/docs/latest/ml-commons-plugin/ml-dashboard/'
                   external
-                  target="_blank"
+                  target='_blank'
                 >
                   Machine Learning Documentation
                 </EuiLink>
                 .
-                <EuiSpacer size="xl" />
+                <EuiSpacer size='xl' />
               </EuiText>
             }
-            aria-label="no deployed models"
+            aria-label='no deployed models'
           />
         </div>
       ) : (
@@ -334,32 +377,36 @@ export const ModelDeploymentTable = ({
               {loading ? (
                 <EuiEmptyPrompt
                   body={
-                    <EuiText size="s">
-                      <EuiSpacer size="l" />
+                    <EuiText size='s'>
+                      <EuiSpacer size='l' />
                       Loading deployed models...
-                      <EuiSpacer size="xl" />
+                      <EuiSpacer size='xl' />
                     </EuiText>
                   }
-                  aria-label="loading models"
+                  aria-label='loading models'
                 />
               ) : (
                 <EuiEmptyPrompt
-                  title={<EuiSpacer size="s" />}
+                  title={<EuiSpacer size='s' />}
                   body={
-                    <EuiText size="s">
-                      There are no results to your search. Reset the search criteria to view the
-                      deployed models.
+                    <EuiText size='s'>
+                      There are no results to your search. Reset the search
+                      criteria to view the deployed models.
                     </EuiText>
                   }
                   actions={
                     <>
-                      <EuiSpacer size="s" />
-                      <EuiButton role="button" onClick={onResetSearchClick} size="m">
+                      <EuiSpacer size='s' />
+                      <EuiButton
+                        role='button'
+                        onClick={onResetSearchClick}
+                        size='m'
+                      >
                         Reset search
                       </EuiButton>
                     </>
                   }
-                  aria-label="no models results"
+                  aria-label='no models results'
                 />
               )}
             </div>
