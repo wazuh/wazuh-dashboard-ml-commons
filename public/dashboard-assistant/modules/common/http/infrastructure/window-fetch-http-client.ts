@@ -4,6 +4,23 @@ export class WindowFetchHttpClient implements HttpClient {
   private defaultHeaders = { 'osd-xsrf': 'kibana' };
 
   private fetch(url: string, options: RequestInit) {
+    if (!options.method) {
+      throw new Error('HTTP method is required');
+    }
+
+    options.headers = {
+      ...options.headers,
+      ...this.defaultHeaders,
+    };
+
+    if (['POST', 'PUT'].includes(options.method)) {
+      options.headers = {
+        'Content-Type': 'application/json',
+        // Merge any additional headers provided in options
+        ...options.headers,
+      };
+    }
+
     return window.fetch(url, options).then(async response => {
       if (!response.ok) {
         const error = new Error(`HTTP error! status: ${response.status}`);
@@ -17,21 +34,12 @@ export class WindowFetchHttpClient implements HttpClient {
   constructor() {}
 
   async get<T = any>(url: string): Promise<T> {
-    return await this.fetch(url, {
-      method: 'GET',
-      headers: {
-        ...this.defaultHeaders,
-      },
-    });
+    return await this.fetch(url, { method: 'GET' });
   }
 
   async post<T = any>(url: string, data?: any): Promise<T> {
     return await this.fetch(url, {
       method: 'POST',
-      headers: {
-        ...this.defaultHeaders,
-        'Content-Type': 'application/json',
-      },
       body: data !== undefined ? JSON.stringify(data) : undefined,
     });
   }
@@ -39,20 +47,11 @@ export class WindowFetchHttpClient implements HttpClient {
   async put<T = any>(url: string, data?: any): Promise<T> {
     return await this.fetch(url, {
       method: 'PUT',
-      headers: {
-        ...this.defaultHeaders,
-        'Content-Type': 'application/json',
-      },
       body: data !== undefined ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T = any>(url: string): Promise<T> {
-    return await this.fetch(url, {
-      method: 'DELETE',
-      headers: {
-        ...this.defaultHeaders,
-      },
-    });
+    return await this.fetch(url, { method: 'DELETE' });
   }
 }
