@@ -1,12 +1,5 @@
 import type { HttpClient } from '../domain/entities/http-client';
 
-/**
- * CoreHttpClient: HTTP client backed by OpenSearch Dashboards core `http` service.
- * - Injects core http via constructor
- * - Replicates AxiosHttpClient's headers (`osd-xsrf: kibana`)
- * - Returns `data` only (same public signature as AxiosHttpClient)
- * - Converts errors into AxiosError for compatibility with existing handlers
- */
 export class WindowFetchHttpClient implements HttpClient {
   private defaultHeaders = { 'osd-xsrf': 'kibana' };
 
