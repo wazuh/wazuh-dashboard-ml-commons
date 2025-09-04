@@ -21,13 +21,30 @@ import { PreviewPanel } from '../preview_panel';
 import { ApplicationStart, ChromeStart } from '../../../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 
-import { ModelDeploymentItem, ModelDeploymentTable } from './model_deployment_table';
+import {
+  ModelDeploymentItem,
+  ModelDeploymentTable,
+} from './model_deployment_table';
 import { useMonitoring } from './use_monitoring';
 import { ModelStatusFilter } from './model_status_filter';
 import { SearchBar } from './search_bar';
 import { ModelSourceFilter } from './model_source_filter';
 import { ModelConnectorFilter } from './model_connector_filter';
 import { MonitoringPageHeader } from './monitoring_page_header';
+import { useToast } from '../../dashboard-assistant/hooks/use-toast';
+import {
+  useModelTest,
+  useDeleteModel,
+} from '../../dashboard-assistant/modules/model/hooks';
+import { useModel } from '../../dashboard-assistant/modules/model/hooks';
+import {
+  EuiFlyout,
+  EuiFlyoutHeader,
+  EuiFlyoutBody,
+  EuiTitle,
+} from '@elastic/eui';
+import { ModelTestResult } from '../../dashboard-assistant/components/model-test-result';
+import { useFlyout } from '../../dashboard-assistant/hooks/use-flyout';
 
 interface MonitoringProps {
   chrome: ChromeStart;
@@ -52,10 +69,36 @@ export const Monitoring = (props: MonitoringProps) => {
     searchByConnector,
     allExternalConnectors,
   } = useMonitoring();
+  const { addSuccessToast, addErrorToast } = useToast();
   const [preview, setPreview] = useState<{
     model: ModelDeploymentItem;
     dataSourceId: string | undefined;
   } | null>(null);
+  const [selectedModel, setSelectedModel] =
+    useState<ModelDeploymentItem | null>(null);
+  const {
+    isLoading: isTestLoading,
+    response: testResponse,
+    error: testError,
+    testModel,
+    reset: resetTest,
+  } = useModelTest();
+  const {
+    isOpen: isTestFlyoutOpen,
+    open: openTestFlyout,
+    close: closeTestFlyout,
+  } = useFlyout({
+    async onOpenHandler(model: ModelDeploymentItem) {
+      setSelectedModel(model);
+      await testModel(model.id);
+    },
+    onCloseHandler() {
+      setSelectedModel(null);
+    },
+    resetHandler() {
+      resetTest();
+    },
+  });
   const searchInputRef = useRef<HTMLInputElement | null>();
 
   const setInputRef = useCallback((node: HTMLInputElement | null) => {
@@ -73,24 +116,47 @@ export const Monitoring = (props: MonitoringProps) => {
     (modelPreviewItem: ModelDeploymentItem) => {
       // This check is for type safe, the data source id won't be invalid or fetching if model can be previewed.
       if (typeof params.dataSourceId !== 'symbol') {
-        setPreview({ model: modelPreviewItem, dataSourceId: params.dataSourceId });
+        setPreview({
+          model: modelPreviewItem,
+          dataSourceId: params.dataSourceId,
+        });
       }
     },
-    [params.dataSourceId]
+    [params.dataSourceId],
   );
 
   const onCloseModelPreview = useCallback(
     (modelProfile: ModelDeploymentProfile | null) => {
       if (
         modelProfile !== null &&
-        (preview?.model?.planningNodesCount !== modelProfile.target_worker_nodes?.length ||
-          preview?.model?.respondingNodesCount !== modelProfile.worker_nodes?.length)
+        (preview?.model?.planningNodesCount !==
+          modelProfile.target_worker_nodes?.length ||
+          preview?.model?.respondingNodesCount !==
+            modelProfile.worker_nodes?.length)
       ) {
         reload();
       }
       setPreview(null);
     },
-    [preview, reload]
+    [preview, reload],
+  );
+
+  const { activateModel } = useModel({ onSuccess: reload });
+  const handleUseModel = useCallback(
+    async (model: ModelDeploymentItem) => {
+      if (!model.agentId) return;
+      await activateModel(model.agentId);
+    },
+    [activateModel],
+  );
+
+  const { deleteModel } = useDeleteModel();
+  const handleDeleteModel = useCallback(
+    async (model: ModelDeploymentItem) => {
+      await deleteModel(model.id);
+      await reload();
+    },
+    [deleteModel, reload, addSuccessToast, addErrorToast],
   );
 
   return (
@@ -164,18 +230,24 @@ export const Monitoring = (props: MonitoringProps) => {
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiFilterGroup>
-                  <ModelSourceFilter value={params.source} onChange={searchBySource} />
+                  <ModelSourceFilter
+                    value={params.source}
+                    onChange={searchBySource}
+                  />
                   <ModelConnectorFilter
                     value={params.connector}
                     onChange={searchByConnector}
                     allExternalConnectors={allExternalConnectors}
                     dataSourceId={params.dataSourceId}
                   />
-                  <ModelStatusFilter selection={params.status} onChange={searchByStatus} />
+                  <ModelStatusFilter
+                    selection={params.status}
+                    onChange={searchByStatus}
+                  />
                 </EuiFilterGroup>
               </EuiFlexItem>
             </EuiFlexGroup>
-            <EuiSpacer size="m" />
+            <EuiSpacer size='m' />
           </>
         )}
 
@@ -188,6 +260,9 @@ export const Monitoring = (props: MonitoringProps) => {
           onChange={handleTableChange}
           onViewDetail={handleViewDetail}
           onResetSearchClick={onResetSearch}
+          onUseModel={handleUseModel}
+          onTestModel={openTestFlyout}
+          onDeleteModel={handleDeleteModel}
         />
         {preview && (
           <PreviewPanel
@@ -195,6 +270,23 @@ export const Monitoring = (props: MonitoringProps) => {
             onClose={onCloseModelPreview}
             dataSourceId={preview.dataSourceId}
           />
+        )}
+        {isTestFlyoutOpen && selectedModel && (
+          <EuiFlyout onClose={closeTestFlyout} size='m'>
+            <EuiFlyoutHeader hasBorder>
+              <EuiTitle size='m'>
+                <h2>Test Model: {selectedModel.name}</h2>
+              </EuiTitle>
+            </EuiFlyoutHeader>
+            <EuiFlyoutBody>
+              <ModelTestResult
+                isLoading={isTestLoading}
+                response={testResponse}
+                error={testError}
+                modelName={selectedModel.name}
+              />
+            </EuiFlyoutBody>
+          </EuiFlyout>
         )}
       </EuiPanel>
     </>
