@@ -1,37 +1,34 @@
-import { ModelWithAgent } from '../../domain/entities/model-with-agent';
-import { ModelWithAgentMapper } from '../mapper/model-with-agent-mapper';
-import { ModelsComposed } from '../dtos/models-composed';
+import { ModelAgentAssociationMapper } from '../mapper/model-agent-association-mapper';
 import { ModelRepository } from '../ports/model-repository';
 import { AgentRepository } from '../../../agent/application/ports/agent-repository';
 import type { Agent } from '../../../agent/domain/entities/agent';
+import type { Model } from '../../domain/entities/model';
+import type { ModelWithAgentData } from "../../domain/entities/model-with-agent-data";
 
 export const composeModelsWithAgentDataUseCase = (
   modelRepository: ModelRepository,
   agentRepository: AgentRepository,
 ) => {
-  const attachAgent = async (
-    model: ModelWithAgent,
-  ): Promise<ModelWithAgent> => {
+  const attachAgent = async (model: Model): Promise<[Model, Agent | null]> => {
     let agent: Agent | null = null;
     try {
       agent = await agentRepository.findByModelId(model.id);
     } catch {}
-    return {
-      ...model,
-      agentId: agent?.id,
-      agentName: agent?.name,
-    };
+    return [model, agent];
   };
 
-  return async (): Promise<ModelsComposed[]> => {
+  return async (): Promise<ModelWithAgentData[]> => {
     const models = await modelRepository.getAll();
 
-    const modelsWithAgents = await Promise.all(
-      models.map(model => attachAgent(model as ModelWithAgent)),
+    const modelsWithAgentAssociations = await Promise.all(
+      models.map(model => attachAgent(model)),
     );
 
     const activeAgentId = await agentRepository.getActive();
 
-    return ModelWithAgentMapper.toTableData(modelsWithAgents, activeAgentId);
+    return ModelAgentAssociationMapper.toTableData(
+      modelsWithAgentAssociations,
+      activeAgentId,
+    );
   };
 };

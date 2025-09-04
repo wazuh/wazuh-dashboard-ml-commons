@@ -1,4 +1,4 @@
-export interface ModelsComposed {
+export interface ModelWithAgentData {
   name: string;
   id: string;
   version: string;
