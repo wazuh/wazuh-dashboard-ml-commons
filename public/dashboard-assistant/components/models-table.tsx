@@ -192,7 +192,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
           description: 'Use model in dashboard assistant',
           icon: 'plusInCircle',
           type: 'icon',
-          enabled: (model: Model) => model.status === 'active' && !model.inUse,
+          enabled: (model: Model) => model.status === ModelStatus.ACTIVE && !model.inUse,
           onClick: async (model: Model) => {
             if (!model.agentId) {
               return;
@@ -233,7 +233,7 @@ export const ModelsTable = ({ onAddModel }: ModelsTableProps) => {
           icon: 'play',
           type: 'icon',
           onClick: (model: Model) => flyoutTest.open(model),
-          enabled: (model: Model) => model.status === 'active',
+          enabled: (model: Model) => model.status === ModelStatus.ACTIVE,
         },
         {
           name: 'Delete',

@@ -1,7 +1,7 @@
 export const ModelStatus = {
-  ACTIVE: 'active',
-  INACTIVE: 'inactive',
-  ERROR: 'error',
+  ACTIVE: 'Active',
+  INACTIVE: 'Inactive',
+  ERROR: 'Error',
 } as const;
 
 export type ModelStatus = (typeof ModelStatus)[keyof typeof ModelStatus];
