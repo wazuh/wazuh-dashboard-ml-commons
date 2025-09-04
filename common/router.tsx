@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
+import { useHistory } from "react-router-dom";
 import { Monitoring } from '../public/components/monitoring';
 import { ModelRegister } from '../public/dashboard-assistant/components/model-register';
 import { routerPaths } from './router_paths';
@@ -22,7 +24,19 @@ export const ROUTES: RouteConfig[] = [
   },
   {
     path: routerPaths.registerModel,
-    Component: ModelRegister,
+    Component: (props) => {
+      const { push } = useHistory();
+
+      const handleCancel = () => {
+        push(routerPaths.overview);
+      };
+
+      const handleDeployed = () => {
+        push(routerPaths.overview);
+      };
+
+      return <ModelRegister {...props} onCancel={handleCancel} onDeployed={handleDeployed} />;
+    },
     label: 'Register Model',
   },
 ];
