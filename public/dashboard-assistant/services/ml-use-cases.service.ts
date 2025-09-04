@@ -1,6 +1,5 @@
 import { createAgentUseCase } from '../modules/agent/application/use-cases/create-agent';
 import { registerAgentUseCase } from '../modules/agent/application/use-cases/register-agent';
-import { getConfigUseCase } from '../modules/assistant';
 import { createConnectorUseCase } from '../modules/connector/application/use-cases/create-connector';
 import { installDashboardAssistantUseCase } from '../modules/installation-manager/application/use-cases';
 import type { InstallationProgress } from '../modules/installation-manager/domain';
@@ -37,7 +36,6 @@ class MLUseCases {
     this.repos.agentRepository,
   );
   testModelConnection = testModelConnectionUseCase(this.repos.modelRepository);
-  getConfig = getConfigUseCase(this.repos.assistantRepository);
   installDashboardAssistant = (
     callback: (progress: InstallationProgress) => void,
   ) =>
