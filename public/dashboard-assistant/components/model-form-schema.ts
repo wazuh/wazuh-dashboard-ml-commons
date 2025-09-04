@@ -1,120 +1,87 @@
-import { schema } from '@osd/config-schema';
 import { ModelFormData } from './types';
 import { modelProviderConfigs } from '../provider-model-config';
 
 // Get valid model providers from config
 const validModelProviders = Object.keys(modelProviderConfigs);
 
-export const modelFormSchema = schema.object({
-  modelProvider: schema.string({
-    validate: (value: string) => {
-      if (!validModelProviders.includes(value)) {
-        return `Provider must be one of: ${validModelProviders.join(', ')}`;
-      }
-    },
-  }),
-
-  model: schema.string({ minLength: 1 }),
-
-  apiUrl: schema.uri({ scheme: ['http', 'https'] }),
-
-  apiKey: schema.string({ minLength: 1 }),
-});
-
-// Custom validation function that also checks if model is valid for the selected provider
+// Browser-safe validation function (no @osd/config-schema)
 export const validateModelForm = (data: ModelFormData): ValidationResult => {
-  try {
-    // First, validate with the base schema
-    const value = modelFormSchema.validate(data);
+  const errors: Array<{ field: keyof ModelFormData; message: string }> = [];
 
-    // Additional validation: check if model is valid for the selected provider
-    const selectedProviderConfig = modelProviderConfigs[data.modelProvider];
-    if (
-      selectedProviderConfig &&
-      !selectedProviderConfig.models.includes(data.model)
-    ) {
-      return {
-        isValid: false,
-        errors: [
-          {
-            field: 'model' as keyof ModelFormData,
-            message: `Model "${data.model}" is not available for provider "${data.modelProvider}"`,
-          },
-        ],
-        value: null,
-      };
-    }
+  // Provider validation
+  if (!validModelProviders.includes(data.modelProvider)) {
+    errors.push({
+      field: 'modelProvider',
+      message: `Provider must be one of: ${validModelProviders.join(', ')}`,
+    });
+  }
 
-    // Additional validation: check if API URL matches provider's regex pattern
-    if (selectedProviderConfig?.default_endpoint_regex) {
-      const regex = new RegExp(selectedProviderConfig.default_endpoint_regex);
-      const fullUrl = data.apiUrl.startsWith('http')
-        ? data.apiUrl
-        : `https://${data.apiUrl}`;
+  // Model validation
+  if (!data.model || data.model.trim().length < 1) {
+    errors.push({
+      field: 'model',
+      message: 'Model is required and must be at least 1 character long',
+    });
+  }
 
-      if (!regex.test(fullUrl)) {
-        return {
-          isValid: false,
-          errors: [
-            {
-              field: 'apiUrl' as keyof ModelFormData,
-              message: `API URL does not match the expected pattern for ${data.modelProvider}`,
-            },
-          ],
-          value: null,
-        };
-      }
-    }
-
-    return {
-      isValid: true,
-      errors: [],
-      value: value as ModelFormData,
-    };
-  } catch (error: any) {
-    // Parse validation errors from @osd/config-schema
-    const errors: Array<{ field: keyof ModelFormData; message: string }> = [];
-
-    if (error.message) {
-      // Extract field path and message from error
-      const errorMessage = error.message;
-
-      // Map common error patterns to fields
-      if (errorMessage.includes('modelProvider')) {
-        errors.push({
-          field: 'modelProvider',
-          message: `Provider must be one of: ${validModelProviders.join(', ')}`,
-        });
-      } else if (errorMessage.includes('model')) {
-        errors.push({
-          field: 'model',
-          message: 'Model is required and must be at least 1 character long',
-        });
-      } else if (errorMessage.includes('apiUrl')) {
+  // API URL validation (http/https)
+  if (!data.apiUrl || data.apiUrl.trim().length < 1) {
+    errors.push({
+      field: 'apiUrl',
+      message: 'API URL must be a valid URL with http or https scheme',
+    });
+  } else {
+    try {
+      const url = new URL(data.apiUrl);
+      if (!['http:', 'https:'].includes(url.protocol)) {
         errors.push({
           field: 'apiUrl',
           message: 'API URL must be a valid URL with http or https scheme',
         });
-      } else if (errorMessage.includes('apiKey')) {
+      }
+    } catch {
+      errors.push({
+        field: 'apiUrl',
+        message: 'API URL must be a valid URL with http or https scheme',
+      });
+    }
+  }
+
+  // API key validation
+  if (!data.apiKey || data.apiKey.trim().length < 1) {
+    errors.push({
+      field: 'apiKey',
+      message: 'API key is required and must be at least 1 character long',
+    });
+  }
+
+  // Provider-specific checks
+  const selectedProviderConfig = modelProviderConfigs[data.modelProvider];
+  if (selectedProviderConfig) {
+    if (!selectedProviderConfig.models.includes(data.model)) {
+      errors.push({
+        field: 'model',
+        message: `Model "${data.model}" is not available for provider "${data.modelProvider}"`,
+      });
+    }
+
+    if (selectedProviderConfig.default_endpoint_regex && data.apiUrl) {
+      const regex = new RegExp(selectedProviderConfig.default_endpoint_regex);
+      const fullUrl = data.apiUrl;
+      if (!regex.test(fullUrl)) {
         errors.push({
-          field: 'apiKey',
-          message: 'API key is required and must be at least 1 character long',
-        });
-      } else {
-        // Generic error
-        errors.push({
-          field: 'modelProvider',
-          message: errorMessage,
+          field: 'apiUrl',
+          message: `API URL does not match the expected pattern for ${data.modelProvider}`,
         });
       }
     }
-
-    return {
-      isValid: false,
-      errors,
-      value: null,
-    };
   }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    value: errors.length === 0 ? data : null,
+  };
 };
 
 export interface ValidationResult {
