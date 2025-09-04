@@ -41,6 +41,10 @@ export interface ModelDeploymentItem {
   planningNodesCount: number | undefined;
   notRespondingNodesCount: number | undefined;
   planningWorkerNodes: string[];
+  version?: string;
+  agentId?: string;
+  inUse?: boolean;
+  createdAt?: string;
   connector?: {
     id?: string;
     name?: string;
@@ -61,6 +65,9 @@ export interface ModelDeploymentTableProps {
   onChange: (criteria: ModelDeploymentTableCriteria) => void;
   onViewDetail?: (modelDeploymentItem: ModelDeploymentItem) => void;
   onResetSearchClick?: () => void;
+  onUseModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
+  onTestModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
+  onDeleteModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
 }
 
 export const ModelDeploymentTable = ({
@@ -72,6 +79,9 @@ export const ModelDeploymentTable = ({
   onChange,
   onViewDetail,
   onResetSearchClick,
+  onUseModel,
+  onTestModel,
+  onDeleteModel,
 }: ModelDeploymentTableProps) => {
   const columns = useMemo(
     () => [
@@ -81,6 +91,22 @@ export const ModelDeploymentTable = ({
         width: '26.13%',
         sortable: true,
         truncateText: true,
+      },
+      {
+        field: 'version',
+        name: 'Version',
+        width: '10%',
+        sortable: true,
+        truncateText: true,
+        render: (version: string | undefined) => version ?? '\u2014',
+      },
+      {
+        field: 'agentId',
+        name: 'Agent ID',
+        width: '18%',
+        sortable: true,
+        truncateText: true,
+        render: (agentId: string | undefined) => agentId ?? '\u2014',
       },
       {
         field: 'id',
@@ -104,7 +130,7 @@ export const ModelDeploymentTable = ({
       },
       {
         field: 'model_state',
-        name: 'Status',
+        name: 'Model Status',
         width: '14%',
         sortable: true,
         truncateText: true,
@@ -169,27 +195,79 @@ export const ModelDeploymentTable = ({
         ),
       },
       {
+        field: 'inUse',
+        name: 'In use',
+        width: '10%',
+        sortable: true,
+        render: (inUse: boolean | undefined) =>
+          inUse ? (
+            <EuiHealth color="success">
+              <div className="eui-textTruncate">Yes</div>
+            </EuiHealth>
+          ) : (
+            '\u2014'
+          ),
+      },
+      {
+        field: 'createdAt',
+        name: 'Created',
+        width: '12%',
+        sortable: true,
+        truncateText: true,
+        render: (createdAt: string | undefined) =>
+          createdAt ? new Date(createdAt).toLocaleDateString() : '\u2014',
+      },
+      {
         field: 'id',
-        name: 'Action',
+        name: 'Actions',
         align: 'right' as const,
-        width: '5.87%',
+        width: '12%',
         render: (id: string, modelDeploymentItem: ModelDeploymentItem) => {
+          const canUse = !!modelDeploymentItem.agentId && !modelDeploymentItem.inUse;
+          const canDelete = !modelDeploymentItem.inUse;
           return (
-            <EuiToolTip content="View status details">
-              <EuiSmallButtonIcon
-                onClick={() => {
-                  onViewDetail?.(modelDeploymentItem);
-                }}
-                role="button"
-                aria-label="view detail"
-                iconType="inspect"
-              />
-            </EuiToolTip>
+            <>
+              <EuiToolTip content="Use model">
+                <EuiSmallButtonIcon
+                  onClick={() => onUseModel?.(modelDeploymentItem)}
+                  role="button"
+                  aria-label="use model"
+                  iconType="plusInCircle"
+                  isDisabled={!canUse}
+                />
+              </EuiToolTip>
+              <EuiToolTip content="View status details">
+                <EuiSmallButtonIcon
+                  onClick={() => onViewDetail?.(modelDeploymentItem)}
+                  role="button"
+                  aria-label="view detail"
+                  iconType="inspect"
+                />
+              </EuiToolTip>
+              <EuiToolTip content="Test model connection">
+                <EuiSmallButtonIcon
+                  onClick={() => onTestModel?.(modelDeploymentItem)}
+                  role="button"
+                  aria-label="test model"
+                  iconType="play"
+                />
+              </EuiToolTip>
+              <EuiToolTip content="Delete model">
+                <EuiSmallButtonIcon
+                  onClick={() => onDeleteModel?.(modelDeploymentItem)}
+                  role="button"
+                  aria-label="delete model"
+                  iconType="trash"
+                  color="danger"
+                  isDisabled={!canDelete}
+                />
+              </EuiToolTip>
+            </>
           );
         },
       },
     ],
-    [onViewDetail]
+    [onViewDetail, onUseModel, onTestModel, onDeleteModel]
   );
   const sorting = useMemo(() => ({ sort }), [sort]);
 
