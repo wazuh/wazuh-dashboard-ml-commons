@@ -141,7 +141,7 @@ const fetchDeployedModels = async (
     status?: string;
   }> = {};
   try {
-    const composedModelsWithAgentData = await getUseCases().retrieveModelsWithAgentData();
+    const composedModelsWithAgentData = await getUseCases().getModelsWithAgentData();
     modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>((acc, modelWithAgentData) => {
       acc[modelWithAgentData.id] = {
         agentId: modelWithAgentData.agentId,

@@ -52,7 +52,7 @@ export function useAssistantInstallation() {
         description: assistantModelInfo.description,
       };
 
-      const response = await getUseCases().installDashboardAssistant(onProgress)(
+      const response = await getUseCases().beginAssistantInstallationProcess(onProgress)(
         request,
       );
 

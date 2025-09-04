@@ -15,7 +15,7 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
     context: InstallationContext,
   ): Promise<void> {
     const agentId = context.get<string>('agentId');
-    await getUseCases().registerAgent(agentId);
+    await getUseCases().useAgent(agentId);
   }
 
   public getSuccessMessage(): string {

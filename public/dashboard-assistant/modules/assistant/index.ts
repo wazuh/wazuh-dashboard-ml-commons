@@ -1,5 +1,4 @@
 // Application layer exports
-export * from './application/use-cases';
 export * from './application/ports';
 
 // Infrastructure layer exports

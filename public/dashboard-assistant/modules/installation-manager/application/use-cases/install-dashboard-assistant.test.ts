@@ -1,4 +1,4 @@
-import { installDashboardAssistantUseCase } from './install-dashboard-assistant';
+import { triggerAIAssistantInstaller } from './trigger-ai-assistant-installer';
 
 describe('installDashboardAssistantUseCase', () => {
   it('returns success with data when orchestrator resolves', async () => {
@@ -6,7 +6,7 @@ describe('installDashboardAssistantUseCase', () => {
     const execute = jest.fn().mockResolvedValue({ data });
     const orchestrator = { execute } as any;
 
-    const useCase = installDashboardAssistantUseCase(orchestrator);
+    const useCase = triggerAIAssistantInstaller(orchestrator);
     const request = { any: 'payload' } as any;
 
     const res = await useCase(request);
@@ -22,7 +22,7 @@ describe('installDashboardAssistantUseCase', () => {
     const execute = jest.fn().mockRejectedValue(new Error('boom'));
     const orchestrator = { execute } as any;
 
-    const useCase = installDashboardAssistantUseCase(orchestrator);
+    const useCase = triggerAIAssistantInstaller(orchestrator);
     const res = await useCase({} as any);
 
     expect(res.success).toBe(false);
@@ -33,7 +33,7 @@ describe('installDashboardAssistantUseCase', () => {
     const execute = jest.fn().mockRejectedValue('bad');
     const orchestrator = { execute } as any;
 
-    const useCase = installDashboardAssistantUseCase(orchestrator);
+    const useCase = triggerAIAssistantInstaller(orchestrator);
     const res = await useCase({} as any);
 
     expect(res.success).toBe(false);

@@ -13,6 +13,6 @@ export interface ModelRepository
     GetAllRepository<Model>,
     DeleteRepository,
     FindRepository<Model> {
-  testConnection(modelId: string): Promise<ModelPredictResponse>;
+  validateConnection(modelId: string): Promise<ModelPredictResponse>;
   deploy(modelId: string, deploy: boolean): Promise<void>;
 }

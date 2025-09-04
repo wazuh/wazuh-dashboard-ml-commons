@@ -1,1 +1,1 @@
-export * from './install-dashboard-assistant';
+export * from './trigger-ai-assistant-installer';

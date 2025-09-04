@@ -15,7 +15,7 @@ export class TestModelConnectionStep extends InstallationAIAssistantStep {
     context: InstallationContext,
   ): Promise<void> {
     // Simulate testing model connection
-    const isConnected = await getUseCases().testModelConnection(
+    const isConnected = await getUseCases().validateModelConnection(
       context.get('modelId'),
     );
     if (!isConnected) {

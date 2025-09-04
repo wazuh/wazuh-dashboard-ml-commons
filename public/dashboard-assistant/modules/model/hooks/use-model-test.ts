@@ -19,7 +19,7 @@ export function useModelTest(): UseModelTestReturn {
     reset,
   } = useQuery<ModelPredictResponse | null>({
     query(model_id: string) {
-      return getUseCases().testModelConnection(model_id);
+      return getUseCases().validateModelConnection(model_id);
     },
     initialData: null,
     defaultErrorMessage: 'Failed to test model connection',

@@ -15,7 +15,7 @@ export interface UseModelReturn {
 
 export function useModel(options?: UseModelOptions): UseModelReturn {
   const registerAgentQuery = useCallback(async (agentId: string) => {
-    await getUseCases().registerAgent(agentId);
+    await getUseCases().useAgent(agentId);
     // small delay to allow config index update
     await new Promise(r => setTimeout(r, 500));
     if (options?.onSuccess) {

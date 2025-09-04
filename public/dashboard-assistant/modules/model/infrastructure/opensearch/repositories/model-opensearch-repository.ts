@@ -87,7 +87,7 @@ export class ModelOpenSearchRepository implements ModelRepository {
     await this.proxyHttpClient.delete(`/_plugins/_ml/models/${id}`);
   }
 
-  public async testConnection(modelId: string): Promise<ModelPredictResponse> {
+  public async validateConnection(modelId: string): Promise<ModelPredictResponse> {
     try {
       const response = await this.proxyHttpClient.post<ModelPredictResponse>(
         `/_plugins/_ml/models/${modelId}/_predict`,

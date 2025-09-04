@@ -4,7 +4,7 @@ import {
   IInstallDashboardAssistantResponse,
 } from '../../domain';
 
-export const installDashboardAssistantUseCase =
+export const triggerAIAssistantInstaller =
   (installationOrchestrator: IInstallationManager) =>
   async (
     request: InstallAIDashboardAssistantDto,
