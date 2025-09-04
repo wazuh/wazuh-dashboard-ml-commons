@@ -8,15 +8,15 @@ export class ProxyHttpClient implements HttpClient {
     `/api/console/proxy?method=${method}&path=${path}`;
 
   get<T = any>(url: string): Promise<T> {
-    return this.httpClient.get(this.buildProxyUrl(HttpMethod.GET, url));
+    return this.httpClient.post(this.buildProxyUrl(HttpMethod.GET, url));
   }
   post<T = any>(url: string, data?: any): Promise<T> {
     return this.httpClient.post(this.buildProxyUrl(HttpMethod.POST, url), data);
   }
   put<T = any>(url: string, data?: any): Promise<T> {
-    return this.httpClient.put(this.buildProxyUrl(HttpMethod.PUT, url), data);
+    return this.httpClient.post(this.buildProxyUrl(HttpMethod.PUT, url), data);
   }
   delete<T = any>(url: string): Promise<T> {
-    return this.httpClient.delete(this.buildProxyUrl(HttpMethod.DELETE, url));
+    return this.httpClient.post(this.buildProxyUrl(HttpMethod.DELETE, url));
   }
 }
