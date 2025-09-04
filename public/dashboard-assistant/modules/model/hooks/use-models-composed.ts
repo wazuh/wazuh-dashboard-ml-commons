@@ -13,7 +13,7 @@ interface UseModelsComposed {
 export function useModelsComposed(): UseModelsComposed {
   const { data, error, isLoading, fetch } = useQuery<ModelsComposed[]>({
     query() {
-      return getUseCases().getModelsComposed();
+      return getUseCases().retrieveModelsWithAgentData();
     },
     initialData: [],
     defaultErrorMessage: 'Failed to fetch models data',

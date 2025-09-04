@@ -6,7 +6,7 @@ import { AgentRepository } from '../../../agent/application/ports/agent-reposito
 import { AssistantRepository } from '../../../assistant/application/ports/assistant-repository';
 import type { Agent } from '../../../agent/domain/entities/agent';
 
-export const getModelsComposedUseCase = (
+export const composeModelsWithAgentDataUseCase = (
   modelRepository: ModelRepository,
   agentRepository: AgentRepository,
   assistantRepository: AssistantRepository,

@@ -8,7 +8,7 @@ import { persistMLCommonsSettingsUseCase } from '../modules/ml-commons-settings/
 import { createModelUseCase } from '../modules/model/application/use-cases/create-model';
 import { deleteModelWithRelatedEntitiesUseCase } from '../modules/model/application/use-cases/delete-model-with-related-entities';
 import { getModelsUseCase } from '../modules/model/application/use-cases/get-models';
-import { getModelsComposedUseCase } from '../modules/model/application/use-cases/get-models-composed';
+import { composeModelsWithAgentDataUseCase } from '../modules/model/application/use-cases/compose-models-with-agent-info';
 import { testModelConnectionUseCase } from '../modules/model/application/use-cases/test-model-connection';
 import { getHttpClient, getProxyHttpClient } from './common';
 import { getRepositories } from './repositories.service';
@@ -24,7 +24,7 @@ class MLUseCases {
   createAgent = createAgentUseCase(this.repos.agentRepository);
   registerAgent = registerAgentUseCase(this.repos.agentRepository);
   getModels = getModelsUseCase(this.repos.modelRepository);
-  getModelsComposed = getModelsComposedUseCase(
+  retrieveModelsWithAgentData = composeModelsWithAgentDataUseCase(
     this.repos.modelRepository,
     this.repos.agentRepository,
     this.repos.assistantRepository,

@@ -133,7 +133,7 @@ const fetchDeployedModels = async (
 
   // Enrich with agent/inUse/version/createdAt/status using assistant use cases
   // Note: getModelsComposed returns all models; merge by ID for current page
-  let modelsComposedMap: Record<string, {
+  let modelAgentDataMap: Record<string, {
     agentId?: string;
     inUse?: boolean;
     version?: string;
@@ -141,14 +141,14 @@ const fetchDeployedModels = async (
     status?: string;
   }> = {};
   try {
-    const modelsComposed = await getUseCases().getModelsComposed();
-    modelsComposedMap = modelsComposed.reduce<typeof modelsComposedMap>((acc, m) => {
-      acc[m.id] = {
-        agentId: m.agentId,
-        inUse: m.inUse,
-        version: m.version,
-        createdAt: m.createdAt,
-        status: m.status,
+    const composedModelsWithAgentData = await getUseCases().retrieveModelsWithAgentData();
+    modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>((acc, modelWithAgentData) => {
+      acc[modelWithAgentData.id] = {
+        agentId: modelWithAgentData.agentId,
+        inUse: modelWithAgentData.inUse,
+        version: modelWithAgentData.version,
+        createdAt: modelWithAgentData.createdAt,
+        status: modelWithAgentData.status,
       };
       return acc;
     }, {});
@@ -181,11 +181,11 @@ const fetchDeployedModels = async (
         algorithm,
         ...rest
       }) => {
-        const composed = modelsComposedMap[id] || {};
+        const combinedAgentData = modelAgentDataMap[id] || {};
         // derive agent status using composed data when available
-        const composedStatus = composed.status?.toLowerCase();
+        const composedStatus = combinedAgentData.status?.toLowerCase();
         let agent_state: AgentModelStatus | undefined;
-        if (composed.agentId === undefined) {
+        if (combinedAgentData.agentId === undefined) {
           agent_state = AgentModelStatus.INACTIVE;
         } else if (composedStatus === 'active') {
           agent_state = AgentModelStatus.ACTIVE;
@@ -205,10 +205,10 @@ const fetchDeployedModels = async (
               ? planningCount - workerCount
               : undefined,
           planningWorkerNodes,
-          version: composed.version,
-          createdAt: composed.createdAt,
-          agentId: composed.agentId,
-          inUse: composed.inUse,
+          version: combinedAgentData.version,
+          createdAt: combinedAgentData.createdAt,
+          agentId: combinedAgentData.agentId,
+          inUse: combinedAgentData.inUse,
           agent_state,
           connector: rest.connector_id
             ? externalConnectorMap[rest.connector_id] || {}
