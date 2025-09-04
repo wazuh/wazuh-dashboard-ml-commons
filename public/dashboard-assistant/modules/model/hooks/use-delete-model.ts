@@ -14,6 +14,16 @@ export function useDeleteModel(): UseDeleteModelReturn {
       getUseCases().deleteModelWithRelatedEntities(modelId),
     initialData: undefined as void,
     defaultErrorMessage: 'Failed to delete model',
+    toasts: {
+      getSuccess: ({ params }) => ({
+        title: 'Model deleted',
+        text: `Model ID "${params}" has been successfully deleted.`,
+      }),
+      getError: ({ error }) => ({
+        title: 'Error deleting model',
+        text: error,
+      }),
+    },
   });
 
   return {
