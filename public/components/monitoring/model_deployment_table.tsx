@@ -261,7 +261,6 @@ export const ModelDeploymentTable = ({
         render: (id: string, modelDeploymentItem: ModelDeploymentItem) => {
           const canUse =
             !!modelDeploymentItem.agentId && !modelDeploymentItem.inUse;
-          const canDelete = !modelDeploymentItem.inUse;
           return (
             <>
               <EuiToolTip content='Use model'>
@@ -296,7 +295,6 @@ export const ModelDeploymentTable = ({
                   aria-label='delete model'
                   iconType='trash'
                   color='danger'
-                  isDisabled={!canDelete}
                 />
               </EuiToolTip>
             </>

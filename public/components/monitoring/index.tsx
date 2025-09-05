@@ -42,6 +42,16 @@ import {
   EuiFlyoutHeader,
   EuiFlyoutBody,
   EuiTitle,
+  EuiOverlayMask,
+  EuiModal,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
+  EuiModalBody,
+  EuiModalFooter,
+  EuiButton,
+  EuiForm,
+  EuiFormRow,
+  EuiFieldText,
 } from '@elastic/eui';
 import { ModelTestResult } from '../../dashboard-assistant/components/model-test-result';
 import { useFlyout } from '../../dashboard-assistant/hooks/use-flyout';
@@ -152,14 +162,42 @@ export const Monitoring = (props: MonitoringProps) => {
     [activateModel],
   );
 
-  const { deleteModel } = useDeleteModel();
+  const { deleteModel, isDeleting } = useDeleteModel();
+
+  const [deleteModalState, setDeleteModalState] = useState<{
+    model: ModelDeploymentItem | null;
+    confirmationText: string;
+  }>({ model: null, confirmationText: '' });
+
+  const openDeleteModal = useCallback((model: ModelDeploymentItem) => {
+    setDeleteModalState({ model, confirmationText: '' });
+  }, []);
+
+  const closeDeleteModal = useCallback(() => {
+    setDeleteModalState({ model: null, confirmationText: '' });
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteModalState.model) return;
+    await deleteModel(deleteModalState.model.id);
+    closeDeleteModal();
+    await reload();
+  }, [deleteModel, deleteModalState.model, closeDeleteModal, reload]);
+
   const handleDeleteModel = useCallback(
     async (model: ModelDeploymentItem) => {
-      await deleteModel(model.id);
-      await reload();
+      openDeleteModal(model);
     },
-    [deleteModel, reload, addSuccessToast, addErrorToast],
+    [openDeleteModal],
   );
+
+  const updateConfirmationText = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const value = (e.target as HTMLInputElement).value;
+    setDeleteModalState(s => ({
+      ...s,
+      confirmationText: value,
+    }));
+  };
 
   return (
     <>
@@ -205,10 +243,7 @@ export const Monitoring = (props: MonitoringProps) => {
                 <EuiFlexGroup justifyContent='flexEnd' gutterSize='none'>
                   <EuiFlexItem key='add-model' grow={false}>
                     <Link to={routerPaths.registerModel}>
-                      <EuiButtonEmpty
-                        color='primary'
-                        iconType='plusInCircle'
-                      >
+                      <EuiButtonEmpty color='primary' iconType='plusInCircle'>
                         Add model
                       </EuiButtonEmpty>
                     </Link>
@@ -266,6 +301,62 @@ export const Monitoring = (props: MonitoringProps) => {
           onTestModel={openTestFlyout}
           onDeleteModel={handleDeleteModel}
         />
+        {deleteModalState.model && (
+          <EuiOverlayMask>
+            <EuiModal
+              onClose={closeDeleteModal}
+              initialFocus='[name=modelName]'
+            >
+              <EuiModalHeader>
+                <EuiModalHeaderTitle>
+                  <h1>Delete model: {deleteModalState.model.name}</h1>
+                </EuiModalHeaderTitle>
+              </EuiModalHeader>
+              <EuiModalBody>
+                <EuiText size='s'>
+                  This action permanently deletes the model and related
+                  entities. To confirm, type the model name exactly.
+                </EuiText>
+                <EuiSpacer size='m' />
+                <EuiForm component='form'>
+                  <EuiFormRow
+                    label={`Type "${deleteModalState.model.name}" to confirm`}
+                    fullWidth
+                  >
+                    <EuiFieldText
+                      fullWidth
+                      name='modelName'
+                      value={deleteModalState.confirmationText}
+                      onChange={updateConfirmationText}
+                    />
+                  </EuiFormRow>
+                </EuiForm>
+              </EuiModalBody>
+              <EuiModalFooter>
+                <EuiButton
+                  onClick={closeDeleteModal}
+                  color='text'
+                  data-test-subj='cancelDeleteModelButton'
+                >
+                  Cancel
+                </EuiButton>
+                <EuiButton
+                  fill
+                  color='danger'
+                  onClick={confirmDelete}
+                  isLoading={isDeleting}
+                  isDisabled={
+                    deleteModalState.confirmationText.trim() !==
+                    deleteModalState.model.name
+                  }
+                  data-test-subj='confirmDeleteModelButton'
+                >
+                  Delete model
+                </EuiButton>
+              </EuiModalFooter>
+            </EuiModal>
+          </EuiOverlayMask>
+        )}
         {preview && (
           <PreviewPanel
             model={preview.model}

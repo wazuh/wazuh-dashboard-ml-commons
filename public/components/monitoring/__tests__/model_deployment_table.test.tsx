@@ -112,8 +112,8 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('model 3 name')).toBeInTheDocument();
     });
 
-    it('should render source at second column', () => {
-      const columnIndex = 1;
+    it('should render source at fourth column', () => {
+      const columnIndex = 3;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -127,8 +127,8 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('External')).toBeInTheDocument();
     });
 
-    it('should render connector name at second column', () => {
-      const columnIndex = 2;
+    it('should render connector name at fifth column', () => {
+      const columnIndex = 4;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -142,14 +142,14 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('Sagemaker')).toBeInTheDocument();
     });
 
-    it('should render status at fourth column', () => {
-      const columnIndex = 3;
+    it('should render model status at sixth column', () => {
+      const columnIndex = 5;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
         .closest('table')
         ?.querySelectorAll(`tbody tr td:nth-child(${columnIndex + 1})`);
-      expect(within(header).getByText('Status')).toBeInTheDocument();
+      expect(within(header).getByText('Model Status')).toBeInTheDocument();
       expect(columnContent?.length).toBe(3);
       const cells = columnContent!;
       expect(within(cells[0] as HTMLElement).getByText('Partially responding')).toBeInTheDocument();
@@ -157,11 +157,11 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('Not responding')).toBeInTheDocument();
     });
 
-    it('should render Model ID at fifth column and copy to clipboard after text clicked', async () => {
+    it('should render Model ID at eighth column and copy to clipboard after text clicked', async () => {
       const execCommandOrigin = document.execCommand;
       document.execCommand = jest.fn(() => true);
 
-      const columnIndex = 4;
+      const columnIndex = 7;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -180,8 +180,8 @@ describe('<DeployedModelTable />', () => {
       document.execCommand = execCommandOrigin;
     });
 
-    it('should render Action column and call onViewDetail with the model item of the current table row', async () => {
-      const columnIndex = 5;
+    it('should render Actions column and call onViewDetail with the model item of the current table row', async () => {
+      const columnIndex = 10;
       const onViewDetailMock = jest.fn();
       const { finalProps } = setup({
         onViewDetail: onViewDetailMock,
@@ -190,17 +190,23 @@ describe('<DeployedModelTable />', () => {
       const columnContent = header
         .closest('table')
         ?.querySelectorAll(`tbody tr td:nth-child(${columnIndex + 1})`);
-      expect(within(header).getByText('Action')).toBeInTheDocument();
+      expect(within(header).getByText('Actions')).toBeInTheDocument();
       expect(columnContent?.length).toBe(3);
       const cells = columnContent!;
 
-      await userEvent.click(within(cells[0] as HTMLElement).getByRole('button'));
+      await userEvent.click(
+        within(cells[0] as HTMLElement).getByRole('button', { name: 'view detail' })
+      );
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[0]);
 
-      await userEvent.click(within(cells[1] as HTMLElement).getByRole('button'));
+      await userEvent.click(
+        within(cells[1] as HTMLElement).getByRole('button', { name: 'view detail' })
+      );
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[1]);
 
-      await userEvent.click(within(cells[2] as HTMLElement).getByRole('button'));
+      await userEvent.click(
+        within(cells[2] as HTMLElement).getByRole('button', { name: 'view detail' })
+      );
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[2]);
     });
   });
@@ -242,7 +248,7 @@ describe('<DeployedModelTable />', () => {
   });
 
   it('should call onChange with consistent status sort parameters', async () => {
-    const statusColumnIndex = 3;
+    const statusColumnIndex = 5;
     const {
       finalProps,
       result: { rerender },
@@ -254,7 +260,7 @@ describe('<DeployedModelTable />', () => {
     });
 
     await userEvent.click(
-      within(screen.getAllByRole('columnheader')[statusColumnIndex]).getByText('Status')
+      within(screen.getAllByRole('columnheader')[statusColumnIndex]).getByText('Model Status')
     );
     expect(finalProps.onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -275,7 +281,7 @@ describe('<DeployedModelTable />', () => {
       />
     );
     await userEvent.click(
-      within(screen.getAllByRole('columnheader')[statusColumnIndex]).getByText('Status')
+      within(screen.getAllByRole('columnheader')[statusColumnIndex]).getByText('Model Status')
     );
     expect(finalProps.onChange).toHaveBeenCalledWith(
       expect.objectContaining({
