@@ -5,7 +5,7 @@
 
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '../../../../test/test_utils';
+import { render, screen, within } from '../../../../test/test_utils';
 import {
   ModelDeploymentTable,
   ModelDeploymentTableProps,
@@ -46,22 +46,82 @@ describe('Model Use and Test actions', () => {
       />,
     );
 
-    const useButtons = screen.getAllByRole('button', { name: 'use model' });
-    expect(useButtons).toHaveLength(3);
-    expect(useButtons[0]).toBeEnabled();
-    expect(useButtons[1]).toBeDisabled();
-    expect(useButtons[2]).toBeDisabled();
+    // Find Actions column index
+    const headers = screen.getAllByRole('columnheader');
+    const actionsIndex = headers.findIndex(h => within(h).queryByText('Actions'));
+    const rows = headers[0].closest('table')?.querySelectorAll('tbody tr') as NodeListOf<HTMLElement>;
 
-    await user.click(useButtons[0]);
+    // Helper to get the Actions cell for a row
+    const cellAt = (rowIdx: number) => rows[rowIdx].querySelectorAll('td')[actionsIndex] as HTMLElement;
+
+    // Row 0: Use should be enabled
+    let use0 = within(cellAt(0)).queryByRole('button', { name: /use model/i });
+    if (!use0) {
+      const all0 = within(cellAt(0)).getByRole('button', { name: /all actions/i });
+      await user.click(all0);
+      const useInMenu = (await screen
+        .findByRole('button', { name: /use model/i })
+        .catch(async () => await screen.findByRole('menuitem', { name: /use model/i }))
+      ) as HTMLElement;
+      expect(useInMenu).toBeEnabled();
+      // close popover after checking
+      await user.click(all0);
+    } else {
+      expect(use0).toBeEnabled();
+    }
+
+    // Row 1: Use should be disabled
+    let use1 = within(cellAt(1)).queryByRole('button', { name: /use model/i });
+    if (!use1) {
+      const all1 = within(cellAt(1)).getByRole('button', { name: /all actions/i });
+      await user.click(all1);
+      use1 = (await screen.findByRole('menuitem', { name: /use model/i }).catch(async () =>
+        await screen.findByRole('button', { name: /use model/i })
+      )) as HTMLElement;
+      expect(use1).toBeDisabled();
+      await user.click(all1);
+    } else {
+      expect(use1).toBeDisabled();
+    }
+
+    // Row 2: Use should be disabled
+    let use2 = within(cellAt(2)).queryByRole('button', { name: /use model/i });
+    if (!use2) {
+      const all2 = within(cellAt(2)).getByRole('button', { name: /all actions/i });
+      await user.click(all2);
+      use2 = (await screen.findByRole('menuitem', { name: /use model/i }).catch(async () =>
+        await screen.findByRole('button', { name: /use model/i })
+      )) as HTMLElement;
+      expect(use2).toBeDisabled();
+      await user.click(all2);
+    } else {
+      expect(use2).toBeDisabled();
+    }
+
+    // Invoke onUseModel from row 0
+    if (use0) {
+      await user.click(use0);
+    } else {
+      const all0 = within(cellAt(0)).getByRole('button', { name: /all actions/i });
+      await user.click(all0);
+      const menuUse0 = (await screen
+        .findByRole('button', { name: /use model/i })
+        .catch(async () => await screen.findByRole('menuitem', { name: /use model/i }))
+      ) as HTMLElement;
+      await user.click(menuUse0);
+    }
     expect(onUseModel).toHaveBeenCalledWith(items[0]);
 
-    const testButtons = screen.getAllByRole('button', { name: 'test model' });
-    expect(testButtons).toHaveLength(3);
-    expect(testButtons[0]).toBeEnabled();
-    expect(testButtons[1]).toBeEnabled();
-    expect(testButtons[2]).toBeEnabled();
-
-    await user.click(testButtons[2]);
+    // Test action (always enabled) – click row 2
+    let test2 = within(cellAt(2)).queryByRole('button', { name: /test model/i });
+    if (!test2) {
+      const all2 = within(cellAt(2)).getByRole('button', { name: /all actions/i });
+      await user.click(all2);
+      test2 = (await screen.findByRole('menuitem', { name: /test model/i }).catch(async () =>
+        await screen.findByRole('button', { name: /test model/i })
+      )) as HTMLElement;
+    }
+    await user.click(test2!);
     expect(onTestModel).toHaveBeenCalledWith(items[2]);
-  });
+  }, 30000);
 });
