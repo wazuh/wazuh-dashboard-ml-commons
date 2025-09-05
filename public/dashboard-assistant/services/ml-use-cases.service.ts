@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { createAgentUseCase } from '../modules/agent/application/use-cases/create-agent';
 import { registerAgentUseCase } from '../modules/agent/application/use-cases/register-agent';
 import { createConnectorUseCase } from '../modules/connector/application/use-cases/create-connector';
@@ -17,7 +22,7 @@ class MLUseCases {
   constructor(private repos: ReturnType<typeof getRepositories>) {}
 
   persistMlCommonsSettings = persistMLCommonsSettingsUseCase(
-    this.repos.mlCommonsSettingsRepository,
+    this.repos.mlCommonsSettingsRepository
   );
   createConnector = createConnectorUseCase(this.repos.connectorRepository);
   createModel = createModelUseCase(this.repos.modelRepository);
@@ -26,24 +31,20 @@ class MLUseCases {
   getModels = getModelsUseCase(this.repos.modelRepository);
   getModelsWithAgentData = composeModelsWithAgentDataUseCase(
     this.repos.modelRepository,
-    this.repos.agentRepository,
+    this.repos.agentRepository
   );
   deleteModelWithRelatedEntities = deleteModelWithRelatedEntitiesUseCase(
     this.repos.modelRepository,
     this.repos.connectorRepository,
     this.repos.modelGroupRepository,
-    this.repos.agentRepository,
+    this.repos.agentRepository
   );
-  validateModelConnection = validateModelConnectionUseCase(
-    this.repos.modelRepository,
-  );
-  beginAssistantInstallationProcess = (
-    callback: (progress: InstallationProgress) => void,
-  ) =>
+  validateModelConnection = validateModelConnectionUseCase(this.repos.modelRepository);
+  beginAssistantInstallationProcess = (callback: (progress: InstallationProgress) => void) =>
     triggerAIAssistantInstaller(
-      new InstallationManager(progressUpdate => {
+      new InstallationManager((progressUpdate) => {
         callback(progressUpdate);
-      }),
+      })
     );
 }
 
@@ -51,9 +52,7 @@ let useCasesInstance: MLUseCases;
 
 export function getUseCases() {
   if (!useCasesInstance) {
-    useCasesInstance = new MLUseCases(
-      getRepositories(getHttpClient(), getProxyHttpClient()),
-    );
+    useCasesInstance = new MLUseCases(getRepositories(getHttpClient(), getProxyHttpClient()));
   }
   return useCasesInstance;
 }

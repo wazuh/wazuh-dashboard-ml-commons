@@ -44,13 +44,13 @@ describe('<DeleteModelModal />', () => {
         }}
         onClose={onClose}
         onDeleted={onDeleted}
-      />,
+      />
     );
 
     expect(
       await screen.findByRole('heading', {
         name: 'Delete model: model 1 name',
-      }),
+      })
     ).toBeInTheDocument();
 
     const confirmButton = screen.getByRole('button', { name: 'Delete model' });

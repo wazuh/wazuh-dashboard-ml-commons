@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { InstallationProgressManager } from './installation-progress-manager';
 import { InstallationAIAssistantStep } from './installation-ai-assistant-step';
 import { ExecutionState, StepResultState } from '../enums';
@@ -6,7 +11,7 @@ class TestStep extends InstallationAIAssistantStep {
   constructor(
     name: string,
     private readonly successMsg: string = 'ok',
-    private readonly failureMsg: string = 'fail',
+    private readonly failureMsg: string = 'fail'
   ) {
     super({ name });
   }
@@ -27,13 +32,8 @@ describe('InstallationProgressManager', () => {
     const mgr = new InstallationProgressManager(steps);
 
     const snapshot = mgr.getProgress();
-    expect(snapshot.getSteps().map(s => s.stepName)).toEqual([
-      'Step 1',
-      'Step 2',
-    ]);
-    expect(
-      snapshot.getSteps().every(s => s.state === ExecutionState.PENDING),
-    ).toBe(true);
+    expect(snapshot.getSteps().map((s) => s.stepName)).toEqual(['Step 1', 'Step 2']);
+    expect(snapshot.getSteps().every((s) => s.state === ExecutionState.PENDING)).toBe(true);
     expect(snapshot.getCurrentStep()).toBe(0);
   });
 
@@ -60,7 +60,7 @@ describe('InstallationProgressManager', () => {
     await expect(
       mgr.runStep(steps[0], async () => {
         throw new Error('boom');
-      }),
+      })
     ).rejects.toThrow('boom');
 
     const p = mgr.getProgress();
@@ -76,10 +76,7 @@ describe('InstallationProgressManager', () => {
     const mgr = new InstallationProgressManager(steps);
 
     let resolveExec!: () => void;
-    const running = mgr.runStep(
-      steps[0],
-      () => new Promise<void>(res => (resolveExec = res)),
-    );
+    const running = mgr.runStep(steps[0], () => new Promise<void>((res) => (resolveExec = res)));
 
     await expect(mgr.runStep(steps[0], async () => {})).rejects.toThrow();
 
@@ -110,18 +107,16 @@ describe('InstallationProgressManager', () => {
     await expect(
       mgr.runStep(steps[1], async () => {
         throw new Error('x');
-      }),
+      })
     ).rejects.toThrow('x');
 
     const p = mgr.getProgress();
     p.reset();
 
     expect(p.getCurrentStep()).toBe(0);
-    expect(p.getSteps().every(s => s.state === ExecutionState.PENDING)).toBe(
-      true,
-    );
-    expect(p.getSteps().every(s => s.message === undefined)).toBe(true);
-    expect(p.getSteps().every(s => s.error === undefined)).toBe(true);
+    expect(p.getSteps().every((s) => s.state === ExecutionState.PENDING)).toBe(true);
+    expect(p.getSteps().every((s) => s.message === undefined)).toBe(true);
+    expect(p.getSteps().every((s) => s.error === undefined)).toBe(true);
     expect(p.hasFailedSteps()).toBe(false);
     expect(p.isFinished()).toBe(false);
     expect(onProgressChange).toHaveBeenCalled();

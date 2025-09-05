@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import {
   IInstallationManager,
   InstallAIDashboardAssistantDto,
@@ -15,13 +20,9 @@ import { TestModelConnectionStep } from './steps/test-model-connection-step';
 import { UpdateMlCommonsSettingsStep } from './steps/update-ml-commons-settings-step';
 
 export class InstallationManager implements IInstallationManager {
-  constructor(
-    private onInstallationProgress?: (progress: InstallationProgress) => void,
-  ) {}
+  constructor(private onInstallationProgress?: (progress: InstallationProgress) => void) {}
 
-  public async execute(
-    request: InstallAIDashboardAssistantDto,
-  ): Promise<InstallationResult> {
+  public async execute(request: InstallAIDashboardAssistantDto): Promise<InstallationResult> {
     const steps: InstallationAIAssistantStep[] = [
       new UpdateMlCommonsSettingsStep(),
       new CreateConnectorStep(),
@@ -31,16 +32,11 @@ export class InstallationManager implements IInstallationManager {
       new RegisterAgentStep(),
     ];
 
-    const progressManager = new InstallationProgressManager(
-      steps,
-      this.onInstallationProgress,
-    );
+    const progressManager = new InstallationProgressManager(steps, this.onInstallationProgress);
     const context = new InstallationContext();
     try {
       for (const step of steps) {
-        await progressManager.runStep(step, () =>
-          step.execute(request, context),
-        );
+        await progressManager.runStep(step, () => step.execute(request, context));
       }
 
       return {
@@ -57,7 +53,7 @@ export class InstallationManager implements IInstallationManager {
         message: `Installation failed: ${error}`,
         progress,
         data: context.toObject(),
-        errors: failedSteps.map(step => ({
+        errors: failedSteps.map((step) => ({
           step: step.stepName,
           message: step.message || 'Unknown error',
           details: step.error,

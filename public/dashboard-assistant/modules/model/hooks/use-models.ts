@@ -1,24 +1,24 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useCallback, useEffect } from 'react';
 import { Model } from '../domain/entities/model';
 import { ModelFieldDefinition } from '../../../components/types';
 import { useQuery } from '../../../hooks/use-query';
-import { getUseCases } from "../../../services/ml-use-cases.service";
+import { getUseCases } from '../../../services/ml-use-cases.service';
 
 interface UseModelsReturn {
   models: Model[];
   isLoading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
-  mapModelsToTableData: () => Array<ModelFieldDefinition>;
+  mapModelsToTableData: () => ModelFieldDefinition[];
 }
 
 export function useModels(): UseModelsReturn {
-  const {
-    data: models,
-    error,
-    isLoading,
-    fetch,
-  } = useQuery<Model[]>({
+  const { data: models, error, isLoading, fetch } = useQuery<Model[]>({
     query() {
       return getUseCases().getModels();
     },
@@ -28,10 +28,10 @@ export function useModels(): UseModelsReturn {
 
   useEffect(() => {
     fetch();
-  }, []);
+  }, [fetch]);
 
   const mapModelsToTableData = useCallback(() => {
-    return models.map(model => {
+    return models.map((model) => {
       return {
         name: model.name,
         id: model.id,

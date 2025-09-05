@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Agent } from '../../../domain/entities/agent';
 import { AppType } from '../../../domain/enums/app-type';
 import { AgentLLMOpenSearchRequestDto } from './agent-llm-opensearch-request-dto';

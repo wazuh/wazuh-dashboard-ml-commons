@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 jest.mock('../../../../services/ml-use-cases.service', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getUseCases: () =>
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases,
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases,
 }));
 
 import { CreateAgentStep } from './create-agent-step';
@@ -21,11 +23,9 @@ describe('CreateAgentStep', () => {
   };
 
   it('creates agent with modelId from context and stores agentId', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       createAgent: jest.fn().mockResolvedValue({ id: 'agent-1' }),
     };
     const step = new CreateAgentStep();
@@ -33,27 +33,21 @@ describe('CreateAgentStep', () => {
     ctx.set('modelId', 'm-1');
     await step.execute(req, ctx);
     expect(
-      (
-        global as unknown as {
-          __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-        }
-      ).__mockUseCases!.createAgent,
+      ((global as unknown) as {
+        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+      }).__mockUseCases!.createAgent
     ).toHaveBeenCalledWith(expect.objectContaining({ model_id: 'm-1' }));
     expect(ctx.get('agentId')).toBe('agent-1');
   });
 
   it('throws if response_filter missing for provider', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = { createAgent: jest.fn() };
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = { createAgent: jest.fn() };
     const step = new CreateAgentStep();
     const ctx = new InstallationContext();
     ctx.set('modelId', 'm-1');
     const badReq = { ...req, selected_provider: 'Unknown' };
-    await expect(step.execute(badReq, ctx)).rejects.toThrow(
-      /Missing response_filter/,
-    );
+    await expect(step.execute(badReq, ctx)).rejects.toThrow(/Missing response_filter/);
   });
 });

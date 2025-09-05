@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect } from 'react';
 import {
   EuiPanel,
@@ -31,30 +36,24 @@ export const ModelTestResult = ({
 
   useEffect(() => {
     if (response && !isLoading && !error) {
-      addSuccessToast(
-        'Model test successful',
-        `The model "${modelName}" responded correctly.`,
-      );
+      addSuccessToast('Model test successful', `The model "${modelName}" responded correctly.`);
     }
   }, [response, isLoading, error, modelName, addSuccessToast]);
 
   useEffect(() => {
     if (error && !isLoading) {
-      addErrorToast(
-        'Model test error',
-        `The test for model "${modelName}" failed: ${error}`,
-      );
+      addErrorToast('Model test error', `The test for model "${modelName}" failed: ${error}`);
     }
   }, [error, isLoading, modelName, addErrorToast]);
   const renderStatus = () => {
     if (isLoading) {
       return (
-        <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
+        <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <EuiFlexItem grow={false}>
-            <EuiLoadingSpinner size='s' />
+            <EuiLoadingSpinner size="s" />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiText size='s' color='subdued'>
+            <EuiText size="s" color="subdued">
               Testing model connection...
             </EuiText>
           </EuiFlexItem>
@@ -64,12 +63,12 @@ export const ModelTestResult = ({
 
     if (error) {
       return (
-        <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
+        <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <EuiFlexItem grow={false}>
-            <EuiIcon type='cross' color='danger' />
+            <EuiIcon type="cross" color="danger" />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiText size='s' color='danger'>
+            <EuiText size="s" color="danger">
               <strong>Test failed</strong>
             </EuiText>
           </EuiFlexItem>
@@ -79,12 +78,12 @@ export const ModelTestResult = ({
 
     if (response) {
       return (
-        <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
+        <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <EuiFlexItem grow={false}>
-            <EuiIcon type='check' color='success' />
+            <EuiIcon type="check" color="success" />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiText size='s' color='success'>
+            <EuiText size="s" color="success">
               <strong>Test successful</strong>
             </EuiText>
           </EuiFlexItem>
@@ -96,20 +95,20 @@ export const ModelTestResult = ({
   };
 
   const renderUserMessage = () => (
-    <EuiPanel paddingSize='m' color='subdued' hasShadow={false}>
-      <EuiFlexGroup alignItems='flexStart' gutterSize='m' responsive={false}>
+    <EuiPanel paddingSize="m" color="subdued" hasShadow={false}>
+      <EuiFlexGroup alignItems="flexStart" gutterSize="m" responsive={false}>
         <EuiFlexItem grow={false}>
-          <EuiIcon type='user' size='l' color='#6DCCB1' />
+          <EuiIcon type="user" size="l" color="#6DCCB1" />
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiFlexGroup direction='column' gutterSize='xs'>
+          <EuiFlexGroup direction="column" gutterSize="xs">
             <EuiFlexItem>
-              <EuiText size='s'>
+              <EuiText size="s">
                 <strong>User</strong>
               </EuiText>
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiText size='s'>{TEST_PROMPT}</EuiText>
+              <EuiText size="s">{TEST_PROMPT}</EuiText>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
@@ -120,33 +119,25 @@ export const ModelTestResult = ({
   const renderAssistantMessage = () => {
     if (isLoading) {
       return (
-        <EuiPanel paddingSize='m' color='plain' hasShadow={false}>
-          <EuiFlexGroup
-            alignItems='flexStart'
-            gutterSize='m'
-            responsive={false}
-          >
+        <EuiPanel paddingSize="m" color="plain" hasShadow={false}>
+          <EuiFlexGroup alignItems="flexStart" gutterSize="m" responsive={false}>
             <EuiFlexItem grow={false}>
-              <EuiIcon type='brain' size='l' color='#7B68EE' />
+              <EuiIcon type="brain" size="l" color="#7B68EE" />
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiFlexGroup direction='column' gutterSize='xs'>
+              <EuiFlexGroup direction="column" gutterSize="xs">
                 <EuiFlexItem>
-                  <EuiText size='s'>
+                  <EuiText size="s">
                     <strong>{modelName}</strong>
                   </EuiText>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFlexGroup
-                    alignItems='center'
-                    gutterSize='s'
-                    responsive={false}
-                  >
+                  <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
                     <EuiFlexItem grow={false}>
-                      <EuiLoadingSpinner size='s' />
+                      <EuiLoadingSpinner size="s" />
                     </EuiFlexItem>
                     <EuiFlexItem grow={false}>
-                      <EuiText size='s' color='subdued'>
+                      <EuiText size="s" color="subdued">
                         Thinking...
                       </EuiText>
                     </EuiFlexItem>
@@ -179,40 +170,33 @@ export const ModelTestResult = ({
       }
 
       return (
-        <EuiPanel paddingSize='m' color='plain' hasShadow={false}>
-          <EuiFlexGroup
-            alignItems='flexStart'
-            gutterSize='m'
-            responsive={false}
-          >
+        <EuiPanel paddingSize="m" color="plain" hasShadow={false}>
+          <EuiFlexGroup alignItems="flexStart" gutterSize="m" responsive={false}>
             <EuiFlexItem grow={false}>
-              <EuiIcon type='brain' size='l' color='#7B68EE' />
+              <EuiIcon type="brain" size="l" color="#7B68EE" />
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiFlexGroup direction='column' gutterSize='xs'>
+              <EuiFlexGroup direction="column" gutterSize="xs">
                 <EuiFlexItem>
-                  <EuiText size='s'>
+                  <EuiText size="s">
                     <strong>{modelName}</strong>
                   </EuiText>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiText size='s'>{content}</EuiText>
+                  <EuiText size="s">{content}</EuiText>
                 </EuiFlexItem>
                 {usage && (
                   <EuiFlexItem>
-                    <EuiSpacer size='xs' />
-                    <EuiText size='xs' color='subdued'>
+                    <EuiSpacer size="xs" />
+                    <EuiText size="xs" color="subdued">
                       {usage.prompt_tokens !== undefined &&
                       usage.completion_tokens !== undefined &&
                       usage.total_tokens !== undefined
                         ? // OpenAI format
                           `Tokens: ${usage.prompt_tokens} prompt + ${usage.completion_tokens} completion = ${usage.total_tokens} total`
-                        : usage.input_tokens !== undefined &&
-                          usage.output_tokens !== undefined
+                        : usage.input_tokens !== undefined && usage.output_tokens !== undefined
                         ? // Claude format
-                          `Tokens: ${usage.input_tokens} input + ${
-                            usage.output_tokens
-                          } output = ${
+                          `Tokens: ${usage.input_tokens} input + ${usage.output_tokens} output = ${
                             usage.input_tokens + usage.output_tokens
                           } total`
                         : 'Token usage information available'}
@@ -230,13 +214,13 @@ export const ModelTestResult = ({
   };
 
   return (
-    <EuiFlexGroup direction='column' gutterSize='m'>
+    <EuiFlexGroup direction="column" gutterSize="m">
       {/* Status Header */}
       <EuiFlexItem>
-        <EuiPanel paddingSize='m' color='subdued' hasShadow={false}>
-          <EuiFlexGroup direction='column' gutterSize='s'>
+        <EuiPanel paddingSize="m" color="subdued" hasShadow={false}>
+          <EuiFlexGroup direction="column" gutterSize="s">
             <EuiFlexItem>
-              <EuiText size='s'>
+              <EuiText size="s">
                 <strong>Model connection test</strong>
               </EuiText>
             </EuiFlexItem>
@@ -247,7 +231,7 @@ export const ModelTestResult = ({
 
       {/* Chat Messages */}
       <EuiFlexItem>
-        <EuiFlexGroup direction='column' gutterSize='s'>
+        <EuiFlexGroup direction="column" gutterSize="s">
           <EuiFlexItem>{renderUserMessage()}</EuiFlexItem>
           <EuiFlexItem>{renderAssistantMessage()}</EuiFlexItem>
         </EuiFlexGroup>
@@ -256,24 +240,20 @@ export const ModelTestResult = ({
       {/* Error Display */}
       {error && (
         <EuiFlexItem>
-          <EuiPanel paddingSize='m' color='danger' hasShadow={false}>
-            <EuiFlexGroup
-              alignItems='flexStart'
-              gutterSize='s'
-              responsive={false}
-            >
+          <EuiPanel paddingSize="m" color="danger" hasShadow={false}>
+            <EuiFlexGroup alignItems="flexStart" gutterSize="s" responsive={false}>
               <EuiFlexItem grow={false}>
-                <EuiIcon type='alert' color='danger' />
+                <EuiIcon type="alert" color="danger" />
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiFlexGroup direction='column' gutterSize='xs'>
+                <EuiFlexGroup direction="column" gutterSize="xs">
                   <EuiFlexItem>
-                    <EuiText size='s' color='danger'>
+                    <EuiText size="s" color="danger">
                       <strong>Test failed</strong>
                     </EuiText>
                   </EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiText size='s'>
+                    <EuiText size="s">
                       <strong>Error details:</strong> {error}
                     </EuiText>
                   </EuiFlexItem>
@@ -286,11 +266,11 @@ export const ModelTestResult = ({
 
       {/* Test Information */}
       <EuiFlexItem>
-        <EuiPanel paddingSize='s' color='subdued' hasShadow={false}>
-          <EuiText size='xs' color='subdued'>
+        <EuiPanel paddingSize="s" color="subdued" hasShadow={false}>
+          <EuiText size="xs" color="subdued">
             <p>
-              <EuiIcon type='iInCircle' size='s' /> This test sends a simple
-              greeting message to verify the model is responding correctly.
+              <EuiIcon type="iInCircle" size="s" /> This test sends a simple greeting message to
+              verify the model is responding correctly.
             </p>
           </EuiText>
         </EuiPanel>

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { createModelUseCase } from './create-model';
 import { createModelRepositoryMock } from '../ports/__mocks__/model-repository';
 

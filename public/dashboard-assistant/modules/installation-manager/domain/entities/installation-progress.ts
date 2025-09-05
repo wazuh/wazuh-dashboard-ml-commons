@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { Observer, Subject } from 'rxjs';
 import { ExecutionState, StepResultState } from '../enums';
 import { StepState } from '../types';
-import { Observer, Subject } from 'rxjs';
 
 export class InstallationProgress {
   private currentStep: number;
@@ -16,7 +21,7 @@ export class InstallationProgress {
   }) {
     this.currentStep = params?.currentStep || 0;
     this.totalSteps = params?.steps?.length || 0;
-    this.steps = params?.steps?.map(step => ({ ...step })) || [];
+    this.steps = params?.steps?.map((step) => ({ ...step })) || [];
     this.globalState = params?.globalState || ExecutionState.PENDING;
   }
 
@@ -52,7 +57,7 @@ export class InstallationProgress {
     stepIndex: number,
     resultState: StepResultState,
     message?: string,
-    error?: Error,
+    error?: Error
   ) {
     if (this.isStepPositionValid(stepIndex)) {
       this.updateStep(stepIndex, {
@@ -86,20 +91,15 @@ export class InstallationProgress {
   }
 
   public hasWarnings(): boolean {
-    return this.steps.some(
-      step => step.state === ExecutionState.FINISHED_WITH_WARNINGS,
-    );
+    return this.steps.some((step) => step.state === ExecutionState.FINISHED_WITH_WARNINGS);
   }
 
   public isStepPositionValid(stepIndex: number): boolean {
     return stepIndex >= 0 && stepIndex < this.totalSteps;
   }
 
-  public updateExecutionStepState(
-    stepIndex: number,
-    state: ExecutionState,
-  ): void {
-    this.updateStep(stepIndex, { state: state });
+  public updateExecutionStepState(stepIndex: number, state: ExecutionState): void {
+    this.updateStep(stepIndex, { state });
   }
 
   public updateStep(stepIndex: number, update: Partial<StepState>): void {
@@ -122,7 +122,7 @@ export class InstallationProgress {
 
   public reset(): void {
     this.currentStep = 0;
-    this.steps = this.steps.map(step => ({
+    this.steps = this.steps.map((step) => ({
       stepName: step.stepName,
       state: ExecutionState.PENDING,
     }));
@@ -135,7 +135,7 @@ export class InstallationProgress {
   }
 
   public getFailedSteps(): StepState[] {
-    return this.steps.filter(step => step.state === ExecutionState.FAILED);
+    return this.steps.filter((step) => step.state === ExecutionState.FAILED);
   }
 
   public isFinishedSuccessfully(): boolean {
@@ -157,15 +157,12 @@ export class InstallationProgress {
   public clone() {
     return new InstallationProgress({
       currentStep: this.currentStep,
-      steps: this.steps.map(step => ({ ...step })),
+      steps: this.steps.map((step) => ({ ...step })),
       globalState: this.globalState,
     });
   }
 
   public hasFailed(): boolean {
-    return (
-      this.globalState === ExecutionState.FAILED &&
-      !!this.getFailedSteps().length
-    );
+    return this.globalState === ExecutionState.FAILED && !!this.getFailedSteps().length;
   }
 }

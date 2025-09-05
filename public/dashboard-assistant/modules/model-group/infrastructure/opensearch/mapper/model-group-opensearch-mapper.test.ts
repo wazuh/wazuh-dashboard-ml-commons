@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelGroupOpenSearchMapper } from './model-group-opensearch-mapper';
 
 describe('ModelGroupOpenSearchMapper', () => {

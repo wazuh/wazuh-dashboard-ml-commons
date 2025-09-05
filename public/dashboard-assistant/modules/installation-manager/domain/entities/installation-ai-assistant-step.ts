@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { InstallationContext } from './installation-context';
 import type { InstallAIDashboardAssistantDto } from '../types/install-ai-dashboard-assistant-dto';
 
@@ -13,7 +18,7 @@ export abstract class InstallationAIAssistantStep {
   }
   abstract execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void>;
   abstract getSuccessMessage(): string;
   abstract getFailureMessage(): string;

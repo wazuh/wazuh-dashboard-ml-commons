@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface MockUseCases {
   persistMlCommonsSettings?: jest.Mock<Promise<void>, [params: { endpoints_regex: string[] }]>;
   createConnector?: jest.Mock<Promise<{ id: string }>, [params: Record<string, unknown>]>;
@@ -11,4 +16,3 @@ declare global {
   // eslint-disable-next-line no-var
   var __mockUseCases: MockUseCases | undefined;
 }
-

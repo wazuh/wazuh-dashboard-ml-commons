@@ -1,11 +1,9 @@
-import React, {
-  useContext,
-  createContext,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useContext, createContext, useState, useCallback, useEffect, useRef } from 'react';
 import { Toast, EuiGlobalToastList } from '@elastic/eui';
 
 interface ToastContextType {
@@ -41,15 +39,13 @@ export const ToastProvider: React.FC = ({ children }) => {
       id: `toast-${Date.now()}-${Math.random()}`,
     };
     if (isMountedRef.current) {
-      setToasts(prevToasts => [...prevToasts, newToast]);
+      setToasts((prevToasts) => [...prevToasts, newToast]);
     }
   }, []);
 
   const dismissToast = useCallback((removedToast: Toast) => {
     if (!isMountedRef.current) return;
-    setToasts(prevToasts =>
-      prevToasts.filter(toast => toast.id !== removedToast.id),
-    );
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== removedToast.id));
   }, []);
 
   const addSuccessToast = useCallback(
@@ -61,7 +57,7 @@ export const ToastProvider: React.FC = ({ children }) => {
         iconType: 'check',
       });
     },
-    [addToast],
+    [addToast]
   );
 
   const addErrorToast = useCallback(
@@ -73,7 +69,7 @@ export const ToastProvider: React.FC = ({ children }) => {
         iconType: 'alert',
       });
     },
-    [addToast],
+    [addToast]
   );
 
   const addWarningToast = useCallback(
@@ -85,7 +81,7 @@ export const ToastProvider: React.FC = ({ children }) => {
         iconType: 'warning',
       });
     },
-    [addToast],
+    [addToast]
   );
 
   const addInfoToast = useCallback(
@@ -97,7 +93,7 @@ export const ToastProvider: React.FC = ({ children }) => {
         iconType: 'iInCircle',
       });
     },
-    [addToast],
+    [addToast]
   );
 
   const value: ToastContextType = {

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface ProviderModelConfig {
   model_family: string;
   model_provider: string;
@@ -25,8 +30,7 @@ export const modelProviderConfigs: Record<string, ProviderModelConfig> = {
     headers: {
       Authorization: 'Bearer ${credential.api_key}',
     },
-    request_body:
-      '{ "model": "${parameters.model}", "messages": ${parameters.messages} }',
+    request_body: '{ "model": "${parameters.model}", "messages": ${parameters.messages} }',
   },
   Deepseek: {
     model_family: 'Deepseek',
@@ -40,8 +44,7 @@ export const modelProviderConfigs: Record<string, ProviderModelConfig> = {
     headers: {
       Authorization: 'Bearer ${credential.api_key}',
     },
-    request_body:
-      '{ "model": "${parameters.model}", "messages": ${parameters.messages} }',
+    request_body: '{ "model": "${parameters.model}", "messages": ${parameters.messages} }',
   },
   Anthropic: {
     model_family: 'Claude',

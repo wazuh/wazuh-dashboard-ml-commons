@@ -1,4 +1,9 @@
-import { getUseCases } from "../../../../services/ml-use-cases.service";
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { getUseCases } from '../../../../services/ml-use-cases.service';
 import {
   InstallationContext,
   InstallationAIAssistantStep,
@@ -12,12 +17,10 @@ export class TestModelConnectionStep extends InstallationAIAssistantStep {
 
   public async execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void> {
     // Simulate testing model connection
-    const isConnected = await getUseCases().validateModelConnection(
-      context.get('modelId'),
-    );
+    const isConnected = await getUseCases().validateModelConnection(context.get('modelId'));
     if (!isConnected) {
       throw new Error('Failed to connect to model');
     }

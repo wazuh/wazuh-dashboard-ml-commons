@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelPredictResponse } from './domain/types';
 
 export class ModelPredictValidator {
@@ -9,21 +14,14 @@ export class ModelPredictValidator {
    */
   public static validate(response: ModelPredictResponse): boolean {
     // Validate that the response has the expected structure
-    if (
-      !response.inference_results ||
-      response.inference_results.length === 0
-    ) {
-      throw new Error(
-        'The response does not contain inference_results or is empty',
-      );
+    if (!response.inference_results || response.inference_results.length === 0) {
+      throw new Error('The response does not contain inference_results or is empty');
     }
 
     const inferenceResult = response.inference_results[0];
 
     if (inferenceResult.status_code !== 200) {
-      throw new Error(
-        `The status code is ${inferenceResult.status_code}, expected 200`,
-      );
+      throw new Error(`The status code is ${inferenceResult.status_code}, expected 200`);
     }
 
     // Verify that it has output and that the first output has dataAsMap
@@ -62,9 +60,7 @@ export class ModelPredictValidator {
     }
 
     if (!hasValidContent) {
-      throw new Error(
-        'The response does not contain valid content in any supported format',
-      );
+      throw new Error('The response does not contain valid content in any supported format');
     }
 
     return true;

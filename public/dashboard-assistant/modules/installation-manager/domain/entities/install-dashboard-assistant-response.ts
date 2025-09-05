@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { InstallationProgress } from './installation-progress';
 
 export interface IInstallDashboardAssistantResponse {
@@ -11,9 +16,7 @@ export interface IInstallDashboardAssistantResponse {
   };
 }
 
-export class InstallDashboardAssistantResponse
-  implements IInstallDashboardAssistantResponse
-{
+export class InstallDashboardAssistantResponse implements IInstallDashboardAssistantResponse {
   public success: boolean;
   public message: string;
   public progress: InstallationProgress;
@@ -43,7 +46,7 @@ export class InstallDashboardAssistantResponse
 
   public static success(
     agentId: string,
-    progress: InstallationProgress,
+    progress: InstallationProgress
   ): InstallDashboardAssistantResponse {
     return new InstallDashboardAssistantResponse({
       success: true,
@@ -55,7 +58,7 @@ export class InstallDashboardAssistantResponse
 
   public static failure(
     error: string,
-    progress: InstallationProgress,
+    progress: InstallationProgress
   ): InstallDashboardAssistantResponse {
     return new InstallDashboardAssistantResponse({
       success: false,
@@ -65,9 +68,7 @@ export class InstallDashboardAssistantResponse
     });
   }
 
-  public static inProgress(
-    progress: InstallationProgress,
-  ): InstallDashboardAssistantResponse {
+  public static inProgress(progress: InstallationProgress): InstallDashboardAssistantResponse {
     return new InstallDashboardAssistantResponse({
       success: false,
       message: 'Installation in progress',

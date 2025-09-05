@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export enum Tool {
   AGENT_TOOL = 'AgentTool',
   CONNECTOR_TOOL = 'ConnectorTool',

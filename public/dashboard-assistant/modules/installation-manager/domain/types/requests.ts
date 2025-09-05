@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { ProviderModelConfig } from '../../../../provider-model-config';
 
 export interface CreateModelGroupRequest {

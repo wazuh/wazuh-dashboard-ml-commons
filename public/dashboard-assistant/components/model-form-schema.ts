@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelFormData } from './types';
 import { modelProviderConfigs } from '../provider-model-config';
 

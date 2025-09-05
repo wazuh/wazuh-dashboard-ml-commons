@@ -1,13 +1,15 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { InstallDashboardAssistantResponse } from './install-dashboard-assistant-response';
 import { InstallationProgress } from './installation-progress';
 
 describe('InstallDashboardAssistantResponse', () => {
   it('success() should create a successful response with agentId and progress', () => {
     const progress = new InstallationProgress();
-    const res = InstallDashboardAssistantResponse.success(
-      'agent-123',
-      progress,
-    );
+    const res = InstallDashboardAssistantResponse.success('agent-123', progress);
 
     expect(res.success).toBe(true);
     expect(res.message).toBe('Installation completed successfully');

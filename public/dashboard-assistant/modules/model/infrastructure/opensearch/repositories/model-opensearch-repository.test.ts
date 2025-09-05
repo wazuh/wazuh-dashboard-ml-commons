@@ -1,10 +1,15 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 // Mock UI dependency imported by the repository to avoid pulling React/EUI
 jest.mock(
   '../../../../../components/model-test-result',
   () => ({
     TEST_PROMPT: 'Hello!',
   }),
-  { virtual: true },
+  { virtual: true }
 );
 
 import { ModelOpenSearchRepository } from './model-opensearch-repository';
@@ -30,7 +35,7 @@ describe('ModelOpenSearchRepository', () => {
     });
     expect(proxy.post).toHaveBeenCalledWith(
       '/_plugins/_ml/models/_register',
-      expect.objectContaining({ name: 'n', connector_id: 'c' }),
+      expect.objectContaining({ name: 'n', connector_id: 'c' })
     );
     expect(model).toMatchObject({ id: 'm-1', name: 'n', connector_id: 'c' });
   });
@@ -116,10 +121,7 @@ describe('ModelOpenSearchRepository', () => {
     proxy.post.mockResolvedValueOnce({});
     proxy.delete.mockResolvedValueOnce({});
     await repo.delete('mid');
-    expect(proxy.post).toHaveBeenCalledWith(
-      '/_plugins/_ml/models/mid/_undeploy',
-      {},
-    );
+    expect(proxy.post).toHaveBeenCalledWith('/_plugins/_ml/models/mid/_undeploy', {});
     expect(proxy.delete).toHaveBeenCalledWith('/_plugins/_ml/models/mid');
   });
 

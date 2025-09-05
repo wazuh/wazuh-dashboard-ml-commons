@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { modelProviderConfigs } from '../../../../provider-model-config';
 import { CreateConnectorDto } from '../../../connector/application/dtos/create-connector-dto';
 import {
@@ -12,13 +17,11 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
     super({ name: 'Create Connector' });
   }
 
-  private buildDto(
-    request: InstallAIDashboardAssistantDto,
-  ): CreateConnectorDto {
+  private buildDto(request: InstallAIDashboardAssistantDto): CreateConnectorDto {
     const provider = modelProviderConfigs[request.selected_provider];
     if (!provider) {
       throw new Error(
-        `Unknown provider: ${request.selected_provider}. Please review configuration.`,
+        `Unknown provider: ${request.selected_provider}. Please review configuration.`
       );
     }
     return {
@@ -36,11 +39,9 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
 
   async execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void> {
-    const connector = await getUseCases().createConnector(
-      this.buildDto(request),
-    );
+    const connector = await getUseCases().createConnector(this.buildDto(request));
     context.set('connectorId', connector.id);
   }
 

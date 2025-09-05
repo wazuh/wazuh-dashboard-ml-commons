@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 jest.mock('../../../../services/ml-use-cases.service', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getUseCases: () =>
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases,
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases,
 }));
 
 import { UpdateMlCommonsSettingsStep } from './update-ml-commons-settings-step';
@@ -22,20 +24,16 @@ describe('UpdateMlCommonsSettingsStep', () => {
 
   it('persists ML settings using provider regex', async () => {
     const step = new UpdateMlCommonsSettingsStep();
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       persistMlCommonsSettings: jest.fn().mockResolvedValue(undefined),
     };
     await step.execute(baseReq, new InstallationContext());
     expect(
-      (
-        global as unknown as {
-          __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-        }
-      ).__mockUseCases!.persistMlCommonsSettings,
+      ((global as unknown) as {
+        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+      }).__mockUseCases!.persistMlCommonsSettings
     ).toHaveBeenCalledWith({
       endpoints_regex: [expect.any(String)],
     });
@@ -44,16 +42,11 @@ describe('UpdateMlCommonsSettingsStep', () => {
 
   it('fails on unknown provider with explicit error', async () => {
     const step = new UpdateMlCommonsSettingsStep();
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = { persistMlCommonsSettings: jest.fn() };
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = { persistMlCommonsSettings: jest.fn() };
     await expect(
-      step.execute(
-        { ...baseReq, selected_provider: 'Unknown' },
-        new InstallationContext(),
-      ),
+      step.execute({ ...baseReq, selected_provider: 'Unknown' }, new InstallationContext())
     ).rejects.toThrow(/Unknown provider/);
     expect(step.getFailureMessage()).toMatch(/Failed to update ML Commons/);
   });

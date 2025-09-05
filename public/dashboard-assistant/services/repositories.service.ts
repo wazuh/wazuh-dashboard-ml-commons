@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { AgentRepository } from '../modules/agent/application/ports/agent-repository';
 import { AgentOpenSearchRepository } from '../modules/agent/infrastructure/opensearch/repositories/agent-opensearch-repository';
 import type { HttpClient } from '../modules/common/http/domain/entities/http-client';
@@ -21,24 +26,14 @@ class Repositories {
   private static agentRepository?: AgentRepository;
 
   private static init(httpClient: HttpClient, proxyHttpClient: HttpClient) {
-    this.mlCommonsSettingsRepository ??=
-      new MLCommonsSettingsHttpClientRepository(httpClient, proxyHttpClient);
-    this.modelGroupRepository ??= new ModelGroupOpenSearchRepository(
+    this.mlCommonsSettingsRepository ??= new MLCommonsSettingsHttpClientRepository(
       httpClient,
-      proxyHttpClient,
+      proxyHttpClient
     );
-    this.connectorRepository ??= new ConnectorOpenSearchRepository(
-      httpClient,
-      proxyHttpClient,
-    );
-    this.modelRepository ??= new ModelOpenSearchRepository(
-      httpClient,
-      proxyHttpClient,
-    );
-    this.agentRepository ??= new AgentOpenSearchRepository(
-      httpClient,
-      proxyHttpClient,
-    );
+    this.modelGroupRepository ??= new ModelGroupOpenSearchRepository(httpClient, proxyHttpClient);
+    this.connectorRepository ??= new ConnectorOpenSearchRepository(httpClient, proxyHttpClient);
+    this.modelRepository ??= new ModelOpenSearchRepository(httpClient, proxyHttpClient);
+    this.agentRepository ??= new AgentOpenSearchRepository(httpClient, proxyHttpClient);
   }
 
   static getInstance(httpClient: HttpClient, proxyHttpClient: HttpClient) {
@@ -53,18 +48,11 @@ class Repositories {
   }
 }
 
-let repositoriesInstance: ReturnType<typeof Repositories.getInstance> | null =
-  null;
+let repositoriesInstance: ReturnType<typeof Repositories.getInstance> | null = null;
 
-export function getRepositories(
-  httpClient: HttpClient,
-  proxyHttpClient: HttpClient,
-) {
+export function getRepositories(httpClient: HttpClient, proxyHttpClient: HttpClient) {
   if (!repositoriesInstance) {
-    repositoriesInstance = Repositories.getInstance(
-      httpClient,
-      proxyHttpClient,
-    );
+    repositoriesInstance = Repositories.getInstance(httpClient, proxyHttpClient);
   }
   return repositoriesInstance;
 }

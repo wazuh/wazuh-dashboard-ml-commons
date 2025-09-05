@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelPredictValidator } from './model-predict-validator';
 import type { ModelPredictResponse } from './domain/types';
 
@@ -42,17 +47,15 @@ describe('ModelPredictValidator', () => {
   });
 
   it('rejects when inference_results missing/empty', () => {
-    expect(() =>
-      ModelPredictValidator.validate({ inference_results: [] } as any),
-    ).toThrow('inference_results');
+    expect(() => ModelPredictValidator.validate({ inference_results: [] } as any)).toThrow(
+      'inference_results'
+    );
   });
 
   it('rejects non-200 status_code', () => {
     const res = baseResponse();
     res.inference_results[0].status_code = 400;
-    expect(() => ModelPredictValidator.validate(res)).toThrow(
-      'status code is 400',
-    );
+    expect(() => ModelPredictValidator.validate(res)).toThrow('status code is 400');
   });
 
   it('rejects when output missing', () => {

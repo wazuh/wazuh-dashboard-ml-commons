@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { AgentOpenSearchRequestFactory } from './agent-opensearch-request-factory';
 import { AgentType } from '../../../domain/enums/agent-type';
 import { Tool } from '../../../domain/enums/tool';
@@ -25,9 +30,7 @@ describe('AgentOpenSearchRequestFactory', () => {
       description: 'desc',
       memory: { type: 'conversation_index' },
       llm: expect.objectContaining({ model_id: 'model-1' }),
-      tools: expect.arrayContaining([
-        expect.objectContaining({ type: Tool.ML_MODEL_TOOL }),
-      ]),
+      tools: expect.arrayContaining([expect.objectContaining({ type: Tool.ML_MODEL_TOOL })]),
       app_type: expect.any(String),
     });
   });

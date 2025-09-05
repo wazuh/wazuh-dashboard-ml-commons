@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 import { Monitoring } from '../public/components/monitoring';
 import { ModelRegister } from '../public/dashboard-assistant/components/model-register';
 import { routerPaths } from './router_paths';

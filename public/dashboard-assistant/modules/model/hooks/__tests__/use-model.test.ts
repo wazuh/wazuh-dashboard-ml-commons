@@ -10,14 +10,14 @@ import { useModel } from '../use-model';
 jest.useFakeTimers();
 
 // Mock getUseCases() to control polling behavior
-type ModelWithAgent = {
+interface ModelWithAgent {
   id: string;
   agentId?: string;
   inUse?: boolean;
   version?: string;
   createdAt?: string;
   status?: string;
-};
+}
 const mockUseAgent = jest.fn();
 const mockGetModelsWithAgentData = jest.fn<Promise<ModelWithAgent[]>, []>();
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* eslint-disable array-element-newline */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -47,7 +52,7 @@ function getJestArgs() {
   const args = process.argv.slice(index + 1);
   // Remove duplicates using set
   return Array.from(
-    new Set([...args, '--runInBand', '--collectCoverage=false', '--watchAll=false', '--verbose']),
+    new Set([...args, '--runInBand', '--collectCoverage=false', '--watchAll=false', '--verbose'])
   ).join(' ');
 }
 
@@ -70,12 +75,7 @@ const buildEnvVars = ({ app, version, repo, cmd, args }) => {
  */
 function setupAbortController() {
   process.on('SIGINT', () => {
-    childProcess.spawnSync('docker', [
-      'compose',
-      '--project-directory',
-      COMPOSE_DIR,
-      'stop',
-    ]);
+    childProcess.spawnSync('docker', ['compose', '--project-directory', COMPOSE_DIR, 'stop']);
     process.exit();
   });
 }
@@ -92,11 +92,11 @@ function startRunner() {
     '--no-log-prefix',
   ]);
 
-  runner.stdout.on('data', data => {
+  runner.stdout.on('data', (data) => {
     console.log(`${data}`);
   });
 
-  runner.stderr.on('data', data => {
+  runner.stderr.on('data', (data) => {
     console.error(`${data}`);
   });
 }
@@ -149,4 +149,3 @@ function main() {
 }
 
 main();
-

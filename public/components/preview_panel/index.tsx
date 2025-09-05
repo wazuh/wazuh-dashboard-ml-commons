@@ -140,9 +140,7 @@ export const PreviewPanel = ({ onClose, model, dataSourceId }: Props) => {
             {model.version && (
               <EuiFlexItem>
                 <EuiDescriptionListTitle>Version</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>
-                  {model.version}
-                </EuiDescriptionListDescription>
+                <EuiDescriptionListDescription>{model.version}</EuiDescriptionListDescription>
               </EuiFlexItem>
             )}
             {typeof model.inUse !== 'undefined' && (

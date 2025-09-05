@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { modelProviderConfigs } from '../../../../provider-model-config';
 import { getUseCases } from '../../../../services/ml-use-cases.service';
 import { CreateAgentDto } from '../../../agent/application/dtos/create-agent-dto';
@@ -14,23 +19,17 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
     super({ name: 'Create Agent' });
   }
 
-  private createAgentDto(
-    request: InstallAIDashboardAssistantDto,
-    modelId: string,
-  ): CreateAgentDto {
-    const response_filter =
-      modelProviderConfigs[request.selected_provider]?.response_filter;
-    if (!response_filter) {
-      throw new Error(
-        `Missing response_filter for provider ${request.selected_provider}`,
-      );
+  private createAgentDto(request: InstallAIDashboardAssistantDto, modelId: string): CreateAgentDto {
+    const responseFilter = modelProviderConfigs[request.selected_provider]?.response_filter;
+    if (!responseFilter) {
+      throw new Error(`Missing response_filter for provider ${request.selected_provider}`);
     }
     return {
       name: `${request.selected_provider}_agent`,
       type: AgentType.CONVERSATIONAL,
       description: `AI agent powered by ${request.selected_provider}`,
       model_id: modelId,
-      response_filter,
+      response_filter: responseFilter,
       tools: [
         {
           type: Tool.ML_MODEL_TOOL,
@@ -61,10 +60,10 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
 
   public async execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void> {
     const agent = await getUseCases().createAgent(
-      this.createAgentDto(request, context.get('modelId')),
+      this.createAgentDto(request, context.get('modelId'))
     );
     context.set('agentId', agent.id);
   }

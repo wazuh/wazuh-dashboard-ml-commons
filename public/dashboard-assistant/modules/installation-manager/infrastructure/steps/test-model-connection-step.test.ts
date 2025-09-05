@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 jest.mock('../../../../services/ml-use-cases.service', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getUseCases: () =>
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases,
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases,
 }));
 
 import { TestModelConnectionStep } from './test-model-connection-step';
@@ -21,11 +23,9 @@ describe('TestModelConnectionStep', () => {
   };
 
   it('succeeds when validation returns true', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       validateModelConnection: jest.fn().mockResolvedValue(true),
     };
     const step = new TestModelConnectionStep();
@@ -36,19 +36,15 @@ describe('TestModelConnectionStep', () => {
   });
 
   it('throws when validation returns false', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       validateModelConnection: jest.fn().mockResolvedValue(false),
     };
     const step = new TestModelConnectionStep();
     const ctx = new InstallationContext();
     ctx.set('modelId', 'm-1');
-    await expect(step.execute(req, ctx)).rejects.toThrow(
-      'Failed to connect to model',
-    );
+    await expect(step.execute(req, ctx)).rejects.toThrow('Failed to connect to model');
     expect(step.getFailureMessage()).toMatch(/Failed to test model connection/);
   });
 });

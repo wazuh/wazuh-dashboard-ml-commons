@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { InstallationProgress } from './installation-progress';
 import { ExecutionState, StepResultState } from '../enums';
 import type { StepState } from '../types';
@@ -14,7 +19,7 @@ describe('InstallationProgress', () => {
     expect(progress.getSteps().length).toBe(2);
     expect(progress.isRunning()).toBe(false);
     expect(progress.getSteps()).not.toBe(baseSteps);
-    expect(progress.getSteps().map(s => s.stepName)).toEqual(['S1', 'S2']);
+    expect(progress.getSteps().map((s) => s.stepName)).toEqual(['S1', 'S2']);
   });
 
   it('startStep sets step to RUNNING and global state to RUNNING', () => {
@@ -51,17 +56,13 @@ describe('InstallationProgress', () => {
 
   it('completeStep does nothing when stepIndex is invalid', () => {
     const progress = new InstallationProgress({ steps: [] });
-    expect(() =>
-      progress.completeStep(0, StepResultState.SUCCESS, 'noop'),
-    ).not.toThrow();
+    expect(() => progress.completeStep(0, StepResultState.SUCCESS, 'noop')).not.toThrow();
     expect(progress.getCurrentStep()).toBe(0);
     expect(progress.getSteps().length).toBe(0);
   });
 
   it('updates global state to FINISHED_SUCCESSFULLY when last step succeeds', () => {
-    const onlyOne: StepState[] = [
-      { stepName: 'Only', state: ExecutionState.PENDING },
-    ];
+    const onlyOne: StepState[] = [{ stepName: 'Only', state: ExecutionState.PENDING }];
     const progress = new InstallationProgress({ steps: onlyOne });
     progress.startStep(0);
     progress.succeedStep(0, 'done');

@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
-import { ModelStatus } from '../modules/model/domain/enums/model-status';
 import { EuiIcon, EuiText, EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
+import { ModelStatus } from '../modules/model/domain/enums/model-status';
 
 interface StatusIconProps {
   status: ModelStatus;
@@ -17,12 +22,12 @@ const AgentStatus = ({ status }: StatusIconProps) => {
   const label = statusColorMap[status] ? status : 'Unknown';
 
   return (
-    <EuiFlexGroup alignItems='center' gutterSize='none' responsive={false}>
+    <EuiFlexGroup alignItems="center" gutterSize="none" responsive={false}>
       <EuiFlexItem grow={false}>
-        <EuiIcon type='dot' color={color} />
+        <EuiIcon type="dot" color={color} />
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiText size='s' style={{ marginLeft: 4 }}>
+        <EuiText size="s" style={{ marginLeft: 4 }}>
           {label}
         </EuiText>
       </EuiFlexItem>
@@ -30,4 +35,4 @@ const AgentStatus = ({ status }: StatusIconProps) => {
   );
 };
 
-export default AgentStatus;
+export { AgentStatus };

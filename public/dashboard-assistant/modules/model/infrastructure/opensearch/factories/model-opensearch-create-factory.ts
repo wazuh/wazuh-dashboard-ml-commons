@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelOpenSearchRequestCreateDto } from '../dtos/model-opensearch-request-create-dto';
 
 export class ModelOpenSearchCreateFactory {

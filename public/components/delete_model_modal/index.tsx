@@ -28,11 +28,7 @@ export interface DeleteModelModalProps {
   onDeleted?: () => void | Promise<void>;
 }
 
-export const DeleteModelModal = ({
-  model,
-  onClose,
-  onDeleted,
-}: DeleteModelModalProps) => {
+export const DeleteModelModal = ({ model, onClose, onDeleted }: DeleteModelModalProps) => {
   const { deleteModel, isDeleting } = useDeleteModel();
   const [confirmationText, setConfirmationText] = useState('');
 
@@ -42,32 +38,30 @@ export const DeleteModelModal = ({
     if (onDeleted) await onDeleted();
   }, [deleteModel, model.id, onClose, onDeleted]);
 
-  const updateConfirmationText = (
-    e: React.SyntheticEvent<HTMLInputElement>,
-  ) => {
+  const updateConfirmationText = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const value = (e.target as HTMLInputElement).value;
     setConfirmationText(value);
   };
 
   return (
     <EuiOverlayMask>
-      <EuiModal onClose={onClose} initialFocus='[name=modelName]'>
+      <EuiModal onClose={onClose} initialFocus="[name=modelName]">
         <EuiModalHeader>
           <EuiModalHeaderTitle>
             <h1>Delete model: {model.name}</h1>
           </EuiModalHeaderTitle>
         </EuiModalHeader>
         <EuiModalBody>
-          <EuiText size='s'>
-            This action permanently deletes the model and related entities. To
-            confirm, type the model name exactly.
+          <EuiText size="s">
+            This action permanently deletes the model and related entities. To confirm, type the
+            model name exactly.
           </EuiText>
-          <EuiSpacer size='m' />
-          <EuiForm component='form'>
+          <EuiSpacer size="m" />
+          <EuiForm component="form">
             <EuiFormRow label={`Type \"${model.name}\" to confirm`} fullWidth>
               <EuiFieldText
                 fullWidth
-                name='modelName'
+                name="modelName"
                 value={confirmationText}
                 onChange={updateConfirmationText}
               />
@@ -75,20 +69,16 @@ export const DeleteModelModal = ({
           </EuiForm>
         </EuiModalBody>
         <EuiModalFooter>
-          <EuiButton
-            onClick={onClose}
-            color='text'
-            data-test-subj='cancelDeleteModelButton'
-          >
+          <EuiButton onClick={onClose} color="text" data-test-subj="cancelDeleteModelButton">
             Cancel
           </EuiButton>
           <EuiButton
             fill
-            color='danger'
+            color="danger"
             onClick={confirmDelete}
             isLoading={isDeleting}
             isDisabled={confirmationText.trim() !== model.name}
-            data-test-subj='confirmDeleteModelButton'
+            data-test-subj="confirmDeleteModelButton"
           >
             Delete model
           </EuiButton>

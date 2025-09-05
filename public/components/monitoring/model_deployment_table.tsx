@@ -26,7 +26,7 @@ import {
 import { MODEL_STATE } from '../../../common';
 import { LONGDASH } from '../../constants';
 import type { ModelStatus } from '../../dashboard-assistant/modules/model/domain/enums/model-status';
-import AgentStatus from '../../dashboard-assistant/components/agent-status';
+import { AgentStatus } from '../../dashboard-assistant/components/agent-status';
 
 export interface ModelDeploymentTableSort {
   field: 'name' | 'model_state' | 'id';
@@ -107,19 +107,19 @@ export const ModelDeploymentTable = ({
           <>
             <EuiCopy
               textToCopy={agentId}
-              beforeMessage='Copy agent ID'
-              anchorClassName='ml-modelModelIdCell'
+              beforeMessage="Copy agent ID"
+              anchorClassName="ml-modelModelIdCell"
             >
-              {copy => (
+              {(copy) => (
                 <EuiSmallButtonIcon
-                  aria-label='Copy ID to clipboard'
-                  color='text'
-                  iconType='copy'
+                  aria-label="Copy ID to clipboard"
+                  color="text"
+                  iconType="copy"
                   onClick={copy}
                 />
               )}
             </EuiCopy>
-            <EuiText className='eui-textTruncate ml-modelModelIdText' size='s'>
+            <EuiText className="eui-textTruncate ml-modelModelIdText" size="s">
               {agentId}
             </EuiText>
           </>
@@ -153,11 +153,7 @@ export const ModelDeploymentTable = ({
         truncateText: true,
         render: (
           _model_state: string,
-          {
-            planningNodesCount,
-            respondingNodesCount,
-            notRespondingNodesCount,
-          }: ModelDeploymentItem,
+          { planningNodesCount, respondingNodesCount, notRespondingNodesCount }: ModelDeploymentItem
         ) => {
           if (
             planningNodesCount === undefined ||
@@ -168,21 +164,21 @@ export const ModelDeploymentTable = ({
           }
           if (respondingNodesCount === 0) {
             return (
-              <EuiHealth className='ml-modelStatusCell' color='danger'>
-                <div className='eui-textTruncate'>Not responding</div>
+              <EuiHealth className="ml-modelStatusCell" color="danger">
+                <div className="eui-textTruncate">Not responding</div>
               </EuiHealth>
             );
           }
           if (notRespondingNodesCount === 0) {
             return (
-              <EuiHealth className='ml-modelStatusCell' color='success'>
-                <div className='eui-textTruncate'>Responding</div>
+              <EuiHealth className="ml-modelStatusCell" color="success">
+                <div className="eui-textTruncate">Responding</div>
               </EuiHealth>
             );
           }
           return (
-            <EuiHealth className='ml-modelStatusCell' color='warning'>
-              <div className='eui-textTruncate'>Partially responding</div>
+            <EuiHealth className="ml-modelStatusCell" color="warning">
+              <div className="eui-textTruncate">Partially responding</div>
             </EuiHealth>
           );
         },
@@ -202,21 +198,21 @@ export const ModelDeploymentTable = ({
         render: (id: string) => (
           <>
             <EuiCopy
-              className='ml-modelModelIdCellTextWrapper'
+              className="ml-modelModelIdCellTextWrapper"
               textToCopy={id}
-              beforeMessage='Copy model ID'
-              anchorClassName='ml-modelModelIdCell'
+              beforeMessage="Copy model ID"
+              anchorClassName="ml-modelModelIdCell"
             >
-              {copy => (
+              {(copy) => (
                 <EuiSmallButtonIcon
-                  aria-label='Copy ID to clipboard'
-                  color='text'
-                  iconType='copy'
+                  aria-label="Copy ID to clipboard"
+                  color="text"
+                  iconType="copy"
                   onClick={copy}
                 />
               )}
             </EuiCopy>
-            <EuiText className='eui-textTruncate ml-modelModelIdText' size='s'>
+            <EuiText className="eui-textTruncate ml-modelModelIdText" size="s">
               {id}
             </EuiText>
           </>
@@ -228,9 +224,9 @@ export const ModelDeploymentTable = ({
         width: '10%',
         render: (inUse: boolean | undefined) =>
           inUse ? (
-            <EuiFlexGroup alignItems='center' gutterSize='s' responsive={false}>
+            <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
               <EuiFlexItem grow={false}>
-                <EuiIcon type={'check'} color={'success'} size='m' />
+                <EuiIcon type={'check'} color={'success'} size="m" />
               </EuiFlexItem>
             </EuiFlexGroup>
           ) : (
@@ -271,7 +267,7 @@ export const ModelDeploymentTable = ({
         ],
       },
     ],
-    [onViewDetail, onUseModel, onTestModel, onDeleteModel],
+    [onViewDetail, onUseModel, onTestModel, onDeleteModel]
   );
   const sorting = useMemo(() => ({ sort }), [sort]);
 
@@ -286,7 +282,7 @@ export const ModelDeploymentTable = ({
             showPerPageOptions: true,
           }
         : undefined,
-    [paginationInProps],
+    [paginationInProps]
   );
 
   const handleChange = useCallback(
@@ -300,12 +296,10 @@ export const ModelDeploymentTable = ({
               },
             }
           : {}),
-        ...(criteria.sort
-          ? { sort: criteria.sort as ModelDeploymentTableSort }
-          : {}),
+        ...(criteria.sort ? { sort: criteria.sort as ModelDeploymentTableSort } : {}),
       });
     },
-    [onChange],
+    [onChange]
   );
 
   return (
@@ -315,22 +309,22 @@ export const ModelDeploymentTable = ({
           <EuiEmptyPrompt
             style={{ maxWidth: 528 }}
             body={
-              <EuiText size='s'>
-                <EuiSpacer size='l' />
+              <EuiText size="s">
+                <EuiSpacer size="l" />
                 Deployed models will appear here. For more information, see{' '}
                 <EuiLink
-                  role='link'
-                  href='https://opensearch.org/docs/latest/ml-commons-plugin/ml-dashboard/'
+                  role="link"
+                  href="https://opensearch.org/docs/latest/ml-commons-plugin/ml-dashboard/"
                   external
-                  target='_blank'
+                  target="_blank"
                 >
                   Machine Learning Documentation
                 </EuiLink>
                 .
-                <EuiSpacer size='xl' />
+                <EuiSpacer size="xl" />
               </EuiText>
             }
-            aria-label='no deployed models'
+            aria-label="no deployed models"
           />
         </div>
       ) : (
@@ -345,36 +339,32 @@ export const ModelDeploymentTable = ({
               {loading ? (
                 <EuiEmptyPrompt
                   body={
-                    <EuiText size='s'>
-                      <EuiSpacer size='l' />
+                    <EuiText size="s">
+                      <EuiSpacer size="l" />
                       Loading deployed models...
-                      <EuiSpacer size='xl' />
+                      <EuiSpacer size="xl" />
                     </EuiText>
                   }
-                  aria-label='loading models'
+                  aria-label="loading models"
                 />
               ) : (
                 <EuiEmptyPrompt
-                  title={<EuiSpacer size='s' />}
+                  title={<EuiSpacer size="s" />}
                   body={
-                    <EuiText size='s'>
-                      There are no results to your search. Reset the search
-                      criteria to view the deployed models.
+                    <EuiText size="s">
+                      There are no results to your search. Reset the search criteria to view the
+                      deployed models.
                     </EuiText>
                   }
                   actions={
                     <>
-                      <EuiSpacer size='s' />
-                      <EuiButton
-                        role='button'
-                        onClick={onResetSearchClick}
-                        size='m'
-                      >
+                      <EuiSpacer size="s" />
+                      <EuiButton role="button" onClick={onResetSearchClick} size="m">
                         Reset search
                       </EuiButton>
                     </>
                   }
-                  aria-label='no models results'
+                  aria-label="no models results"
                 />
               )}
             </div>

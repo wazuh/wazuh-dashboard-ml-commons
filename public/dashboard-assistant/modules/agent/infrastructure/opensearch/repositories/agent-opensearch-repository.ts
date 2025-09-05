@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { CreateAgentDto } from '../../../application/dtos/create-agent-dto';
 import { AgentOpenSearchRequestFactory } from '../factories/agent-opensearch-request-factory';
@@ -11,26 +16,21 @@ import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensea
 export class AgentOpenSearchRepository implements AgentRepository {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly proxyHttpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient
   ) {}
 
   public async create(agentDto: CreateAgentDto) {
-    const agentOpenSearchRequest =
-      AgentOpenSearchRequestFactory.create(agentDto);
-    const response =
-      await this.proxyHttpClient.post<AgentOpenSearchResponseCreateDto>(
-        '/_plugins/_ml/agents/_register',
-        agentOpenSearchRequest,
-      );
-    return AgentOpenSearchMapper.fromResponse(
-      response.agent_id,
-      agentOpenSearchRequest,
+    const agentOpenSearchRequest = AgentOpenSearchRequestFactory.create(agentDto);
+    const response = await this.proxyHttpClient.post<AgentOpenSearchResponseCreateDto>(
+      '/_plugins/_ml/agents/_register',
+      agentOpenSearchRequest
     );
+    return AgentOpenSearchMapper.fromResponse(response.agent_id, agentOpenSearchRequest);
   }
 
   private findManyByModelId = async (
     modelId: string,
-    opts: { size?: number } = {},
+    opts: { size?: number } = {}
   ): Promise<Agent[]> => {
     const size = opts.size || 1000;
 
@@ -47,14 +47,13 @@ export class AgentOpenSearchRepository implements AgentRepository {
 
     const {
       hits: { hits },
-    } = await this.proxyHttpClient.post<
-      OpenSearchResponseDto<AgentOpenSearchResponseDto>
-    >('/_plugins/_ml/agents/_search', searchPayload);
+    } = await this.proxyHttpClient.post<OpenSearchResponseDto<AgentOpenSearchResponseDto>>(
+      '/_plugins/_ml/agents/_search',
+      searchPayload
+    );
 
     if (hits.length > 0) {
-      return hits.map(hit =>
-        AgentOpenSearchMapper.fromResponse(hit._id, hit._source),
-      );
+      return hits.map((hit) => AgentOpenSearchMapper.fromResponse(hit._id, hit._source));
     }
     return [];
   };
@@ -79,23 +78,16 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async execute(id: string, parameters: any): Promise<any> {
-    return await this.proxyHttpClient.post(
-      `/_plugins/_ml/agents/${id}/_execute`,
-      parameters,
-    );
+    return await this.proxyHttpClient.post(`/_plugins/_ml/agents/${id}/_execute`, parameters);
   }
 
   public async getActive(): Promise<any> {
     try {
-      const response = await this.proxyHttpClient.get(
-        '/.plugins-ml-config/_doc/os_chat',
-      );
+      const response = await this.proxyHttpClient.get('/.plugins-ml-config/_doc/os_chat');
       return response._source?.configuration?.agent_id;
     } catch (err: any) {
       if (err.status === 403) {
-        throw new Error(
-          `You don’t have the necessary permissions to access this resource.`,
-        );
+        throw new Error(`You don’t have the necessary permissions to access this resource.`);
       }
       // If this endpoint returns a 404, it does not mean that the endpoint or
       // the route was not found, but rather that there is no agent registered
@@ -118,22 +110,17 @@ export class AgentOpenSearchRepository implements AgentRepository {
   }
 
   public async getAll(): Promise<Agent[]> {
-    try {
-      const searchPayload = {
-        query: { match_all: {} },
-        size: 25,
-      };
+    const searchPayload = {
+      query: { match_all: {} },
+      size: 25,
+    };
 
-      const response = await this.proxyHttpClient.post<
-        OpenSearchResponseDto<AgentOpenSearchResponseDto>
-      >('/_plugins/_ml/agents/_search', searchPayload);
+    const response = await this.proxyHttpClient.post<
+      OpenSearchResponseDto<AgentOpenSearchResponseDto>
+    >('/_plugins/_ml/agents/_search', searchPayload);
 
-      return response.hits.hits.map(hit =>
-        AgentOpenSearchMapper.fromResponse(hit._id, hit._source),
-      );
-    } catch (error) {
-      console.error('Error fetching agents:', error);
-      throw error;
-    }
+    return response.hits.hits.map((hit) =>
+      AgentOpenSearchMapper.fromResponse(hit._id, hit._source)
+    );
   }
 }

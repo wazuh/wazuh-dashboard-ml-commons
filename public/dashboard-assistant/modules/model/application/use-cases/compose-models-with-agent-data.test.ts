@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { composeModelsWithAgentDataUseCase } from './compose-models-with-agent-data';
 import { createModelRepositoryMock } from '../ports/__mocks__/model-repository';
 import { createAgentRepositoryMock } from '../../../agent/application/ports/__mocks__/agent-repository';
@@ -30,7 +35,7 @@ describe('composeModelsWithAgentDataUseCase', () => {
       } as any,
     ]);
     agentRepo.findByModelId.mockImplementation(async (modelId: string) =>
-      modelId === 'm1' ? ({ id: 'a1', name: 'Agent' } as any) : null,
+      modelId === 'm1' ? ({ id: 'a1', name: 'Agent' } as any) : null
     );
     agentRepo.getActive.mockResolvedValueOnce('a1');
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export const mapToOptions = (items: any[], map: (item: any) => any) => {
   if (!Array.isArray(items)) {
     throw new Error('Expected items to be an array');
@@ -9,7 +14,7 @@ export const mapToOptions = (items: any[], map: (item: any) => any) => {
   if (isEmpty) {
     return [];
   }
-  return items.map(item => {
+  return items.map((item) => {
     const mappedItem = map(item);
     return {
       value: mappedItem,

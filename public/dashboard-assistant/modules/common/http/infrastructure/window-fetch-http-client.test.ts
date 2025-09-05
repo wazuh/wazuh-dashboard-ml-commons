@@ -1,10 +1,15 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { WindowFetchHttpClient } from './window-fetch-http-client';
 
-type JsonResponse = {
+interface JsonResponse {
   ok: boolean;
   status: number;
   json: () => Promise<Record<string, unknown>>;
-};
+}
 
 describe('WindowFetchHttpClient', () => {
   const originalFetch = window.fetch;
@@ -17,14 +22,12 @@ describe('WindowFetchHttpClient', () => {
   it('throws if method is missing (internal guard)', async () => {
     const client = new WindowFetchHttpClient();
     // Access private method via indexer to avoid using `any` types
-    const guardedFetch = (
-      client as unknown as {
-        fetch: (url: string, options: RequestInit) => Promise<unknown>;
-      }
-    ).fetch;
-    await expect(
-      guardedFetch('/x', {} as unknown as RequestInit),
-    ).rejects.toThrow('HTTP method is required');
+    const guardedFetch = ((client as unknown) as {
+      fetch: (url: string, options: RequestInit) => Promise<unknown>;
+    }).fetch;
+    await expect(guardedFetch('/x', ({} as unknown) as RequestInit)).rejects.toThrow(
+      'HTTP method is required'
+    );
   });
 
   it('sends GET and parses JSON; merges default headers', async () => {
@@ -46,7 +49,7 @@ describe('WindowFetchHttpClient', () => {
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({ 'osd-xsrf': 'kibana' }),
-      }),
+      })
     );
   });
 
@@ -74,7 +77,7 @@ describe('WindowFetchHttpClient', () => {
           'osd-xsrf': 'kibana',
         }),
         body: JSON.stringify({ a: 1 }),
-      }),
+      })
     );
     expect(fetchSpy).toHaveBeenNthCalledWith(
       2,
@@ -86,7 +89,7 @@ describe('WindowFetchHttpClient', () => {
           'osd-xsrf': 'kibana',
         }),
         body: JSON.stringify({ b: 2 }),
-      }),
+      })
     );
   });
 

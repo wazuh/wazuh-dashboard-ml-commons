@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Agent } from '../../../domain/entities/agent';
 import { AgentOpenSearchRequestDto } from '../dtos/agent-opensearch-request-dto';
 import { AgentOpenSearchResponseDto } from '../dtos/agent-opensearch-response-dto';
@@ -5,7 +10,7 @@ import { AgentOpenSearchResponseDto } from '../dtos/agent-opensearch-response-dt
 export class AgentOpenSearchMapper {
   public static fromResponse(
     id: string,
-    dto: AgentOpenSearchResponseDto | AgentOpenSearchRequestDto,
+    dto: AgentOpenSearchResponseDto | AgentOpenSearchRequestDto
   ): Agent {
     return {
       id,

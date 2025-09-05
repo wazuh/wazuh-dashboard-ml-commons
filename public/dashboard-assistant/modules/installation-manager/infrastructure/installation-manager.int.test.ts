@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /**
  * Integration tests for the InstallationManager orchestration over concrete steps.
  * External use cases are mocked via the services layer.
@@ -5,13 +10,10 @@
 
 // Mock the ML use-cases service to isolate from network and repositories
 jest.mock('../../../services/ml-use-cases.service', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getUseCases: () =>
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases,
+    ((global as unknown) as {
+      __mockUseCases: import('../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases,
 }));
 
 import { InstallationManager } from './installation-manager';
@@ -27,11 +29,9 @@ describe('InstallationManager (integration)', () => {
   };
 
   it('runs all steps successfully and updates context', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       persistMlCommonsSettings: jest.fn().mockResolvedValue(undefined),
       createConnector: jest.fn().mockResolvedValue({ id: 'conn-1' }),
       createModel: jest.fn().mockResolvedValue({ id: 'model-1' }),
@@ -41,7 +41,7 @@ describe('InstallationManager (integration)', () => {
     };
 
     const progressUpdates: unknown[] = [];
-    const manager = new InstallationManager(p => progressUpdates.push(p));
+    const manager = new InstallationManager((p) => progressUpdates.push(p));
     const result = await manager.execute(request);
 
     expect(result.success).toBe(true);
@@ -60,11 +60,9 @@ describe('InstallationManager (integration)', () => {
   });
 
   it('captures and returns failure details on step error', async () => {
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = {
+    ((global as unknown) as {
+      __mockUseCases: import('../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
       persistMlCommonsSettings: jest.fn().mockResolvedValue(undefined),
       createConnector: jest.fn().mockResolvedValue({ id: 'conn-1' }),
       // Fail on model creation

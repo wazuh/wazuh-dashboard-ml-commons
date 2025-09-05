@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export const StepStatus = {
   PENDING: 'pending',
   LOADING: 'loading',
@@ -6,4 +11,4 @@ export const StepStatus = {
   WARNING: 'warning',
 } as const;
 
-export type StepStatus = (typeof StepStatus)[keyof typeof StepStatus];
+export type StepStatus = typeof StepStatus[keyof typeof StepStatus];

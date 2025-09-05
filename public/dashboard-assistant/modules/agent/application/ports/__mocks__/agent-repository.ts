@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { AgentRepository } from '../agent-repository';
 
 export function createAgentRepositoryMock(): jest.Mocked<AgentRepository> {
@@ -10,4 +15,3 @@ export function createAgentRepositoryMock(): jest.Mocked<AgentRepository> {
     deleteByModelId: jest.fn(),
   };
 }
-

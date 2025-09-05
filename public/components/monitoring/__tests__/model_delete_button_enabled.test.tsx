@@ -6,10 +6,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '../../../../test/test_utils';
-import {
-  ModelDeploymentTable,
-  ModelDeploymentTableProps,
-} from '../model_deployment_table';
+import { ModelDeploymentTable, ModelDeploymentTableProps } from '../model_deployment_table';
 
 describe('Model delete button', () => {
   it('is enabled even when model is in use and invokes onDeleteModel', async () => {
@@ -33,7 +30,7 @@ describe('Model delete button', () => {
         sort={{ field: 'name', direction: 'asc' }}
         onChange={jest.fn()}
         onDeleteModel={onDeleteModel}
-      />,
+      />
     );
 
     // Delete action may be inline or under the "All actions" popover depending on layout.
@@ -42,13 +39,16 @@ describe('Model delete button', () => {
       const allActionsBtn = screen.getByRole('button', { name: /all actions/i });
       await user.click(allActionsBtn);
       // In the popover, actions are often rendered as menu items, but may also be buttons.
-      deleteAction = screen.queryByRole('menuitem', { name: /delete model/i })
-        || screen.queryByRole('button', { name: /delete model/i });
+      deleteAction =
+        screen.queryByRole('menuitem', { name: /delete model/i }) ||
+        screen.queryByRole('button', { name: /delete model/i });
       if (!deleteAction) {
         // Wait briefly in case the popover renders asynchronously
-        deleteAction = await screen.findByRole('menuitem', { name: /delete model/i }).catch(async () => {
-          return await screen.findByRole('button', { name: /delete model/i });
-        });
+        deleteAction = await screen
+          .findByRole('menuitem', { name: /delete model/i })
+          .catch(async () => {
+            return await screen.findByRole('button', { name: /delete model/i });
+          });
       }
     }
 

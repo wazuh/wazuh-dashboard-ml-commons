@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { CreateModelGroupDto } from '../../../application/dtos/create-model-group-dto';
 import { ModelGroupRepository } from '../../../application/ports/model-group-repository';
@@ -8,17 +13,15 @@ import { ModelGroupOpenSearchMapper } from '../mapper/model-group-opensearch-map
 export class ModelGroupOpenSearchRepository implements ModelGroupRepository {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly proxyHttpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient
   ) {}
 
   public async create(modelGroupDto: CreateModelGroupDto): Promise<ModelGroup> {
-    const { model_group_id } =
-      await this.proxyHttpClient.post<ModelGroupOpenSearchResponseCreateDto>(
-        '/_plugins/_ml/model_groups/_register',
-        modelGroupDto,
-      );
+    const { model_group_id: modelGroupId } = await this.proxyHttpClient.post<
+      ModelGroupOpenSearchResponseCreateDto
+    >('/_plugins/_ml/model_groups/_register', modelGroupDto);
     return ModelGroupOpenSearchMapper.toModel({
-      id: model_group_id,
+      id: modelGroupId,
       name: modelGroupDto.name,
       description: modelGroupDto.description,
     });
@@ -27,6 +30,8 @@ export class ModelGroupOpenSearchRepository implements ModelGroupRepository {
   public async delete(id: string): Promise<void> {
     try {
       await this.proxyHttpClient.delete(`/_plugins/_ml/model_groups/${id}`);
-    } catch {}
+    } catch (_) {
+      // Ignore errors
+    }
   }
 }

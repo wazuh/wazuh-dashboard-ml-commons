@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { modelProviderConfigs } from '../../../../provider-model-config';
 import { CreateMLCommonsDto } from '../../../ml-commons-settings/application/dtos/create-ml-commons-dto';
 import {
@@ -12,22 +17,20 @@ export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
     super({ name: 'Update ML Commons Settings' });
   }
 
-  private buildDto(
-    request: InstallAIDashboardAssistantDto,
-  ): CreateMLCommonsDto {
+  private buildDto(request: InstallAIDashboardAssistantDto): CreateMLCommonsDto {
     const provider = modelProviderConfigs[request.selected_provider];
     if (!provider) {
       throw new Error(
-        `Unknown provider: ${request.selected_provider}. Please review configuration.`,
+        `Unknown provider: ${request.selected_provider}. Please review configuration.`
       );
     }
-    const endpoints_regex = [provider.default_endpoint_regex || '.*'];
-    return { endpoints_regex };
+    const endpointsRegex = [provider.default_endpoint_regex || '.*'];
+    return { endpoints_regex: endpointsRegex };
   }
 
   async execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void> {
     const dto = this.buildDto(request);
     await getUseCases().persistMlCommonsSettings(dto);

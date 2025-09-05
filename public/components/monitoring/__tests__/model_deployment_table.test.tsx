@@ -207,9 +207,11 @@ describe('<DeployedModelTable />', () => {
           screen.queryByRole('menuitem', { name: /view status details/i }) ||
           screen.queryByRole('button', { name: /view status details/i });
         if (!viewAction) {
-          viewAction = await screen.findByRole('menuitem', {
-            name: /view status details/i,
-          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+          viewAction = await screen
+            .findByRole('menuitem', {
+              name: /view status details/i,
+            })
+            .catch(async () => await screen.findByRole('button', { name: /view status details/i }));
         }
       }
       await userEvent.click(viewAction!);
@@ -228,9 +230,11 @@ describe('<DeployedModelTable />', () => {
           screen.queryByRole('menuitem', { name: /view status details/i }) ||
           screen.queryByRole('button', { name: /view status details/i });
         if (!viewAction) {
-          viewAction = await screen.findByRole('menuitem', {
-            name: /view status details/i,
-          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+          viewAction = await screen
+            .findByRole('menuitem', {
+              name: /view status details/i,
+            })
+            .catch(async () => await screen.findByRole('button', { name: /view status details/i }));
         }
       }
       await userEvent.click(viewAction!);
@@ -249,9 +253,11 @@ describe('<DeployedModelTable />', () => {
           screen.queryByRole('menuitem', { name: /view status details/i }) ||
           screen.queryByRole('button', { name: /view status details/i });
         if (!viewAction) {
-          viewAction = await screen.findByRole('menuitem', {
-            name: /view status details/i,
-          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+          viewAction = await screen
+            .findByRole('menuitem', {
+              name: /view status details/i,
+            })
+            .catch(async () => await screen.findByRole('button', { name: /view status details/i }));
         }
       }
       await userEvent.click(viewAction!);

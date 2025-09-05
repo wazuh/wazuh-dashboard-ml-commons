@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelPredictResponse } from '../domain/types';
 import { useQuery } from '../../../hooks/use-query';
-import { getUseCases } from "../../../services/ml-use-cases.service";
+import { getUseCases } from '../../../services/ml-use-cases.service';
 
 interface UseModelTestReturn {
   isLoading: boolean;
@@ -11,15 +16,9 @@ interface UseModelTestReturn {
 }
 
 export function useModelTest(): UseModelTestReturn {
-  const {
-    data: response,
-    error,
-    isLoading,
-    fetch,
-    reset,
-  } = useQuery<ModelPredictResponse | null>({
-    query(model_id: string) {
-      return getUseCases().validateModelConnection(model_id);
+  const { data: response, error, isLoading, fetch, reset } = useQuery<ModelPredictResponse | null>({
+    query(modelId: string) {
+      return getUseCases().validateModelConnection(modelId);
     },
     initialData: null,
     defaultErrorMessage: 'Failed to test model connection',

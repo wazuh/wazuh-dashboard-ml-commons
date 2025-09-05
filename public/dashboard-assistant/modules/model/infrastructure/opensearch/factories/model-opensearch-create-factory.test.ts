@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelOpenSearchCreateFactory } from './model-opensearch-create-factory';
 
 describe('ModelOpenSearchCreateFactory', () => {

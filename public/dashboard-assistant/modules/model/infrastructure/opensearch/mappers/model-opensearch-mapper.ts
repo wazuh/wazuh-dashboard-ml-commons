@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelStateMapper } from '../../../application/mapper/model-state-mapper';
 import { Model } from '../../../domain/entities/model';
 import { ModelStatus } from '../../../domain/enums/model-status';
@@ -5,10 +10,7 @@ import { ModelOpenSearchRequestCreateDto } from '../dtos/model-opensearch-reques
 import { ModelOpenSearchResponseDto } from '../dtos/model-opensearch-response-dto';
 
 export class ModelOpenSearchMapper {
-  public static fromRequest(
-    id: string,
-    source: ModelOpenSearchRequestCreateDto,
-  ): Model {
+  public static fromRequest(id: string, source: ModelOpenSearchRequestCreateDto): Model {
     return {
       id,
       name: source.name,
@@ -22,10 +24,7 @@ export class ModelOpenSearchMapper {
     };
   }
 
-  public static fromResponse(
-    id: string,
-    source: ModelOpenSearchResponseDto,
-  ): Model {
+  public static fromResponse(id: string, source: ModelOpenSearchResponseDto): Model {
     return {
       id,
       name: source.name,

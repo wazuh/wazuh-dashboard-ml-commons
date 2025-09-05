@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { AgentOpenSearchRepository } from './agent-opensearch-repository';
 import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { AgentType } from '../../../domain/enums/agent-type';
@@ -46,7 +51,7 @@ describe('AgentOpenSearchRepository', () => {
       expect.objectContaining({
         name: 'agent',
         llm: expect.objectContaining({ model_id: 'model-1' }),
-      }),
+      })
     );
     expect(agent).toEqual({
       id: 'agent-1',
@@ -88,9 +93,9 @@ describe('AgentOpenSearchRepository', () => {
     const res = await repo.findAllByModelId('m');
     expect(proxyHttp.post).toHaveBeenCalledWith(
       '/_plugins/_ml/agents/_search',
-      expect.objectContaining({ query: expect.any(Object), size: 1000 }),
+      expect.objectContaining({ query: expect.any(Object), size: 1000 })
     );
-    expect(res.map(r => r.id)).toEqual(['a1', 'a2']);
+    expect(res.map((r) => r.id)).toEqual(['a1', 'a2']);
   });
 
   it('findByModelId returns first match or null', async () => {
@@ -121,9 +126,7 @@ describe('AgentOpenSearchRepository', () => {
   it('delete deletes by id', async () => {
     proxyHttp.delete.mockResolvedValueOnce(undefined as never);
     await repo.delete('agent-9');
-    expect(proxyHttp.delete).toHaveBeenCalledWith(
-      '/_plugins/_ml/agents/agent-9',
-    );
+    expect(proxyHttp.delete).toHaveBeenCalledWith('/_plugins/_ml/agents/agent-9');
   });
 
   it('deleteByModelId finds and deletes all', async () => {
@@ -156,23 +159,16 @@ describe('AgentOpenSearchRepository', () => {
     });
     proxyHttp.delete.mockResolvedValue(undefined as never);
     await repo.deleteByModelId('m');
-    expect(proxyHttp.delete).toHaveBeenNthCalledWith(
-      1,
-      '/_plugins/_ml/agents/a1',
-    );
-    expect(proxyHttp.delete).toHaveBeenNthCalledWith(
-      2,
-      '/_plugins/_ml/agents/a2',
-    );
+    expect(proxyHttp.delete).toHaveBeenNthCalledWith(1, '/_plugins/_ml/agents/a1');
+    expect(proxyHttp.delete).toHaveBeenNthCalledWith(2, '/_plugins/_ml/agents/a2');
   });
 
   it('execute posts to execute endpoint and returns the value', async () => {
     proxyHttp.post.mockResolvedValueOnce({ ok: true });
     const res = await repo.execute('agent-123', { q: 1 });
-    expect(proxyHttp.post).toHaveBeenCalledWith(
-      '/_plugins/_ml/agents/agent-123/_execute',
-      { q: 1 },
-    );
+    expect(proxyHttp.post).toHaveBeenCalledWith('/_plugins/_ml/agents/agent-123/_execute', {
+      q: 1,
+    });
     expect(res).toEqual({ ok: true });
   });
 
@@ -181,16 +177,12 @@ describe('AgentOpenSearchRepository', () => {
       _source: { configuration: { agent_id: 'a1' } },
     });
     await expect(repo.getActive()).resolves.toBe('a1');
-    expect(proxyHttp.get).toHaveBeenCalledWith(
-      '/.plugins-ml-config/_doc/os_chat',
-    );
+    expect(proxyHttp.get).toHaveBeenCalledWith('/.plugins-ml-config/_doc/os_chat');
   });
 
   it('getActive throws a permission error when 403', async () => {
     proxyHttp.get.mockRejectedValueOnce({ status: 403 });
-    await expect(repo.getActive()).rejects.toThrow(
-      'You don’t have the necessary permissions',
-    );
+    await expect(repo.getActive()).rejects.toThrow('You don’t have the necessary permissions');
   });
 
   it('getActive returns undefined on non-403 errors (e.g., 404)', async () => {

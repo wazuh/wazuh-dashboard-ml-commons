@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { MlCommonsPluginSettings } from '../../domain/entities/plugin-settings';
 import { CreateMLCommonsDto } from '../../application/dtos/create-ml-commons-dto';
 

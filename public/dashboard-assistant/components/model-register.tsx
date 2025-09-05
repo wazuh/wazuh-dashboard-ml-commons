@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   EuiButton,
@@ -62,16 +67,16 @@ const ModelRegisterComponent = ({
     if (installationError) {
       addErrorToast(
         `Error deploying model`,
-        `${installationError}. Rolling back current installation. Please, verify data provided and try again.`,
+        `${installationError}. Rolling back current installation. Please, verify data provided and try again.`
       );
     }
-  }, [installationError]);
+  }, [addErrorToast, addSuccessToast, installationError]);
 
   useEffect(() => {
     if (isInstallationSuccessful) {
       addSuccessToast('Model deployed successfully.');
     }
-  }, [isInstallationSuccessful]);
+  }, [addSuccessToast, isInstallationSuccessful]);
 
   // Default form configuration
   const defaultFormConfig: FormConfig = {
@@ -102,7 +107,7 @@ const ModelRegisterComponent = ({
         description: `${data.modelProvider} ${data.model} model`,
       });
     },
-    [setModel],
+    [setModel]
   );
 
   const handleValidationChange = useCallback((isValid: boolean) => {
@@ -121,32 +126,29 @@ const ModelRegisterComponent = ({
     <>
       <div style={{ minHeight: '100vh', display: 'flex' }}>
         <EuiFlexGroup
-          direction='column'
-          justifyContent='center'
-          alignItems='center'
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
           style={{ minHeight: '100vh', width: '100%' }}
         >
-          <EuiFlexItem
-            grow={false}
-            style={{ maxWidth: config.maxWidth || '600px', width: '100%' }}
-          >
-            <EuiPanel paddingSize='l'>
-              <EuiTitle size='l'>
+          <EuiFlexItem grow={false} style={{ maxWidth: config.maxWidth || '600px', width: '100%' }}>
+            <EuiPanel paddingSize="l">
+              <EuiTitle size="l">
                 <h2>{config.title}</h2>
               </EuiTitle>
 
-              <EuiSpacer size='s' />
+              <EuiSpacer size="s" />
 
-              <EuiText color='subdued'>
+              <EuiText color="subdued">
                 <p>
                   {config.description}{' '}
-                  <EuiLink href='#' target='_blank'>
+                  <EuiLink href="#" target="_blank">
                     {config.learnMoreText}
                   </EuiLink>
                 </p>
               </EuiText>
 
-              <EuiSpacer size='l' />
+              <EuiSpacer size="l" />
 
               <ModelForm
                 onChange={handleFormChange}
@@ -154,14 +156,11 @@ const ModelRegisterComponent = ({
                 disabled={disabled}
               />
 
-              <EuiSpacer size='xl' />
+              <EuiSpacer size="xl" />
 
-              <EuiFlexGroup justifyContent='flexEnd' gutterSize='m'>
+              <EuiFlexGroup justifyContent="flexEnd" gutterSize="m">
                 <EuiFlexItem grow={false}>
-                  <EuiButtonEmpty
-                    onClick={onCancel}
-                    disabled={isInstalling || isDeployed}
-                  >
+                  <EuiButtonEmpty onClick={onCancel} disabled={isInstalling || isDeployed}>
                     {config.buttons.cancel}
                   </EuiButtonEmpty>
                 </EuiFlexItem>
@@ -182,9 +181,9 @@ const ModelRegisterComponent = ({
       </div>
 
       {isDeploymentVisible && (
-        <EuiFlyout onClose={onCancel} size='s' type='push'>
+        <EuiFlyout onClose={onCancel} size="s" type="push">
           <EuiFlyoutHeader hasBorder>
-            <EuiTitle size='m'>
+            <EuiTitle size="m">
               <h2>Model deployment</h2>
             </EuiTitle>
           </EuiFlyoutHeader>

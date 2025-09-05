@@ -1,7 +1,9 @@
-import {
-  CreateRepository,
-  DeleteRepository,
-} from '../../../common/domain/entities/repository';
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { CreateRepository, DeleteRepository } from '../../../common/domain/entities/repository';
 import { ModelGroup } from '../../domain/entities/model-group';
 import { CreateModelGroupDto } from '../dtos/create-model-group-dto';
 

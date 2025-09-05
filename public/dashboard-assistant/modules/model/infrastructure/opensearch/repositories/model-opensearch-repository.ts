@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelPredictResponse } from '../../../domain/types';
 import { Model } from '../../../domain/entities/model';
 import { ModelPredictValidator } from '../../../model-predict-validator';
@@ -14,21 +19,16 @@ import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensea
 export class ModelOpenSearchRepository implements ModelRepository {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly proxyHttpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient
   ) {}
 
   public async create(createModelDto: CreateModelDto): Promise<Model> {
-    const modelOpenSearchRequestCreateDto =
-      ModelOpenSearchCreateFactory.create(createModelDto);
-    const response =
-      await this.proxyHttpClient.post<ModelOpenSearchResponseCreateDto>(
-        '/_plugins/_ml/models/_register',
-        modelOpenSearchRequestCreateDto,
-      );
-    return ModelOpenSearchMapper.fromRequest(
-      response.model_id,
-      modelOpenSearchRequestCreateDto,
+    const modelOpenSearchRequestCreateDto = ModelOpenSearchCreateFactory.create(createModelDto);
+    const response = await this.proxyHttpClient.post<ModelOpenSearchResponseCreateDto>(
+      '/_plugins/_ml/models/_register',
+      modelOpenSearchRequestCreateDto
     );
+    return ModelOpenSearchMapper.fromRequest(response.model_id, modelOpenSearchRequestCreateDto);
   }
 
   public async findById(id: string): Promise<Model | null> {
@@ -53,7 +53,6 @@ export class ModelOpenSearchRepository implements ModelRepository {
 
       return ModelOpenSearchMapper.fromResponse(id, hits[0]._source);
     } catch (error) {
-      console.error('Error fetching model by ID:', error);
       return null;
     }
   }
@@ -72,11 +71,10 @@ export class ModelOpenSearchRepository implements ModelRepository {
         OpenSearchResponseDto<ModelOpenSearchResponseDto>
       >('/_plugins/_ml/models/_search', searchPayload);
 
-      return response.hits.hits.map(hit =>
-        ModelOpenSearchMapper.fromResponse(hit._id, hit._source),
+      return response.hits.hits.map((hit) =>
+        ModelOpenSearchMapper.fromResponse(hit._id, hit._source)
       );
     } catch (error) {
-      console.error('Error fetching models:', error);
       return [];
     }
   }
@@ -88,24 +86,19 @@ export class ModelOpenSearchRepository implements ModelRepository {
   }
 
   public async validateConnection(modelId: string): Promise<ModelPredictResponse> {
-    try {
-      const response = await this.proxyHttpClient.post<ModelPredictResponse>(
-        `/_plugins/_ml/models/${modelId}/_predict`,
-        {
-          parameters: {
-            prompt: TEST_PROMPT,
-          },
+    const response = await this.proxyHttpClient.post<ModelPredictResponse>(
+      `/_plugins/_ml/models/${modelId}/_predict`,
+      {
+        parameters: {
+          prompt: TEST_PROMPT,
         },
-      );
+      }
+    );
 
-      // Validate that the response has the expected structure using the validation function
-      ModelPredictValidator.validate(response);
+    // Validate that the response has the expected structure using the validation function
+    ModelPredictValidator.validate(response);
 
-      return response;
-    } catch (error) {
-      console.error('Error testing model connection:', error);
-      throw error;
-    }
+    return response;
   }
 
   public async deploy(modelId: string, deploy: boolean): Promise<void> {
@@ -115,9 +108,6 @@ export class ModelOpenSearchRepository implements ModelRepository {
   }
 
   private async undeploy(modelId: string): Promise<void> {
-    await this.proxyHttpClient.post(
-      `/_plugins/_ml/models/${modelId}/_undeploy`,
-      {},
-    );
+    await this.proxyHttpClient.post(`/_plugins/_ml/models/${modelId}/_undeploy`, {});
   }
 }

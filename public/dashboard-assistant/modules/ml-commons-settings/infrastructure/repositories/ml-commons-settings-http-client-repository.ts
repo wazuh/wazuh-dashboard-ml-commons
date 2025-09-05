@@ -1,15 +1,18 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { HttpClient } from '../../../common/http/domain/entities/http-client';
 import { CreateMLCommonsDto } from '../../application/dtos/create-ml-commons-dto';
 import { MLCommonsSettingsCreateFactory } from '../factories/ml-commons-settings-factory';
 import { MLCommonsSettingsRepository } from '../../application/ports/ml-commons-settings-repository';
 import { ClusterSettings } from '../../domain/entities/cluster-settings';
 
-export class MLCommonsSettingsHttpClientRepository
-  implements MLCommonsSettingsRepository
-{
+export class MLCommonsSettingsHttpClientRepository implements MLCommonsSettingsRepository {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly proxyHttpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient
   ) {}
 
   public async persist(dto: CreateMLCommonsDto): Promise<boolean> {
@@ -27,13 +30,6 @@ export class MLCommonsSettingsHttpClientRepository
   }
 
   public async retrieve(): Promise<any> {
-    try {
-      return await this.proxyHttpClient.post(
-        '/_cluster/settings?include_defaults=true',
-      );
-    } catch (error) {
-      console.error('Error fetching cluster settings:', error);
-      throw error;
-    }
+    return await this.proxyHttpClient.post('/_cluster/settings?include_defaults=true');
   }
 }

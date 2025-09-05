@@ -19,34 +19,24 @@ import {
   MlCommonsPluginPluginSetupDependencies,
 } from './types';
 import { PLUGIN_NAME, PLUGIN_ID } from '../common';
-import {
-  setHttpClient,
-  setProxyHttpClient,
-} from './dashboard-assistant/services/common';
+import { setHttpClient, setProxyHttpClient } from './dashboard-assistant/services/common';
 import { WindowFetchHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/window-fetch-http-client';
 import { ProxyHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/proxy-http-client';
 import type { HttpClient } from './dashboard-assistant/modules/common/http/domain/entities/http-client';
 
 export class MlCommonsPluginPlugin
-  implements Plugin<MlCommonsPluginPluginSetup, MlCommonsPluginPluginStart>
-{
+  implements Plugin<MlCommonsPluginPluginSetup, MlCommonsPluginPluginStart> {
   public setup(
     core: CoreSetup<AppPluginStartDependencies, AppPluginStartDependencies>,
-    {
-      dataSource,
-      dataSourceManagement,
-    }: MlCommonsPluginPluginSetupDependencies,
+    { dataSource, dataSourceManagement }: MlCommonsPluginPluginSetupDependencies
   ): MlCommonsPluginPluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
       title: PLUGIN_NAME,
-      description: i18n.translate(
-        'MLCommonsDashboards.application.aiModels.description',
-        {
-          defaultMessage: 'Review  the status of running AI models.',
-        },
-      ),
+      description: i18n.translate('MLCommonsDashboards.application.aiModels.description', {
+        defaultMessage: 'Review  the status of running AI models.',
+      }),
       category: {
         id: 'opensearch',
         label: 'OpenSearch Plugins',
@@ -72,27 +62,21 @@ export class MlCommonsPluginPlugin
       },
     });
 
-    core.chrome.navGroup.addNavLinksToGroup(
-      DEFAULT_NAV_GROUPS.dataAdministration,
-      [
-        {
-          id: PLUGIN_ID,
-          title: i18n.translate('MLCommonsDashboards.NavLink.AIModels.title', {
-            defaultMessage: 'AI models',
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.dataAdministration, [
+      {
+        id: PLUGIN_ID,
+        title: i18n.translate('MLCommonsDashboards.NavLink.AIModels.title', {
+          defaultMessage: 'AI models',
+        }),
+        category: {
+          id: 'ai-models',
+          label: i18n.translate('MLCommonsDashboards.Category.MachineLearning.label', {
+            defaultMessage: 'Machine learning',
           }),
-          category: {
-            id: 'ai-models',
-            label: i18n.translate(
-              'MLCommonsDashboards.Category.MachineLearning.label',
-              {
-                defaultMessage: 'Machine learning',
-              },
-            ),
-            order: 9999,
-          },
+          order: 9999,
         },
-      ],
-    );
+      },
+    ]);
 
     // Return methods that should be available to other plugins
     return {};

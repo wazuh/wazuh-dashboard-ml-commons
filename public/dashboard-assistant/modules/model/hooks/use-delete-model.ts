@@ -1,5 +1,10 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useQuery } from '../../../hooks/use-query';
-import { getUseCases } from "../../../services/ml-use-cases.service";
+import { getUseCases } from '../../../services/ml-use-cases.service';
 
 export interface UseDeleteModelReturn {
   isDeleting: boolean;
@@ -10,8 +15,7 @@ export interface UseDeleteModelReturn {
 
 export function useDeleteModel(): UseDeleteModelReturn {
   const { isLoading, error, fetch, reset } = useQuery<void>({
-    query: (modelId: string) =>
-      getUseCases().deleteModelWithRelatedEntities(modelId),
+    query: (modelId: string) => getUseCases().deleteModelWithRelatedEntities(modelId),
     initialData: undefined as void,
     defaultErrorMessage: 'Failed to delete model',
     toasts: {
@@ -19,9 +23,9 @@ export function useDeleteModel(): UseDeleteModelReturn {
         title: 'Model deleted',
         text: `Model ID "${params}" has been successfully deleted.`,
       }),
-      getError: ({ error }) => ({
+      getError: ({ error: modelDeletionError }) => ({
         title: 'Error deleting model',
-        text: error,
+        text: modelDeletionError,
       }),
     },
   });

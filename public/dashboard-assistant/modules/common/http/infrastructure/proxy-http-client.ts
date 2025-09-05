@@ -1,4 +1,9 @@
-import { HttpMethod } from "../../domain/enum/http-method";
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { HttpMethod } from '../../domain/enum/http-method';
 import type { HttpClient } from '../domain/entities/http-client';
 
 export class ProxyHttpClient implements HttpClient {

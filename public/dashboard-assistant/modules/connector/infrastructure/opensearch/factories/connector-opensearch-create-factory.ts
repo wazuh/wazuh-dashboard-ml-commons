@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ASSISTANT_PROMPT } from '../../../domain/constants';
 import { CreateConnectorDto } from '../../../application/dtos/create-connector-dto';
 import { ConnectorActionFactory } from './connector-action-factory';

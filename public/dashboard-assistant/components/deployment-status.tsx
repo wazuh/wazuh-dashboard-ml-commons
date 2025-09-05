@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import {
   EuiButton,
@@ -15,7 +20,7 @@ import {
   ExecutionState,
   StepState,
 } from '../modules/installation-manager/domain';
-import StepIcon from './step-icon';
+import { StepIcon } from './step-icon';
 import { StepStatus } from './types';
 
 interface DeploymentStatusProps {
@@ -55,26 +60,23 @@ export const DeploymentStatus = ({
 
   return (
     <>
-      <EuiTitle size='s'>
+      <EuiTitle size="s">
         <h3>Assistant setup in progress</h3>
       </EuiTitle>
 
-      <EuiSpacer size='s' />
+      <EuiSpacer size="s" />
 
-      <EuiText size='s' color='subdued'>
-        Installing and configuring your intelligent dashboard assistant. Please
-        wait while we set up the AI components and establish model connections
-        to enable natural language interactions with your data.{' '}
-        <EuiLink href='#'>Learn more</EuiLink>
+      <EuiText size="s" color="subdued">
+        Installing and configuring your intelligent dashboard assistant. Please wait while we set up
+        the AI components and establish model connections to enable natural language interactions
+        with your data. <EuiLink href="#">Learn more</EuiLink>
       </EuiText>
 
-      <EuiSpacer size='l' />
+      <EuiSpacer size="l" />
 
       <EuiListGroup flush maxWidth={false}>
         {steps.map((step: StepState, index) => {
-          const uiStatus = step
-            ? mapToUIStatus(step.state)
-            : StepStatus.PENDING;
+          const uiStatus = step ? mapToUIStatus(step.state) : StepStatus.PENDING;
           const key = `${step.stepName}-${index}`;
 
           return (
@@ -87,7 +89,7 @@ export const DeploymentStatus = ({
                 padding: '8px 0',
               }}
             >
-              <EuiText size='s'>{step.stepName}</EuiText>
+              <EuiText size="s">{step.stepName}</EuiText>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {uiStatus === StepStatus.ERROR && step?.error ? (
                   <EuiToolTip content={step.error.message}>
@@ -115,7 +117,7 @@ export const DeploymentStatus = ({
           if (hasErrors()) {
             const failedSteps = progress?.getFailedSteps() || [];
             const errorMessage = failedSteps
-              .map(step => step.error || 'Unknown error')
+              .map((step) => step.error || 'Unknown error')
               .join(', ');
             onErrorDuringDeployment?.(errorMessage);
           } else {
@@ -125,13 +127,12 @@ export const DeploymentStatus = ({
 
         const buttonText = hasErrors() ? 'Try again' : 'Go to model assistants';
 
-        const shouldShowButton =
-          hasErrors() || showCheckDeploymentButton || progress?.isFinished();
+        const shouldShowButton = hasErrors() || showCheckDeploymentButton || progress?.isFinished();
         return (
           !!shouldShowButton && (
             <>
-              <EuiSpacer size='l' />
-              <EuiFlexGroup justifyContent='center'>
+              <EuiSpacer size="l" />
+              <EuiFlexGroup justifyContent="center">
                 <EuiFlexItem grow={false}>
                   <EuiButton fill onClick={handleProcessDeploymentClick}>
                     {buttonText}

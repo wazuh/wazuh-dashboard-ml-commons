@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 // https://docs.opensearch.org/latest/ml-commons-plugin/agents-tools/agents/index/
 export enum AgentType {
   FLOW = 'flow',

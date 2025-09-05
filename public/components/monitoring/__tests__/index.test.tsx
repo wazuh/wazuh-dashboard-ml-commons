@@ -383,7 +383,7 @@ describe('<Monitoring />', () => {
 
     // click on first item: responding: 1, not responding: 2, planning: 3
     const headers = screen.getAllByRole('columnheader');
-    const actionsIndex = headers.findIndex(h => within(h).queryByText('Actions'));
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
     const table = headers[0].closest('table') as HTMLTableElement;
     const firstRow = table.querySelectorAll('tbody tr')[0] as HTMLElement;
     const actionsCell = firstRow.querySelectorAll('td')[actionsIndex] as HTMLElement;
@@ -418,7 +418,7 @@ describe('<Monitoring />', () => {
 
     // click on first item: responding: 1, not responding: 2, planning: 3
     const headers = screen.getAllByRole('columnheader');
-    const actionsIndex = headers.findIndex(h => within(h).queryByText('Actions'));
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
     const table = headers[0].closest('table') as HTMLTableElement;
     const firstRow = table.querySelectorAll('tbody tr')[0] as HTMLElement;
     const actionsCell = firstRow.querySelectorAll('td')[actionsIndex] as HTMLElement;

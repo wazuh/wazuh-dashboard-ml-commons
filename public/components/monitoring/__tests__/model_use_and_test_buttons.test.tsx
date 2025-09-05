@@ -6,10 +6,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, within } from '../../../../test/test_utils';
-import {
-  ModelDeploymentTable,
-  ModelDeploymentTableProps,
-} from '../model_deployment_table';
+import { ModelDeploymentTable, ModelDeploymentTableProps } from '../model_deployment_table';
 
 describe('Model Use and Test actions', () => {
   const baseItem = {
@@ -43,26 +40,30 @@ describe('Model Use and Test actions', () => {
         onChange={jest.fn()}
         onUseModel={onUseModel}
         onTestModel={onTestModel}
-      />,
+      />
     );
 
     // Find Actions column index
     const headers = screen.getAllByRole('columnheader');
-    const actionsIndex = headers.findIndex(h => within(h).queryByText('Actions'));
-    const rows = headers[0].closest('table')?.querySelectorAll('tbody tr') as NodeListOf<HTMLElement>;
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
+    const rows = headers[0].closest('table')?.querySelectorAll('tbody tr') as NodeListOf<
+      HTMLElement
+    >;
 
     // Helper to get the Actions cell for a row
-    const cellAt = (rowIdx: number) => rows[rowIdx].querySelectorAll('td')[actionsIndex] as HTMLElement;
+    const cellAt = (rowIdx: number) =>
+      rows[rowIdx].querySelectorAll('td')[actionsIndex] as HTMLElement;
 
     // Row 0: Use should be enabled
-    let use0 = within(cellAt(0)).queryByRole('button', { name: /use model/i });
+    const use0 = within(cellAt(0)).queryByRole('button', { name: /use model/i });
     if (!use0) {
       const all0 = within(cellAt(0)).getByRole('button', { name: /all actions/i });
       await user.click(all0);
       const useInMenu = (await screen
         .findByRole('button', { name: /use model/i })
-        .catch(async () => await screen.findByRole('menuitem', { name: /use model/i }))
-      ) as HTMLElement;
+        .catch(
+          async () => await screen.findByRole('menuitem', { name: /use model/i })
+        )) as HTMLElement;
       expect(useInMenu).toBeEnabled();
       // close popover after checking
       await user.click(all0);
@@ -75,9 +76,11 @@ describe('Model Use and Test actions', () => {
     if (!use1) {
       const all1 = within(cellAt(1)).getByRole('button', { name: /all actions/i });
       await user.click(all1);
-      use1 = (await screen.findByRole('menuitem', { name: /use model/i }).catch(async () =>
-        await screen.findByRole('button', { name: /use model/i })
-      )) as HTMLElement;
+      use1 = (await screen
+        .findByRole('menuitem', { name: /use model/i })
+        .catch(
+          async () => await screen.findByRole('button', { name: /use model/i })
+        )) as HTMLElement;
       expect(use1).toBeDisabled();
       await user.click(all1);
     } else {
@@ -89,9 +92,11 @@ describe('Model Use and Test actions', () => {
     if (!use2) {
       const all2 = within(cellAt(2)).getByRole('button', { name: /all actions/i });
       await user.click(all2);
-      use2 = (await screen.findByRole('menuitem', { name: /use model/i }).catch(async () =>
-        await screen.findByRole('button', { name: /use model/i })
-      )) as HTMLElement;
+      use2 = (await screen
+        .findByRole('menuitem', { name: /use model/i })
+        .catch(
+          async () => await screen.findByRole('button', { name: /use model/i })
+        )) as HTMLElement;
       expect(use2).toBeDisabled();
       await user.click(all2);
     } else {
@@ -106,8 +111,9 @@ describe('Model Use and Test actions', () => {
       await user.click(all0);
       const menuUse0 = (await screen
         .findByRole('button', { name: /use model/i })
-        .catch(async () => await screen.findByRole('menuitem', { name: /use model/i }))
-      ) as HTMLElement;
+        .catch(
+          async () => await screen.findByRole('menuitem', { name: /use model/i })
+        )) as HTMLElement;
       await user.click(menuUse0);
     }
     expect(onUseModel).toHaveBeenCalledWith(items[0]);
@@ -117,9 +123,11 @@ describe('Model Use and Test actions', () => {
     if (!test2) {
       const all2 = within(cellAt(2)).getByRole('button', { name: /all actions/i });
       await user.click(all2);
-      test2 = (await screen.findByRole('menuitem', { name: /test model/i }).catch(async () =>
-        await screen.findByRole('button', { name: /test model/i })
-      )) as HTMLElement;
+      test2 = (await screen
+        .findByRole('menuitem', { name: /test model/i })
+        .catch(
+          async () => await screen.findByRole('button', { name: /test model/i })
+        )) as HTMLElement;
     }
     await user.click(test2!);
     expect(onTestModel).toHaveBeenCalledWith(items[2]);

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 // Compatibility barrel for legacy imports from './domain/types'
 export type { InstallAIDashboardAssistantDto } from './types/install-ai-dashboard-assistant-dto';
 export type { StepState } from './types/step-state';

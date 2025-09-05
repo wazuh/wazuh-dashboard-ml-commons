@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { HttpClient } from '../domain/entities/http-client';
 
 export class WindowFetchHttpClient implements HttpClient {
@@ -21,7 +26,7 @@ export class WindowFetchHttpClient implements HttpClient {
       };
     }
 
-    return window.fetch(url, options).then(async response => {
+    return window.fetch(url, options).then(async (response) => {
       if (!response.ok) {
         const error = new Error(`HTTP error! status: ${response.status}`);
         (error as any).response = response;

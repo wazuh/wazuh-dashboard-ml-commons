@@ -1,10 +1,15 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface ModelOpenSearchResponseDto {
   name: string;
   algorithm: string; // e.g., 'REMOTE'
   model_group_id: string;
   connector_id: string;
   description: string;
-  model_version: `${number}`;
+  model_version: string;
   model_state: string;
   created_time: number;
   last_deployed_time: number;

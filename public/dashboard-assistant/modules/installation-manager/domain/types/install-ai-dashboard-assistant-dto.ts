@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 // Minimal requirements provided by the UI to derive DTOs within steps (JIT)
 export interface InstallAIDashboardAssistantDto {
   selected_provider: string; // key to locate provider config

@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface CreateRepository<Entity, CreateEntityDTO> {
   create(data: CreateEntityDTO): Promise<Entity>;
 }
 
-export interface UpdateRepository<
-  Entity,
-  UpdateEntityDTO = Partial<Exclude<Entity, 'id'>>,
-> {
+export interface UpdateRepository<Entity, UpdateEntityDTO = Partial<Exclude<Entity, 'id'>>> {
   update(id: string, data: UpdateEntityDTO): Promise<Entity>;
 }
 

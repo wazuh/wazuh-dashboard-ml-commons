@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { AgentLLMOpenSearchRequestDto } from '../dtos/agent-llm-opensearch-request-dto';
 
 export class AgentLLMOpenSearchRequestFactory {

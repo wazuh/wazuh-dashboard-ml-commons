@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { InstallationContext } from './installation-context';
 
 describe('InstallationContext', () => {
@@ -9,9 +14,7 @@ describe('InstallationContext', () => {
 
   it('throws when getting a missing key', () => {
     const ctx = new InstallationContext();
-    expect(() => ctx.get('missing')).toThrow(
-      'Key "missing" not found in installation context',
-    );
+    expect(() => ctx.get('missing')).toThrow('Key "missing" not found in installation context');
   });
 
   it('checks presence with has()', () => {

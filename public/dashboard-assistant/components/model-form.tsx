@@ -1,11 +1,10 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState, useEffect } from 'react';
-import {
-  EuiForm,
-  EuiFormRow,
-  EuiSelect,
-  EuiFieldText,
-  EuiSpacer,
-} from '@elastic/eui';
+import { EuiForm, EuiFormRow, EuiSelect, EuiFieldText, EuiSpacer } from '@elastic/eui';
 import { modelProviderConfigs } from '../provider-model-config';
 import { ModelFormData } from './types';
 import { mapToOptions } from './utils/map-to-options';
@@ -17,14 +16,10 @@ interface ModelFormProps {
 }
 
 const mapModelProvidersToOptions = () => {
-  return mapToOptions(Object.keys(modelProviderConfigs), model => model);
+  return mapToOptions(Object.keys(modelProviderConfigs), (model) => model);
 };
 
-export const ModelForm = ({
-  onChange,
-  onValidationChange,
-  disabled = false,
-}: ModelFormProps) => {
+export const ModelForm = ({ onChange, onValidationChange, disabled = false }: ModelFormProps) => {
   const [formData, setFormData] = useState<ModelFormData>({
     modelProvider: '',
     model: '',
@@ -32,9 +27,7 @@ export const ModelForm = ({
     apiKey: '',
   });
 
-  const [modelsOptions, setModelsOptions] = useState<
-    ReturnType<typeof mapToOptions>
-  >([]);
+  const [modelsOptions, setModelsOptions] = useState<ReturnType<typeof mapToOptions>>([]);
 
   useEffect(() => {
     if (onChange) {
@@ -43,28 +36,19 @@ export const ModelForm = ({
   }, [formData, onChange]);
 
   useEffect(() => {
-    const isValid =
-      formData.modelProvider &&
-      formData.model &&
-      formData.apiUrl &&
-      formData.apiKey;
+    const isValid = formData.modelProvider && formData.model && formData.apiUrl && formData.apiKey;
     if (onValidationChange) {
       onValidationChange(!!isValid);
     }
   }, [formData, onValidationChange]);
 
-  const handleModelProviderChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
+  const handleModelProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newModelProvider = e.target.value;
     setModelsOptions(
-      mapToOptions(
-        modelProviderConfigs[newModelProvider]?.models || [],
-        model => model,
-      ),
+      mapToOptions(modelProviderConfigs[newModelProvider]?.models || [], (model) => model)
     );
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       modelProvider: newModelProvider,
       model: modelProviderConfigs[newModelProvider].default_model || '',
@@ -72,15 +56,15 @@ export const ModelForm = ({
     }));
   };
 
-  const updateFormDataOnChange =
-    (key: keyof typeof formData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({ ...prev, [key]: e.target.value }));
-    };
+  const updateFormDataOnChange = (key: keyof typeof formData) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [key]: e.target.value }));
+  };
 
   return (
     <EuiForm>
-      <EuiFormRow label='Provider' fullWidth>
+      <EuiFormRow label="Provider" fullWidth>
         <EuiSelect
           fullWidth
           options={mapModelProvidersToOptions()}
@@ -91,9 +75,9 @@ export const ModelForm = ({
         />
       </EuiFormRow>
 
-      <EuiSpacer size='m' />
+      <EuiSpacer size="m" />
 
-      <EuiFormRow label='Model' fullWidth>
+      <EuiFormRow label="Model" fullWidth>
         <EuiSelect
           fullWidth
           options={modelsOptions}
@@ -104,27 +88,27 @@ export const ModelForm = ({
         />
       </EuiFormRow>
 
-      <EuiSpacer size='m' />
+      <EuiSpacer size="m" />
 
-      <EuiFormRow label='API URL' fullWidth>
+      <EuiFormRow label="API URL" fullWidth>
         <EuiFieldText
           fullWidth
           value={formData.apiUrl}
           onChange={updateFormDataOnChange('apiUrl')}
-          placeholder='Enter API URL'
+          placeholder="Enter API URL"
           disabled={disabled}
         />
       </EuiFormRow>
 
-      <EuiSpacer size='m' />
+      <EuiSpacer size="m" />
 
-      <EuiFormRow label='API key' fullWidth>
+      <EuiFormRow label="API key" fullWidth>
         <EuiFieldText
           fullWidth
-          type='password'
+          type="password"
           value={formData.apiKey}
           onChange={updateFormDataOnChange('apiKey')}
-          placeholder='Enter API key'
+          placeholder="Enter API key"
           disabled={disabled}
         />
       </EuiFormRow>

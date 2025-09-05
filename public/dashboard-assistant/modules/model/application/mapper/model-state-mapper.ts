@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelState } from '../../domain/enums/model-state';
 import { ModelStatus } from '../../domain/enums/model-status';
 
 export class ModelStateMapper {
-  static toStatus(
-    state: string,
-    defaultStatus = ModelStatus.ACTIVE,
-  ): ModelStatus {
+  static toStatus(state: string, defaultStatus = ModelStatus.ACTIVE): ModelStatus {
     switch (state?.toUpperCase()) {
       case ModelState.DEPLOYED:
       case ModelState.LOADED:

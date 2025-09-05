@@ -1,27 +1,31 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import {
   IInstallationManager,
   InstallAIDashboardAssistantDto,
   IInstallDashboardAssistantResponse,
 } from '../../domain';
 
-export const triggerAIAssistantInstaller =
-  (installationOrchestrator: IInstallationManager) =>
-  async (
-    request: InstallAIDashboardAssistantDto,
-  ): Promise<IInstallDashboardAssistantResponse> => {
-    try {
-      const result = await installationOrchestrator.execute(request);
+export const triggerAIAssistantInstaller = (
+  installationOrchestrator: IInstallationManager
+) => async (
+  request: InstallAIDashboardAssistantDto
+): Promise<IInstallDashboardAssistantResponse> => {
+  try {
+    const result = await installationOrchestrator.execute(request);
 
-      return {
-        success: true,
-        message: 'Dashboard assistant installed successfully',
-        data: result.data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : 'Unknown error occurred',
-      };
-    }
-  };
+    return {
+      success: true,
+      message: 'Dashboard assistant installed successfully',
+      data: result.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+};

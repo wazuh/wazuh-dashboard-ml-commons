@@ -1,4 +1,9 @@
-import { getUseCases } from "../../../../services/ml-use-cases.service";
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { getUseCases } from '../../../../services/ml-use-cases.service';
 import {
   InstallationContext,
   InstallationAIAssistantStep,
@@ -12,7 +17,7 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
 
   public async execute(
     request: InstallAIDashboardAssistantDto,
-    context: InstallationContext,
+    context: InstallationContext
   ): Promise<void> {
     const agentId = context.get<string>('agentId');
     await getUseCases().useAgent(agentId);

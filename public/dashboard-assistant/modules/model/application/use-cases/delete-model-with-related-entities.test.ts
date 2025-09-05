@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { deleteModelWithRelatedEntitiesUseCase } from './delete-model-with-related-entities';
 import { createModelRepositoryMock } from '../ports/__mocks__/model-repository';
 import { createConnectorRepositoryMock } from '../../../connector/application/ports/__mocks__/connector-repository';
@@ -24,7 +29,7 @@ describe('deleteModelWithRelatedEntitiesUseCase', () => {
       modelRepo,
       connectorRepo,
       { delete: jest.fn() } as any,
-      agentRepo,
+      agentRepo
     );
     await run('m1');
     expect(modelRepo.delete).toHaveBeenCalledWith('m1');
@@ -41,7 +46,7 @@ describe('deleteModelWithRelatedEntitiesUseCase', () => {
       modelRepo,
       connectorRepo,
       { delete: jest.fn() } as any,
-      agentRepo,
+      agentRepo
     );
     await expect(run('m1')).rejects.toThrow('Model not found');
   });

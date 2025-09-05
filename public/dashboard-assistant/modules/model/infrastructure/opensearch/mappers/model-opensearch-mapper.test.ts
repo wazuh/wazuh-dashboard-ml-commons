@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelOpenSearchMapper } from './model-opensearch-mapper';
 import { ModelStatus } from '../../../domain/enums/model-status';
 

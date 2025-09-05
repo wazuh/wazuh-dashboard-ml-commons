@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { AgentType } from '../enums/agent-type';
 import { AgentTool } from './agent-tool';
 

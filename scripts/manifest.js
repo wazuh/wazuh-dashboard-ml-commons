@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const fs = require('fs');
@@ -14,4 +19,3 @@ function loadPackageJson() {
 module.exports = {
   loadPackageJson,
 };
-

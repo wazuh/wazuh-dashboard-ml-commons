@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { HttpMethod } from '../../../../common/domain/enum/http-method';
 import { ConnectorAction } from '../../../domain/entities/connector-action';
 

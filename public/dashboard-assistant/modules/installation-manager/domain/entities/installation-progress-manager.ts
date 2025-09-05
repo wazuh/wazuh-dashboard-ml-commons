@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ExecutionState, StepResultState } from '../enums';
 import { InstallationAIAssistantStep } from './installation-ai-assistant-step';
 import { InstallationProgress } from './installation-progress';
@@ -9,14 +14,14 @@ export class InstallationProgressManager {
 
   constructor(
     steps: InstallationAIAssistantStep[],
-    private onProgressChange?: (progress: InstallationProgress) => void,
+    private onProgressChange?: (progress: InstallationProgress) => void
   ) {
     if (steps.length === 0) {
       throw new Error('At least one step must be provided');
     }
 
     this.progress = new InstallationProgress({
-      steps: steps.map(step => ({
+      steps: steps.map((step) => ({
         stepName: step.getName(),
         state: ExecutionState.PENDING,
       })),
@@ -34,7 +39,7 @@ export class InstallationProgressManager {
 
   public async runStep(
     step: InstallationAIAssistantStep,
-    executor: () => Promise<void>,
+    executor: () => Promise<void>
   ): Promise<void> {
     if (this.inProgress) {
       throw new Error('A step is already running');
@@ -58,28 +63,12 @@ export class InstallationProgressManager {
     }
   }
 
-  private succeedStep(
-    stepIndex: number,
-    step: InstallationAIAssistantStep,
-  ): void {
-    this.progress.completeStep(
-      stepIndex,
-      StepResultState.SUCCESS,
-      step.getSuccessMessage(),
-    );
+  private succeedStep(stepIndex: number, step: InstallationAIAssistantStep): void {
+    this.progress.completeStep(stepIndex, StepResultState.SUCCESS, step.getSuccessMessage());
   }
 
-  private failStep(
-    stepIndex: number,
-    step: InstallationAIAssistantStep,
-    error: Error,
-  ): void {
-    this.progress.completeStep(
-      stepIndex,
-      StepResultState.FAIL,
-      step.getFailureMessage(),
-      error,
-    );
+  private failStep(stepIndex: number, step: InstallationAIAssistantStep, error: Error): void {
+    this.progress.completeStep(stepIndex, StepResultState.FAIL, step.getFailureMessage(), error);
   }
 
   private notifyProgress(): void {

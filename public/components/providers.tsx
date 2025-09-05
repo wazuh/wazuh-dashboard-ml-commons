@@ -1,8 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import {
   DataSourceContextProvider,
-  type DataSourceContextProviderProps,
+  DataSourceContextProviderProps,
 } from '../contexts/data_source_context';
 import { ToastProvider } from '../dashboard-assistant/hooks/use-toast';
 
@@ -20,4 +25,4 @@ const Providers: React.FC<ProvidersProps> = ({ children, initialValue }) => {
   );
 };
 
-export default Providers;
+export { Providers };

@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { HttpClient } from '../../../../common/http/domain/entities/http-client';
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
 import { CreateConnectorDto } from '../../../application/dtos/create-connector-dto';
@@ -11,20 +16,18 @@ import { ConnectorOpenSearchResponseDto } from '../dtos/connector-opensearch-res
 export class ConnectorOpenSearchRepository implements ConnectorRepository {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly proxyHttpClient: HttpClient,
+    private readonly proxyHttpClient: HttpClient
   ) {}
 
   public async create(connectorDto: CreateConnectorDto): Promise<Connector> {
-    const connectorOpensearchCreateDto =
-      ConnectorOpenSearchCreateFactory.create(connectorDto);
-    const response =
-      await this.proxyHttpClient.post<ConnectorOpenSearchResponseCreateDto>(
-        '/_plugins/_ml/connectors/_create',
-        connectorOpensearchCreateDto,
-      );
+    const connectorOpensearchCreateDto = ConnectorOpenSearchCreateFactory.create(connectorDto);
+    const response = await this.proxyHttpClient.post<ConnectorOpenSearchResponseCreateDto>(
+      '/_plugins/_ml/connectors/_create',
+      connectorOpensearchCreateDto
+    );
     return ConnectorOpenSearchMapper.fromRequest(
       response.connector_id,
-      connectorOpensearchCreateDto,
+      connectorOpensearchCreateDto
     );
   }
 
@@ -33,22 +36,17 @@ export class ConnectorOpenSearchRepository implements ConnectorRepository {
   }
 
   public async getAll(): Promise<Connector[]> {
-    try {
-      const searchPayload = {
-        query: { match_all: {} },
-        size: 25,
-      };
+    const searchPayload = {
+      query: { match_all: {} },
+      size: 25,
+    };
 
-      const response = await this.proxyHttpClient.post<
-        OpenSearchResponseDto<ConnectorOpenSearchResponseDto>
-      >('/_plugins/_ml/connectors/_search', searchPayload);
+    const response = await this.proxyHttpClient.post<
+      OpenSearchResponseDto<ConnectorOpenSearchResponseDto>
+    >('/_plugins/_ml/connectors/_search', searchPayload);
 
-      return response.hits.hits.map(hit =>
-        ConnectorOpenSearchMapper.fromResponse(hit._id, hit._source),
-      );
-    } catch (error) {
-      console.error('Error fetching connectors:', error);
-      throw error;
-    }
+    return response.hits.hits.map((hit) =>
+      ConnectorOpenSearchMapper.fromResponse(hit._id, hit._source)
+    );
   }
 }

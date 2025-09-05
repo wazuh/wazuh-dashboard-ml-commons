@@ -133,25 +133,31 @@ const fetchDeployedModels = async (
 
   // Enrich with agent/inUse/version/createdAt/status using assistant use cases
   // Note: getModelsComposed returns all models; merge by ID for current page
-  let modelAgentDataMap: Record<string, {
-    agentId?: string;
-    inUse?: boolean;
-    version?: string;
-    createdAt?: string;
-    status?: string;
-  }> = {};
+  let modelAgentDataMap: Record<
+    string,
+    {
+      agentId?: string;
+      inUse?: boolean;
+      version?: string;
+      createdAt?: string;
+      status?: string;
+    }
+  > = {};
   try {
     const composedModelsWithAgentData = await getUseCases().getModelsWithAgentData();
-    modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>((acc, modelWithAgentData) => {
-      acc[modelWithAgentData.id] = {
-        agentId: modelWithAgentData.agentId,
-        inUse: modelWithAgentData.inUse,
-        version: modelWithAgentData.version,
-        createdAt: modelWithAgentData.createdAt,
-        status: modelWithAgentData.status,
-      };
-      return acc;
-    }, {});
+    modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>(
+      (acc, modelWithAgentData) => {
+        acc[modelWithAgentData.id] = {
+          agentId: modelWithAgentData.agentId,
+          inUse: modelWithAgentData.inUse,
+          version: modelWithAgentData.version,
+          createdAt: modelWithAgentData.createdAt,
+          status: modelWithAgentData.status,
+        };
+        return acc;
+      },
+      {}
+    );
   } catch (_e) {
     // Fallback silently if composed data is unavailable
   }
@@ -184,15 +190,15 @@ const fetchDeployedModels = async (
         const combinedAgentData = modelAgentDataMap[id] || {};
         // derive agent status using composed data when available
         const composedStatus = combinedAgentData.status?.toLowerCase();
-        let agent_state: AgentModelStatus | undefined;
+        let agentState: AgentModelStatus | undefined;
         if (combinedAgentData.agentId === undefined) {
-          agent_state = AgentModelStatus.INACTIVE;
+          agentState = AgentModelStatus.INACTIVE;
         } else if (composedStatus === 'active') {
-          agent_state = AgentModelStatus.ACTIVE;
+          agentState = AgentModelStatus.ACTIVE;
         } else if (composedStatus === 'inactive') {
-          agent_state = AgentModelStatus.INACTIVE;
+          agentState = AgentModelStatus.INACTIVE;
         } else if (composedStatus === 'error' || composedStatus === 'failed') {
-          agent_state = AgentModelStatus.ERROR;
+          agentState = AgentModelStatus.ERROR;
         }
 
         return {
@@ -209,7 +215,7 @@ const fetchDeployedModels = async (
           createdAt: combinedAgentData.createdAt,
           agentId: combinedAgentData.agentId,
           inUse: combinedAgentData.inUse,
-          agent_state,
+          agent_state: agentState,
           connector: rest.connector_id
             ? externalConnectorMap[rest.connector_id] || {}
             : rest.connector,

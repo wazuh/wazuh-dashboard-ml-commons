@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { CreateAgentDto } from './create-agent-dto';
 
-export interface UpdateAgentDto extends Partial<CreateAgentDto> {}
+export type UpdateAgentDto = Partial<CreateAgentDto>;

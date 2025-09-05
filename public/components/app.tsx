@@ -23,7 +23,7 @@ import type { DataSourcePluginSetup } from '../../../../src/plugins/data_source/
 
 import { GlobalBreadcrumbs } from './global_breadcrumbs';
 import { DataSourceTopNavMenu } from './data_source_top_nav_menu';
-import Providers from './providers';
+import { Providers } from './providers';
 
 interface MlCommonsPluginAppDeps {
   basename: string;
@@ -61,14 +61,12 @@ export const MlCommonsPluginApp = ({
   application,
 }: MlCommonsPluginAppDeps) => {
   const dataSourceEnabled = !!dataSource;
-  const useNewPageHeader = useObservable(
-    uiSettingsClient.get$('home:useNewHomePage'),
-  );
+  const useNewPageHeader = useObservable(uiSettingsClient.get$('home:useNewHomePage'));
 
   return (
     <Providers initialValue={{ dataSourceEnabled }}>
       <EuiPage>
-        <EuiPageBody component='main'>
+        <EuiPageBody component="main">
           <Switch>
             {ROUTES.map(({ path, Component, exact }) => (
               <Route
@@ -93,9 +91,7 @@ export const MlCommonsPluginApp = ({
         </EuiPageBody>
       </EuiPage>
       {/* Breadcrumbs will contains dynamic content in new page header, should be provided by each page self*/}
-      {!useNewPageHeader && (
-        <GlobalBreadcrumbs chrome={chrome} basename={basename} />
-      )}
+      {!useNewPageHeader && <GlobalBreadcrumbs chrome={chrome} basename={basename} />}
       {dataSourceEnabled && (
         <DataSourceTopNavMenu
           notifications={notifications}

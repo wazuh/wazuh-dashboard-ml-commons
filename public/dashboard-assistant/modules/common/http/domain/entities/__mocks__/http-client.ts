@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { HttpClient } from '../http-client';
 
 export function createHttpClientMock(): jest.Mocked<HttpClient> {
@@ -8,4 +13,3 @@ export function createHttpClientMock(): jest.Mocked<HttpClient> {
     delete: jest.fn(),
   };
 }
-

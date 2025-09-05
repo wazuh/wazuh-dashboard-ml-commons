@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 jest.mock('../../../../services/ml-use-cases.service', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getUseCases: () =>
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases,
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases,
 }));
 
 import { RegisterAgentStep } from './register-agent-step';
@@ -22,11 +24,9 @@ describe('RegisterAgentStep', () => {
 
   it('uses agent from context', async () => {
     const useAgent = jest.fn().mockResolvedValue(undefined);
-    (
-      global as unknown as {
-        __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
-      }
-    ).__mockUseCases = { useAgent };
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = { useAgent };
     const step = new RegisterAgentStep();
     const ctx = new InstallationContext();
     ctx.set('agentId', 'agent-1');

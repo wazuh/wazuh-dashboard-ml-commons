@@ -1,11 +1,13 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useState, useCallback, useEffect } from 'react';
-import type {
-  InstallAIDashboardAssistantDto,
-  InstallationProgress,
-} from '../domain';
+import type { InstallAIDashboardAssistantDto, InstallationProgress } from '../domain';
 import { InstallDashboardAssistantResponse } from '../domain';
 import { useQuery } from '../../../hooks/use-query';
-import { getUseCases } from "../../../services/ml-use-cases.service";
+import { getUseCases } from '../../../services/ml-use-cases.service';
 
 interface ModelConfiguration {
   model_provider: string;
@@ -16,11 +18,11 @@ interface ModelConfiguration {
 }
 
 export function useAssistantInstallation() {
-  const [assistantModelInfo, setAssistantModelInfo] = useState<
-    ModelConfiguration | undefined
-  >(undefined);
+  const [assistantModelInfo, setAssistantModelInfo] = useState<ModelConfiguration | undefined>(
+    undefined
+  );
   const [progress, setProgress] = useState<InstallationProgress>(
-    InstallDashboardAssistantResponse.start().progress,
+    InstallDashboardAssistantResponse.start().progress
   );
   const setModel = useCallback((data: ModelConfiguration) => {
     setAssistantModelInfo(data);
@@ -37,10 +39,7 @@ export function useAssistantInstallation() {
 
     if (!assistantModelInfo) {
       // No model info provided; return a failure response
-      return InstallDashboardAssistantResponse.failure(
-        'No model data provided',
-        lastProgress,
-      );
+      return InstallDashboardAssistantResponse.failure('No model data provided', lastProgress);
     }
 
     try {
@@ -52,15 +51,10 @@ export function useAssistantInstallation() {
         description: assistantModelInfo.description,
       };
 
-      const response = await getUseCases().beginAssistantInstallationProcess(onProgress)(
-        request,
-      );
+      const response = await getUseCases().beginAssistantInstallationProcess(onProgress)(request);
 
       if (response.success && response.data?.agentId) {
-        return InstallDashboardAssistantResponse.success(
-          response.data.agentId,
-          lastProgress,
-        );
+        return InstallDashboardAssistantResponse.success(response.data.agentId, lastProgress);
       }
 
       if (!response.success && response.data?.modelId) {
@@ -69,25 +63,17 @@ export function useAssistantInstallation() {
 
       return InstallDashboardAssistantResponse.failure(
         response.message ?? 'Installation failed',
-        lastProgress,
+        lastProgress
       );
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Unknown error occurred';
-      return InstallDashboardAssistantResponse.failure(
-        errorMessage,
-        lastProgress,
-      );
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      return InstallDashboardAssistantResponse.failure(errorMessage, lastProgress);
     }
   }, [assistantModelInfo]);
 
-  const {
-    data: result,
-    isLoading,
-    error: queryError,
-    fetch,
-    reset: resetQuery,
-  } = useQuery<InstallDashboardAssistantResponse>({
+  const { data: result, isLoading, error: queryError, fetch, reset: resetQuery } = useQuery<
+    InstallDashboardAssistantResponse
+  >({
     query: installerQuery,
     initialData: InstallDashboardAssistantResponse.start(),
     defaultErrorMessage: 'Unknown error occurred',
@@ -110,13 +96,13 @@ export function useAssistantInstallation() {
       setError(
         `Steps: "${progress
           .getFailedSteps()
-          .map(s => s.stepName)
-          .join('", "')}" has failed`,
+          .map((s) => s.stepName)
+          .join('", "')}" has failed`
       );
     } else {
       setError(undefined);
     }
-  }, [JSON.stringify(progress)]);
+  }, [progress]);
 
   return {
     install,

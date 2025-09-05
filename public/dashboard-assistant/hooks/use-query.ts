@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useCallback, useState } from 'react';
 import { useToast } from './use-toast';
 
@@ -6,12 +11,8 @@ interface UseFetchDataProps<T> {
   initialData: T;
   defaultErrorMessage: string;
   toasts?: {
-    getSuccess?: (ctx: { data: T; params: any }) =>
-      | { title: string; text?: string }
-      | null;
-    getError?: (ctx: { error: string; params: any }) =>
-      | { title: string; text?: string }
-      | null;
+    getSuccess?: (ctx: { data: T; params: any }) => { title: string; text?: string } | null;
+    getError?: (ctx: { error: string; params: any }) => { title: string; text?: string } | null;
   };
 }
 
@@ -41,17 +42,16 @@ export function useQuery<T>({
       setError(null);
 
       try {
-        const data = await query(params);
-        setData(data);
+        const queryResult = await query(params);
+        setData(queryResult);
         if (toasts?.getSuccess) {
-          const toast = toasts.getSuccess({ data, params });
+          const toast = toasts.getSuccess({ data: queryResult, params });
           if (toast) {
             addSuccessToast(toast.title, toast.text);
           }
         }
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : defaultErrorMessage;
+        const errorMessage = err instanceof Error ? err.message : defaultErrorMessage;
         setError(errorMessage);
         if (toasts?.getError) {
           const toast = toasts.getError({ error: errorMessage, params });
@@ -63,7 +63,7 @@ export function useQuery<T>({
         setIsLoading(false);
       }
     },
-    [query, initialData, toasts, addSuccessToast, addErrorToast],
+    [query, initialData, toasts, addSuccessToast, addErrorToast, defaultErrorMessage]
   );
 
   const reset = useCallback(() => {

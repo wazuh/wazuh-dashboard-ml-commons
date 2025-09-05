@@ -1,4 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ModelGroup } from '../../domain/entities/model-group';
 
-export interface CreateModelGroupDto
-  extends Pick<ModelGroup, 'name' | 'description'> {}
+export type CreateModelGroupDto = Pick<ModelGroup, 'name' | 'description'>;

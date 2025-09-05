@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface MLCommonsSettings {
   agent_framework_enabled: boolean;
   only_run_on_ml_node: boolean;
