@@ -18,8 +18,8 @@ This implementation follows Clean Architecture, SOLID principles, and design pat
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                       │
 │  (React Components, Hooks, UI State Management)             │
-│  - ModelRegister, ModelsTable, ModelForm                    │
-│  - DeploymentStatus, ModelTestResult                        │
+│  - ModelRegister, ModelForm                                 │
+│  - DeploymentStatus, ModelTestResult, AgentStatus           │
 │  - useAssistantInstallation, useModels, useModelTest        │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -38,13 +38,13 @@ This implementation follows Clean Architecture, SOLID principles, and design pat
 │  - Installation Types, Prediction Types                     │
 └─────────────────────────────────────────────────────────────┘
                               │
-┌───────────────────────────────────────────────────────────────────┐
-│                 Infrastructure Layer                              │
-│  (Repositories, HTTP Clients, External APIs)                      │
-│  - ModelOpenSearchRepository, ConnectorOpenSearchRepository       │
-│  - HttpWithProxyClient, AgentOpenSearchRepository                 │
-│  - MLCommonsSettingsHttpClientRepository                          │
-└───────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                 Infrastructure Layer                                │
+│  (Repositories, HTTP Clients, External APIs)                        │
+│  - ModelOpenSearchRepository, ConnectorOpenSearchRepository         │
+│  - ProxyHttpClient/WindowFetchHttpClient, AgentOpenSearchRepository │
+│  - MLCommonsSettingsHttpClientRepository                            │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ## 📊 Domain Model Diagram
@@ -52,7 +52,7 @@ This implementation follows Clean Architecture, SOLID principles, and design pat
 ```mermaid
 classDiagram
     %% Core Infrastructure
-    class HttpWithProxyClient {
+    class ProxyHttpClient {
         +get(url: string): Promise~T~
         +post(url: string, data: any): Promise~T~
         +put(url: string, data: any): Promise~T~
@@ -62,42 +62,40 @@ classDiagram
     %% Repository Interfaces
     class ModelRepository {
         <<interface>>
-        +create(dto: CreateModelDto): Promise~string~
+        +create(dto: CreateModelDto): Promise~Model~
         +findById(id: string): Promise~Model | null~
         +getAll(): Promise~Model[]~
         +delete(id: string): Promise~void~
-        +testConnection(modelId: string): Promise~ModelPredictResponse~
+        +validateConnection(modelId: string): Promise~ModelPredictResponse~
         +deploy(modelId: string, deploy: boolean): Promise~void~
     }
 
     class ConnectorRepository {
         <<interface>>
-        +create(connector: Connector): Promise~string~
-        +findById(id: string): Promise~Connector | null~
-        +update(id: string, connector: Connector): Promise~void~
+        +create(connector: CreateConnectorDto): Promise~Connector~
         +delete(id: string): Promise~void~
     }
 
     class AgentRepository {
         <<interface>>
-        +create(agent: Agent): Promise~string~
-        +findById(id: string): Promise~Agent | null~
-        +update(id: string, agent: Agent): Promise~void~
-        +delete(id: string): Promise~void~
+        +create(agent: CreateAgentDto): Promise~Agent~
+        +execute(id: string, parameters: any): Promise~any~
+        +getActive(): Promise~string | undefined~
         +register(agentId: string): Promise~void~
+        +findByModelId(modelId: string): Promise~Agent | null~
+        +deleteByModelId(modelId: string): Promise~void~
     }
 
     class ModelGroupRepository {
         <<interface>>
-        +create(modelGroup: ModelGroup): Promise~string~
-        +findById(id: string): Promise~ModelGroup | null~
-        +update(id: string, modelGroup: ModelGroup): Promise~void~
+        +create(modelGroup: CreateModelGroupDto): Promise~ModelGroup~
         +delete(id: string): Promise~void~
     }
 
     class MLCommonsSettingsRepository {
         <<interface>>
-        +updateSettings(settings): Promise~void~
+        +persist(dto: CreateMLCommonsDto): Promise~boolean~
+        +retrieve(): Promise~any~
     }
 
     %% Installation Management
@@ -166,46 +164,22 @@ classDiagram
 
 ## 🔧 Current Implementation
 
-### Setup Configuration (`setup.ts`)
+### Services and Use Cases
 
-The main setup file configures dependency injection with repositories and use cases:
+HTTP clients are initialized in `public/plugin.ts` using `WindowFetchHttpClient` and wrapped by `ProxyHttpClient` for OpenSearch calls. Repositories are wired in `services/repositories.service.ts`, and use cases are exposed via `services/ml-use-cases.service.ts` using `getUseCases()`.
 
-```typescript
-// HTTP Client
-export const httpClient = new HttpWithProxyClient();
+Available use cases include:
 
-// Repositories (Dependency Injection)
-export class Repositories {
-  static mlCommonsSettingsRepository: MLCommonsSettingsRepository;
-  static modelGroupRepository: ModelGroupRepository;
-  static connectorRepository: ConnectorRepository;
-  static modelRepository: ModelRepository;
-  static agentRepository: AgentRepository;
-}
-
-// Use Cases (Business Logic Layer)
-export class UseCases {
-  static persistMlCommonsSettings;
-  static createConnector;
-  static createModel;
-  static createAgent;
-  static registerAgent;
-  static getModels;
-  static deleteModel;
-  static deleteModelWithRelatedEntities;
-  static testModelConnection;
-  static useAgentByModelId;
-  static installDashboardAssistant;
-}
-```
+- Installation: `beginAssistantInstallationProcess` (wraps `InstallationManager`), `persistMlCommonsSettings`, `createConnector`, `createModel`, `validateModelConnection`, `createAgent`, `useAgent` (register agent)
+- Models: `getModels`, `getModelsWithAgentData`, `deleteModelWithRelatedEntities`
 
 ### 🎯 Key Components
 
-#### 1. **ModelRegister Component** (`model-register.tsx`)
+#### 1. **ModelRegister Component** (`components/model-register.tsx`)
 
 - **Purpose**: Main registration interface for AI models
 - **Features**:
-  - Model provider selection (OpenAI, Cohere, etc.)
+  - Model provider selection (OpenAI, Anthropic, Deepseek)
   - Configuration form with real-time validation
   - Deployment progress tracking via flyout
   - Integration with installation manager
@@ -224,27 +198,12 @@ const {
 } = useAssistantInstallation();
 ```
 
-#### 2. **ModelsTable Component** (`models-table.tsx`)
+#### 2. **AgentStatus Component** (`components/agent-status.tsx`)
 
-- **Purpose**: Display and manage registered models
+- **Purpose**: Show agent/model status (active/inactive/error)
 - **Features**:
-  - Model listing with status indicators (active/inactive/error)
-  - Actions: View, Test, Use, Delete
-  - Real-time status updates
-  - Model details flyout
-  - Test results display in separate flyout
-  - Integrated with model hooks for data management
-
-```tsx
-// Model management actions
-const handleUseModel = async (agentId: string) => {
-  await UseCases.useAgentByModelId(agentId);
-};
-
-const handleTestModel = async (model: Model) => {
-  await testModel(model.id);
-};
-```
+  - Small, reusable status indicator
+  - Color-coded states for quick recognition
 
 #### 3. **ModelForm Component** (`model-form.tsx`)
 
@@ -281,21 +240,19 @@ The following use cases have been implemented:
 
 ### 🔧 **Core Installation Use Cases**
 
-1. **installDashboardAssistantUseCase** - Main orchestrator for the complete installation process
+1. **beginAssistantInstallationProcess** - Main orchestrator for the complete installation process
 2. **persistMLCommonsSettingsUseCase** - Updates OpenSearch cluster settings for ML Commons
-3. **createModelGroupUseCase** - Creates model groups for organizing models
-4. **createConnectorUseCase** - Creates connectors for external AI services
-5. **createModelUseCase** - Creates and registers AI models
-6. **testModelConnectionUseCase** - Tests connectivity and functionality of models
-7. **createAgentUseCase** - Creates conversational agents with specialized tools
-8. **registerAgentUseCase** - Registers agents in the indexer manager
+3. **createConnectorUseCase** - Creates connectors for external AI services
+4. **createModelUseCase** - Creates and registers AI models
+5. **validateModelConnectionUseCase** - Tests connectivity and functionality of models
+6. **createAgentUseCase** - Creates conversational agents with specialized tools
+7. **registerAgentUseCase** - Registers agents in the indexer manager
 
 ### 📊 **Model Management Use Cases**
 
-9. **getModelsUseCase** - Retrieves all registered models
-10. **deleteModelUseCase** - Removes individual models
-11. **deleteModelWithRelatedEntitiesUseCase** - Removes models and associated entities
-12. **useAgentByModelIdUseCase** - Activates agent for dashboard use
+8. **getModelsUseCase** - Retrieves all registered models
+9. **deleteModelWithRelatedEntitiesUseCase** - Removes models and associated entities
+10. **composeModelsWithAgentDataUseCase** - Compose models with agent metadata
 
 ## 🚀 Installation Manager
 
@@ -380,16 +337,16 @@ PUT /_cluster/settings
 </p>
 </details>
 
-<details><summary>Step 2: Create Model Group</summary>
+<details><summary>Optional: Create Model Group</summary>
 <p>
 
-Create a model group for organization:
+Optionally create a model group for organization (not required by the installer flow):
 
 ```http
 POST /_plugins/_ml/model_groups/_register
 {
-"name": "test_model_group",
-"description": "A model group for external models"
+  "name": "external_models",
+  "description": "Group for remote models"
 }
 ```
 
@@ -423,7 +380,7 @@ POST /_plugins/_ml/connectors/_create
         ]
     },
     "credential": {
-        "openAI_key": "..."
+        "api_key": "..."
     },
     "actions": [
         {
@@ -431,7 +388,7 @@ POST /_plugins/_ml/connectors/_create
             "method": "POST",
             "url": "https://${parameters.endpoint}/v1/chat/completions",
             "headers": {
-                "Authorization": "Bearer ${credential.openAI_key}"
+                "Authorization": "Bearer ${credential.api_key}"
             },
             "request_body": "{ \"model\": \"${parameters.model}\", \"messages\": ${parameters.messages} }"
         }
@@ -470,16 +427,7 @@ Verify model functionality:
 POST /_plugins/_ml/models/<llm_model_id>/_predict
 {
   "parameters": {
-    "messages": [
-      {
-        "role": "system",
-        "content": "You are a helpful assistant."
-      },
-      {
-        "role": "user",
-        "content": "Hello!"
-      }
-    ]
+    "prompt": "Hello!"
   }
 }
 ```
@@ -554,10 +502,10 @@ POST /_plugins/_ml/agents/<agent id>/_execute
 </p>
 </details>
 
-<details><summary>Step 8: Register Agent in Indexer Manager</summary>
+<details><summary>Step 8: Register Agent in Indexer Manager (manual)</summary>
 <p>
 
-Final registration step:
+Note: The installer performs this registration automatically. The following command is the manual equivalent:
 
 ```bash
 DIR="/etc/wazuh-indexer/certs"; curl --cacert $DIR/root-ca.pem --cert $DIR/admin.pem --key $DIR/admin-key.pem \
@@ -575,9 +523,9 @@ DIR="/etc/wazuh-indexer/certs"; curl --cacert $DIR/root-ca.pem --cert $DIR/admin
 dashboard-assistant/
 ├── components/                           # React components
 │   ├── model-form.tsx                    # Model configuration form
-│   ├── models-table.tsx                  # Models management table
 │   ├── deployment-status.tsx             # Installation progress
 │   ├── model-test-result.tsx             # Test results display
+│   ├── agent-status.tsx                  # Agent/model status indicator
 │   ├── model-form-schema.ts              # Form validation schema
 │   ├── types/                            # Component type definitions
 │   └── utils/                            # Utility functions
@@ -602,8 +550,7 @@ dashboard-assistant/
 │   └── common/                           # Shared infrastructure
 ├── hooks/                                # Custom React hooks
 ├── provider-model-config.ts              # AI provider configurations
-├── setup.ts                              # Dependency injection setup
-├── model-register.tsx                    # Main registration component
+├── components/model-register.tsx         # Main registration component
 └── README.md                             # This documentation
 ```
 
@@ -612,7 +559,7 @@ dashboard-assistant/
 ### 1. **Import the main component**:
 
 ```tsx
-import { ModelRegister } from './dashboard-assistant/model-register';
+import { ModelRegister } from './dashboard-assistant/components/model-register';
 ```
 
 ### 2. **Use the registration component**:
@@ -629,13 +576,9 @@ import { ModelRegister } from './dashboard-assistant/model-register';
 />
 ```
 
-### 3. **Manage models with table**:
+### 3. Build your own models list
 
-```tsx
-import { ModelsTable } from './dashboard-assistant/components/models-table';
-
-<ModelsTable onAddModel={true} />;
-```
+Use the hooks under `modules/model/hooks` (e.g., `useModels`, `useModelTest`) to build a custom models table in your app.
 
 ### 4. **Use installation hook directly**:
 
