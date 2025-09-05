@@ -16,7 +16,6 @@ import {
   EuiHealth,
   EuiSpacer,
   EuiLink,
-  EuiToolTip,
   EuiCopy,
   EuiText,
   EuiFlexGroup,
@@ -254,52 +253,37 @@ export const ModelDeploymentTable = ({
           createdAt ? new Date(createdAt).toLocaleDateString() : LONGDASH,
       },
       {
-        field: 'id',
         name: 'Actions',
         align: 'right' as const,
         width: '12%',
-        render: (id: string, modelDeploymentItem: ModelDeploymentItem) => {
-          const canUse =
-            !!modelDeploymentItem.agentId && !modelDeploymentItem.inUse;
-          return (
-            <>
-              <EuiToolTip content='Use model'>
-                <EuiSmallButtonIcon
-                  onClick={() => onUseModel?.(modelDeploymentItem)}
-                  role='button'
-                  aria-label='use model'
-                  iconType='plusInCircle'
-                  isDisabled={!canUse}
-                />
-              </EuiToolTip>
-              <EuiToolTip content='View status details'>
-                <EuiSmallButtonIcon
-                  onClick={() => onViewDetail?.(modelDeploymentItem)}
-                  role='button'
-                  aria-label='view detail'
-                  iconType='inspect'
-                />
-              </EuiToolTip>
-              <EuiToolTip content='Test model connection'>
-                <EuiSmallButtonIcon
-                  onClick={() => onTestModel?.(modelDeploymentItem)}
-                  role='button'
-                  aria-label='test model'
-                  iconType='play'
-                />
-              </EuiToolTip>
-              <EuiToolTip content='Delete model'>
-                <EuiSmallButtonIcon
-                  onClick={() => onDeleteModel?.(modelDeploymentItem)}
-                  role='button'
-                  aria-label='delete model'
-                  iconType='trash'
-                  color='danger'
-                />
-              </EuiToolTip>
-            </>
-          );
-        },
+        actions: [
+          {
+            name: 'Use model',
+            description: 'Use model',
+            icon: 'plusInCircle',
+            onClick: (item: ModelDeploymentItem) => onUseModel?.(item),
+            enabled: (item: ModelDeploymentItem) => !!item.agentId && !item.inUse,
+          },
+          {
+            name: 'View status details',
+            description: 'View status details',
+            icon: 'inspect',
+            onClick: (item: ModelDeploymentItem) => onViewDetail?.(item),
+          },
+          {
+            name: 'Test model connection',
+            description: 'Test model connection',
+            icon: 'play',
+            onClick: (item: ModelDeploymentItem) => onTestModel?.(item),
+          },
+          {
+            name: 'Delete model',
+            description: 'Delete model',
+            icon: 'trash',
+            color: 'danger',
+            onClick: (item: ModelDeploymentItem) => onDeleteModel?.(item),
+          },
+        ],
       },
     ],
     [onViewDetail, onUseModel, onTestModel, onDeleteModel],
