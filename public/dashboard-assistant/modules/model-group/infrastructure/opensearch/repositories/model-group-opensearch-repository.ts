@@ -25,6 +25,8 @@ export class ModelGroupOpenSearchRepository implements ModelGroupRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.proxyHttpClient.delete(`/_plugins/_ml/model_groups/${id}`);
+    try {
+      await this.proxyHttpClient.delete(`/_plugins/_ml/model_groups/${id}`);
+    } catch {}
   }
 }
