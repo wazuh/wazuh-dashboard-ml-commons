@@ -1,4 +1,11 @@
-import React, { useContext, createContext, useState, useCallback } from 'react';
+import React, {
+  useContext,
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import { Toast, EuiGlobalToastList } from '@elastic/eui';
 
 interface ToastContextType {
@@ -19,16 +26,27 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const newToast: Toast = {
       ...toast,
       id: `toast-${Date.now()}-${Math.random()}`,
     };
-    setToasts(prevToasts => [...prevToasts, newToast]);
+    if (isMountedRef.current) {
+      setToasts(prevToasts => [...prevToasts, newToast]);
+    }
   }, []);
 
   const dismissToast = useCallback((removedToast: Toast) => {
+    if (!isMountedRef.current) return;
     setToasts(prevToasts =>
       prevToasts.filter(toast => toast.id !== removedToast.id),
     );
