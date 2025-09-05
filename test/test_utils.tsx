@@ -10,7 +10,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { DataSourceContextProvider } from '../public/contexts';
 import { ToastProvider } from '../public/dashboard-assistant/hooks/use-toast';
 
-const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <I18nProvider>
       <MemoryRouter>
