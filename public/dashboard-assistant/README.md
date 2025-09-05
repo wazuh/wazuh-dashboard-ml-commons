@@ -2,6 +2,27 @@
 
 A comprehensive AI-powered assistant integration for Wazuh dashboard that enables conversational AI capabilities for cybersecurity analysis and data querying through OpenSearch ML Commons.
 
+## Quick Index
+
+- Architecture: [Domain Model Architecture](#domain-model-architecture), [Domain Model Diagram](#domain-model-diagram)
+- Implementation: [Current Implementation](#current-implementation), [Key Components](#-key-components)
+- Use Cases: [Implemented Use Cases](#implemented-use-cases)
+- Orchestration: [Installation Manager](#installation-manager), [Installation via OpenSearch API](#installation-process-via-opensearch-api)
+- Project Layout: [Module Structure](#module-structure)
+- Usage: [Getting Started](#getting-started)
+- Contributing: [Development and Contribution](#development-and-contribution)
+
+## Module Docs
+
+- Core index: `modules/` → [Modules Overview](./modules/README.md)
+- Agent: [modules/agent/README.md](./modules/agent/README.md)
+- Connector: [modules/connector/README.md](./modules/connector/README.md)
+- Installation Manager: [modules/installation-manager/README.md](./modules/installation-manager/README.md)
+- ML Commons Settings: [modules/ml-commons-settings/README.md](./modules/ml-commons-settings/README.md)
+- Model: [modules/model/README.md](./modules/model/README.md)
+- Model Group: [modules/model-group/README.md](./modules/model-group/README.md)
+- Common (HTTP/proxy): [modules/common/README.md](./modules/common/README.md)
+
 ## 📋 Overview
 
 The Dashboard Assistant module provides a complete solution for integrating AI language models with Wazuh's security data, enabling users to interact with their security information through natural language queries and receive intelligent insights. It follows Clean Architecture principles with SOLID design patterns for maintainability and extensibility.
