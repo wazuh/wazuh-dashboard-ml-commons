@@ -5,7 +5,7 @@ export class WindowFetchHttpClient implements HttpClient {
 
   private fetch(url: string, options: RequestInit) {
     if (!options.method) {
-      throw new Error('HTTP method is required');
+      return Promise.reject(new Error('HTTP method is required'));
     }
 
     options.headers = {

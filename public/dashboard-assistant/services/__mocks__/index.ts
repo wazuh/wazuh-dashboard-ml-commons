@@ -1,0 +1,14 @@
+export interface MockUseCases {
+  persistMlCommonsSettings?: jest.Mock<Promise<void>, [params: { endpoints_regex: string[] }]>;
+  createConnector?: jest.Mock<Promise<{ id: string }>, [params: Record<string, unknown>]>;
+  createModel?: jest.Mock<Promise<{ id: string }>, [params: Record<string, unknown>]>;
+  validateModelConnection?: jest.Mock<Promise<boolean>, [modelId: string]>;
+  createAgent?: jest.Mock<Promise<{ id: string }>, [params: Record<string, unknown>]>;
+  useAgent?: jest.Mock<Promise<void>, [agentId: string]>;
+}
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __mockUseCases: MockUseCases | undefined;
+}
+
