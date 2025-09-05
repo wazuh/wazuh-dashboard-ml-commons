@@ -161,8 +161,8 @@ describe('useMonitoring', () => {
 
     await waitFor(() => expect(Model.prototype.search).toHaveBeenCalledTimes(1));
 
-    act(() => {
-      result.current.reload();
+    await act(async () => {
+      await result.current.reload();
     });
     await waitFor(() => expect(Model.prototype.search).toHaveBeenCalledTimes(2));
   });
@@ -724,12 +724,22 @@ describe('useMonitoring.pageStatus', () => {
   });
 
   it('should return "loading" and not call model search when data source id is fetching', async () => {
+    // Reset any prior calls from previous tests to avoid false positives
+    jest.clearAllMocks();
     const {
       renderHookResult: { result, waitFor },
-    } = setup();
+    } = setup({
+      initDataSourceContextValue: {
+        dataSourceEnabled: true,
+        selectedDataSourceOption: null,
+      },
+    });
 
     await waitFor(() => {
       expect(result.current.pageStatus).toBe('loading');
+    });
+    await waitFor(() => {
+      expect(Model.prototype.search).not.toHaveBeenCalled();
     });
   });
 });
