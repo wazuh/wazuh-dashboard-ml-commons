@@ -131,7 +131,7 @@ describe('<PreviewPanel />', () => {
     jest.advanceTimersByTime(3000);
     jest.useRealTimers();
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText('node-1')).toBeInTheDocument();
       expect(screen.getByText('node-2')).toBeInTheDocument();
       expect(screen.getByText('node-3')).toBeInTheDocument();
