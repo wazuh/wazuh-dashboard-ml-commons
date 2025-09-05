@@ -15,9 +15,26 @@ export interface UseModelReturn {
 
 export function useModel(options?: UseModelOptions): UseModelReturn {
   const registerAgentQuery = useCallback(async (agentId: string) => {
-    await getUseCases().useAgent(agentId);
-    // small delay to allow config index update
-    await new Promise(r => setTimeout(r, 500));
+    const useCases = getUseCases();
+    await useCases.useAgent(agentId);
+
+    // Wait until the active agent state is visible in subsequent reads
+    // This avoids a first-click no-op due to eventual consistency.
+    const maxAttempts = 10;
+    const delayMs = 300;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const modelsWithAgent = await useCases.getModelsWithAgentData();
+        const target = modelsWithAgent.find(m => m.agentId === agentId);
+        if (target?.inUse) {
+          break;
+        }
+      } catch (_) {
+        // ignore and keep polling briefly
+      }
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+
     if (options?.onSuccess) {
       await options.onSuccess();
     }
@@ -51,4 +68,3 @@ export function useModel(options?: UseModelOptions): UseModelReturn {
     reset,
   };
 }
-
