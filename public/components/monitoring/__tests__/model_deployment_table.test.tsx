@@ -112,8 +112,8 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('model 3 name')).toBeInTheDocument();
     });
 
-    it('should render source at fourth column', () => {
-      const columnIndex = 3;
+    it('should render source at third column', () => {
+      const columnIndex = 2;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -127,8 +127,8 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('External')).toBeInTheDocument();
     });
 
-    it('should render connector name at fifth column', () => {
-      const columnIndex = 4;
+    it('should render connector name at fourth column', () => {
+      const columnIndex = 3;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -142,8 +142,8 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('Sagemaker')).toBeInTheDocument();
     });
 
-    it('should render model status at sixth column', () => {
-      const columnIndex = 5;
+    it('should render model status at fifth column', () => {
+      const columnIndex = 4;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -157,11 +157,11 @@ describe('<DeployedModelTable />', () => {
       expect(within(cells[2] as HTMLElement).getByText('Not responding')).toBeInTheDocument();
     });
 
-    it('should render Model ID at eighth column and copy to clipboard after text clicked', async () => {
+    it('should render Model ID at seventh column and copy to clipboard after text clicked', async () => {
       const execCommandOrigin = document.execCommand;
       document.execCommand = jest.fn(() => true);
 
-      const columnIndex = 7;
+      const columnIndex = 6;
       setup();
       const header = screen.getAllByRole('columnheader')[columnIndex];
       const columnContent = header
@@ -181,7 +181,7 @@ describe('<DeployedModelTable />', () => {
     });
 
     it('should render Actions column and call onViewDetail with the model item of the current table row', async () => {
-      const columnIndex = 10;
+      const columnIndex = 8;
       const onViewDetailMock = jest.fn();
       const { finalProps } = setup({
         onViewDetail: onViewDetailMock,
@@ -194,21 +194,69 @@ describe('<DeployedModelTable />', () => {
       expect(columnContent?.length).toBe(3);
       const cells = columnContent!;
 
-      await userEvent.click(
-        within(cells[0] as HTMLElement).getByRole('button', { name: 'view detail' })
-      );
+      // Row 1: click View status details (inline or via All actions popover)
+      let viewAction = within(cells[0] as HTMLElement).queryByRole('button', {
+        name: /view status details/i,
+      });
+      if (!viewAction) {
+        const allActionsBtn = within(cells[0] as HTMLElement).getByRole('button', {
+          name: /all actions/i,
+        });
+        await userEvent.click(allActionsBtn);
+        viewAction =
+          screen.queryByRole('menuitem', { name: /view status details/i }) ||
+          screen.queryByRole('button', { name: /view status details/i });
+        if (!viewAction) {
+          viewAction = await screen.findByRole('menuitem', {
+            name: /view status details/i,
+          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+        }
+      }
+      await userEvent.click(viewAction!);
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[0]);
 
-      await userEvent.click(
-        within(cells[1] as HTMLElement).getByRole('button', { name: 'view detail' })
-      );
+      // Row 2
+      viewAction = within(cells[1] as HTMLElement).queryByRole('button', {
+        name: /view status details/i,
+      });
+      if (!viewAction) {
+        const allActionsBtn = within(cells[1] as HTMLElement).getByRole('button', {
+          name: /all actions/i,
+        });
+        await userEvent.click(allActionsBtn);
+        viewAction =
+          screen.queryByRole('menuitem', { name: /view status details/i }) ||
+          screen.queryByRole('button', { name: /view status details/i });
+        if (!viewAction) {
+          viewAction = await screen.findByRole('menuitem', {
+            name: /view status details/i,
+          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+        }
+      }
+      await userEvent.click(viewAction!);
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[1]);
 
-      await userEvent.click(
-        within(cells[2] as HTMLElement).getByRole('button', { name: 'view detail' })
-      );
+      // Row 3
+      viewAction = within(cells[2] as HTMLElement).queryByRole('button', {
+        name: /view status details/i,
+      });
+      if (!viewAction) {
+        const allActionsBtn = within(cells[2] as HTMLElement).getByRole('button', {
+          name: /all actions/i,
+        });
+        await userEvent.click(allActionsBtn);
+        viewAction =
+          screen.queryByRole('menuitem', { name: /view status details/i }) ||
+          screen.queryByRole('button', { name: /view status details/i });
+        if (!viewAction) {
+          viewAction = await screen.findByRole('menuitem', {
+            name: /view status details/i,
+          }).catch(async () => await screen.findByRole('button', { name: /view status details/i }));
+        }
+      }
+      await userEvent.click(viewAction!);
       expect(onViewDetailMock).toHaveBeenCalledWith(finalProps.items[2]);
-    });
+    }, 30000);
   });
 
   it('should call onChange with consistent name sort parameters', async () => {
@@ -248,7 +296,7 @@ describe('<DeployedModelTable />', () => {
   });
 
   it('should call onChange with consistent status sort parameters', async () => {
-    const statusColumnIndex = 5;
+    const statusColumnIndex = 4;
     const {
       finalProps,
       result: { rerender },

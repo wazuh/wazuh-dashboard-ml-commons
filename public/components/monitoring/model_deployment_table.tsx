@@ -99,13 +99,6 @@ export const ModelDeploymentTable = ({
         truncateText: true,
       },
       {
-        field: 'version',
-        name: 'Version',
-        width: '10%',
-        truncateText: true,
-        render: (version: string | undefined) => version ?? LONGDASH,
-      },
-      {
         field: 'agentId',
         name: 'Agent ID',
         width: '18%',
@@ -243,14 +236,6 @@ export const ModelDeploymentTable = ({
           ) : (
             LONGDASH
           ),
-      },
-      {
-        field: 'createdAt',
-        name: 'Created',
-        width: '12%',
-        truncateText: true,
-        render: (createdAt: string | undefined) =>
-          createdAt ? new Date(createdAt).toLocaleDateString() : LONGDASH,
       },
       {
         name: 'Actions',
