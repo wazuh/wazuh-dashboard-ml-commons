@@ -47,7 +47,7 @@ function getJestArgs() {
   const args = process.argv.slice(index + 1);
   // Remove duplicates using set
   return Array.from(
-    new Set([...args, '--runInBand', '--collectCoverage=false', '--watchAll=false']),
+    new Set([...args, '--runInBand', '--collectCoverage=false', '--watchAll=false', '--verbose']),
   ).join(' ');
 }
 
