@@ -59,6 +59,8 @@ export const Monitoring = (props: MonitoringProps) => {
     searchBySource,
     searchByConnector,
     allExternalConnectors,
+    permissionError,
+    permissionErrorMessage,
   } = useMonitoring();
 
   const [preview, setPreview] = useState<{
@@ -162,7 +164,7 @@ export const Monitoring = (props: MonitoringProps) => {
         useNewPageHeader={useNewPageHeader}
       />
       <EuiPanel>
-        {!useNewPageHeader && (
+        {!permissionError && !useNewPageHeader && (
           <>
             <EuiFlexGroup justifyContent="spaceBetween" alignItems="center" gutterSize="none">
               <EuiFlexItem>
@@ -204,7 +206,7 @@ export const Monitoring = (props: MonitoringProps) => {
             <EuiSpacer size="m" />
           </>
         )}
-        {pageStatus !== 'empty' && (
+        {!permissionError && pageStatus !== 'empty' && (
           <>
             <EuiFlexGroup gutterSize={useNewPageHeader ? 's' : 'l'}>
               <EuiFlexItem>
@@ -226,20 +228,28 @@ export const Monitoring = (props: MonitoringProps) => {
             <EuiSpacer size="m" />
           </>
         )}
-
-        <ModelDeploymentTable
-          noTable={pageStatus === 'empty'}
-          loading={pageStatus === 'loading'}
-          items={deployedModels}
-          sort={params.sort}
-          pagination={pagination}
-          onChange={handleTableChange}
-          onViewDetail={handleViewDetail}
-          onResetSearchClick={onResetSearch}
-          onUseModel={handleUseModel}
-          onTestModel={openTestFlyout}
-          onDeleteModel={handleDeleteModel}
-        />
+        {permissionError ? (
+          <div style={{ paddingTop: 48, paddingBottom: 32 }}>
+            <EuiText size="s" color="subdued">
+              <h3>Insufficient permissions</h3>
+              <p>{permissionErrorMessage}</p>
+            </EuiText>
+          </div>
+        ) : (
+          <ModelDeploymentTable
+            noTable={pageStatus === 'empty'}
+            loading={pageStatus === 'loading'}
+            items={deployedModels}
+            sort={params.sort}
+            pagination={pagination}
+            onChange={handleTableChange}
+            onViewDetail={handleViewDetail}
+            onResetSearchClick={onResetSearch}
+            onUseModel={handleUseModel}
+            onTestModel={openTestFlyout}
+            onDeleteModel={handleDeleteModel}
+          />
+        )}
         {modelToDelete && (
           <DeleteModelModal model={modelToDelete} onClose={closeDeleteModal} onDeleted={reload} />
         )}

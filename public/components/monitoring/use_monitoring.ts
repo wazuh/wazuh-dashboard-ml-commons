@@ -236,7 +236,7 @@ export const useMonitoring = () => {
     connector: [],
     dataSourceId: getDataSourceId(dataSourceEnabled, selectedDataSourceOption),
   });
-  const { data, loading, reload } = useFetcher(
+  const { data, loading, reload, error } = useFetcher(
     fetchDeployedModels,
     typeof params.dataSourceId === 'symbol'
       ? DO_NOT_FETCH
@@ -365,6 +365,28 @@ export const useMonitoring = () => {
     }));
   }, [params, data]);
 
+  const permissionError = useMemo(() => {
+    if (!error) return false;
+    const status = (error as any)?.response?.status ?? (error as any)?.statusCode ?? (error as any)?.status;
+    const bodyMsg = (error as any)?.body.message || '';
+    const msg = (error as any)?.message || '';
+    const text = `${bodyMsg} ${msg}`.toLowerCase();
+    // Server sends 400 with a plain message that includes 'security_exception'.
+    // Also consider 403 statuses in case proxies change.
+    return (
+      text.includes('security_exception') ||
+      text.includes('no permissions') ||
+      status === 403
+    );
+  }, [error]);
+
+  const permissionErrorMessage = useMemo(() => {
+    if (!permissionError) return undefined;
+    return (
+      'Insufficient permissions to view AI models. Missing index permissions for \'/.plugins-ml-model\'. Grant a role with index privileges to this index (and ML indices if applicable) and include action group "system:admin/system_index". Then assign the role to your user and reload.'
+    );
+  }, [permissionError]);
+
   return {
     params,
     pageStatus,
@@ -381,5 +403,7 @@ export const useMonitoring = () => {
     searchByConnector,
     resetSearch,
     handleTableChange,
+    permissionError,
+    permissionErrorMessage,
   };
 };
