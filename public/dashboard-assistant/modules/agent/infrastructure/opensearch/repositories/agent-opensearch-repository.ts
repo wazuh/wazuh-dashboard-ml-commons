@@ -86,7 +86,8 @@ export class AgentOpenSearchRepository implements AgentRepository {
       const response = await this.proxyHttpClient.get('/.plugins-ml-config/_doc/os_chat');
       return response._source?.configuration?.agent_id;
     } catch (err: any) {
-      if (err.status === 403) {
+      const status = err?.status ?? err?.response?.status;
+      if (status === 403) {
         throw new Error(`You don’t have the necessary permissions to access this resource.`);
       }
       // If this endpoint returns a 404, it does not mean that the endpoint or
@@ -106,7 +107,18 @@ export class AgentOpenSearchRepository implements AgentRepository {
       },
     };
 
-    await this.proxyHttpClient.put('/.plugins-ml-config/_doc/os_chat', data);
+    try {
+      await this.proxyHttpClient.put('/.plugins-ml-config/_doc/os_chat', data);
+    } catch (err: any) {
+      const status = err?.status ?? err?.response?.status;
+      if (status === 403) {
+        // Provide a clear, actionable message for missing permissions
+        throw new Error(
+          'Insufficient permissions to register the agent (403). Add a role with index permissions to .plugins-ml-config (and related ML indices) and action group "system:admin/system_index" under Security > Roles, then assign it to your user and retry.'
+        );
+      }
+      throw err;
+    }
   }
 
   public async getAll(): Promise<Agent[]> {
