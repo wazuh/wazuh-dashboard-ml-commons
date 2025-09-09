@@ -12,6 +12,7 @@ import {
   EuiText,
   EuiFilterGroup,
   EuiButtonEmpty,
+  EuiCallOut,
 } from '@elastic/eui';
 import React, { useState, useRef, useCallback } from 'react';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -164,7 +165,7 @@ export const Monitoring = (props: MonitoringProps) => {
         useNewPageHeader={useNewPageHeader}
       />
       <EuiPanel>
-        {!permissionError && !useNewPageHeader && (
+        {!useNewPageHeader && (
           <>
             <EuiFlexGroup justifyContent="spaceBetween" alignItems="center" gutterSize="none">
               <EuiFlexItem>
@@ -188,13 +189,15 @@ export const Monitoring = (props: MonitoringProps) => {
 
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
-                  <EuiFlexItem key="add-model" grow={false}>
-                    <Link to={routerPaths.registerModel}>
-                      <EuiButtonEmpty color="primary" iconType="plusInCircle">
-                        Add model
-                      </EuiButtonEmpty>
-                    </Link>
-                  </EuiFlexItem>
+                  {!permissionError && (
+                    <EuiFlexItem key="add-model" grow={false}>
+                      <Link to={routerPaths.registerModel}>
+                        <EuiButtonEmpty color="primary" iconType="plusInCircle">
+                          Add model
+                        </EuiButtonEmpty>
+                      </Link>
+                    </EuiFlexItem>
+                  )}
                   <EuiFlexItem key="refresh" grow={false}>
                     <EuiButtonEmpty iconType="refresh" onClick={reload}>
                       Refresh
@@ -229,12 +232,15 @@ export const Monitoring = (props: MonitoringProps) => {
           </>
         )}
         {permissionError ? (
-          <div style={{ paddingTop: 48, paddingBottom: 32 }}>
-            <EuiText size="s" color="subdued">
-              <h3>Insufficient permissions</h3>
-              <p>{permissionErrorMessage}</p>
-            </EuiText>
-          </div>
+          <EuiCallOut
+            color='danger'
+            iconType='alert'
+            title='Insufficient permissions to view AI models.'
+          >
+            <p>
+              <small>{permissionErrorMessage}</small>
+            </p>
+          </EuiCallOut>
         ) : (
           <ModelDeploymentTable
             noTable={pageStatus === 'empty'}

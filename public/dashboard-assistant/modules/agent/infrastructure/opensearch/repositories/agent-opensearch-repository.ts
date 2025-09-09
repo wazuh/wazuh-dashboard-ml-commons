@@ -13,6 +13,7 @@ import { AgentOpenSearchResponseDto } from '../dtos/agent-opensearch-response-dt
 import { AgentOpenSearchResponseCreateDto } from '../dtos/agent-opensearch-response-create-dto';
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
 import { PermissionMLConfigError } from "../../../domain/errors/permission-ml-config-error";
+import { PermissionMLAgentError } from "../../../../model/domain/errors/permission-ml-agent-error";
 
 export class AgentOpenSearchRepository implements AgentRepository {
   constructor(
@@ -46,17 +47,25 @@ export class AgentOpenSearchRepository implements AgentRepository {
       size,
     };
 
-    const {
-      hits: { hits },
-    } = await this.proxyHttpClient.post<OpenSearchResponseDto<AgentOpenSearchResponseDto>>(
-      '/_plugins/_ml/agents/_search',
-      searchPayload
-    );
+    try {
+      const {
+        hits: { hits },
+      } = await this.proxyHttpClient.post<OpenSearchResponseDto<AgentOpenSearchResponseDto>>(
+        '/_plugins/_ml/agents/_search',
+        searchPayload
+      );
 
-    if (hits.length > 0) {
-      return hits.map((hit) => AgentOpenSearchMapper.fromResponse(hit._id, hit._source));
+      if (hits.length > 0) {
+        return hits.map((hit) => AgentOpenSearchMapper.fromResponse(hit._id, hit._source));
+      }
+      return [];
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 403) {
+        throw new PermissionMLAgentError();
+      }
+      throw err;
     }
-    return [];
   };
 
   public async findAllByModelId(modelId: string): Promise<Agent[]> {

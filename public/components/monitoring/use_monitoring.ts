@@ -14,6 +14,7 @@ import { DataSourceContext } from '../../contexts';
 import { ModelDeployStatus } from './types';
 import { DATA_SOURCE_FETCHING_ID, DataSourceId, getDataSourceId } from '../../utils/data_source';
 import { getUseCases } from '../../dashboard-assistant/services/ml-use-cases.service';
+import { PermissionMLError } from "../../dashboard-assistant/modules/common/domain/errors/permission-ml-error";
 
 interface Params {
   nameOrId?: string;
@@ -143,24 +144,20 @@ const fetchDeployedModels = async (
       status?: string;
     }
   > = {};
-  try {
-    const composedModelsWithAgentData = await getUseCases().getModelsWithAgentData();
-    modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>(
-      (acc, modelWithAgentData) => {
-        acc[modelWithAgentData.id] = {
-          agentId: modelWithAgentData.agentId,
-          inUse: modelWithAgentData.inUse,
-          version: modelWithAgentData.version,
-          createdAt: modelWithAgentData.createdAt,
-          status: modelWithAgentData.status,
-        };
-        return acc;
-      },
-      {}
-    );
-  } catch (_e) {
-    // Fallback silently if composed data is unavailable
-  }
+  const composedModelsWithAgentData = await getUseCases().getModelsWithAgentData();
+  modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>(
+    (acc, modelWithAgentData) => {
+      acc[modelWithAgentData.id] = {
+        agentId: modelWithAgentData.agentId,
+        inUse: modelWithAgentData.inUse,
+        version: modelWithAgentData.version,
+        createdAt: modelWithAgentData.createdAt,
+        status: modelWithAgentData.status,
+      };
+      return acc;
+    },
+    {}
+  );
   const externalConnectorMap = externalConnectorsData.data.reduce<{
     [key: string]: {
       id: string;
@@ -365,8 +362,12 @@ export const useMonitoring = () => {
     }));
   }, [params, data]);
 
-  const permissionError = useMemo(() => {
+  const permissionError: boolean = useMemo(() => {
     if (!error) return false;
+    if (error instanceof PermissionMLError) {
+      return true;
+    }
+
     const status = (error as any)?.response?.status ?? (error as any)?.statusCode ?? (error as any)?.status;
     const bodyMsg = (error as any)?.body.message || '';
     const msg = (error as any)?.message || '';
@@ -382,10 +383,9 @@ export const useMonitoring = () => {
 
   const permissionErrorMessage = useMemo(() => {
     if (!permissionError) return undefined;
-    return (
-      'Insufficient permissions to view AI models. Missing index permissions for \'/.plugins-ml-model\'. Grant a role with index privileges to this index (and ML indices if applicable) and include action group "system:admin/system_index". Then assign the role to your user and reload.'
-    );
-  }, [permissionError]);
+    if (error instanceof PermissionMLError) {
+      return error.message;
+    }
 
   return {
     params,

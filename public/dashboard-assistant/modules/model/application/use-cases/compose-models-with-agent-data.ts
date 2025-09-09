@@ -15,12 +15,7 @@ export const composeModelsWithAgentDataUseCase = (
   agentRepository: AgentRepository
 ) => {
   const attachAgent = async (model: Model): Promise<[Model, Agent | null]> => {
-    let agent: Agent | null = null;
-    try {
-      agent = await agentRepository.findByModelId(model.id);
-    } catch (_) {
-      // do nothing and return null agent
-    }
+    const agent = await agentRepository.findByModelId(model.id);
     return [model, agent];
   };
 
