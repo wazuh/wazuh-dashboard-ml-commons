@@ -100,6 +100,10 @@ const fetchDeployedModels = async (
         return MODEL_STATE.partiallyLoaded;
     }
   });
+  const externalConnectorsData = await APIProvider.getAPI('connector').getAll({
+    dataSourceId: params.dataSourceId,
+  });
+
   const result = await APIProvider.getAPI('model').search({
     from: (params.currentPage - 1) * params.pageSize,
     size: params.pageSize,
@@ -121,7 +125,6 @@ const fetchDeployedModels = async (
             }))
           : [],
     }),
-  const externalConnectorsData = await APIProvider.getAPI('connector').getAll({
     dataSourceId: params.dataSourceId,
   });
 
@@ -355,30 +358,11 @@ export const useMonitoring = () => {
     }));
   }, [params, data]);
 
-  const permissionError: boolean = useMemo(() => {
-    if (!error) return false;
-    if (error instanceof PermissionMLError) {
-      return true;
-    }
-
-    const status = (error as any)?.response?.status ?? (error as any)?.statusCode ?? (error as any)?.status;
-    const bodyMsg = (error as any)?.body.message || '';
-    const msg = (error as any)?.message || '';
-    const text = `${bodyMsg} ${msg}`.toLowerCase();
-    // Server sends 400 with a plain message that includes 'security_exception'.
-    // Also consider 403 statuses in case proxies change.
-    return (
-      text.includes('security_exception') ||
-      text.includes('no permissions') ||
-      status === 403
-    );
-  }, [error]);
-
-  const permissionErrorMessage = useMemo(() => {
-    if (!permissionError) return undefined;
+  const permissionErrorMessage: string | undefined = useMemo(() => {
     if (error instanceof PermissionMLError) {
       return error.message;
     }
+  }, [error]);
 
   return {
     params,
@@ -396,7 +380,6 @@ export const useMonitoring = () => {
     searchByConnector,
     resetSearch,
     handleTableChange,
-    permissionError,
     permissionErrorMessage,
   };
 };

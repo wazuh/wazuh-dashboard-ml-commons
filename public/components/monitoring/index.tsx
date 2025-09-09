@@ -60,7 +60,6 @@ export const Monitoring = (props: MonitoringProps) => {
     searchBySource,
     searchByConnector,
     allExternalConnectors,
-    permissionError,
     permissionErrorMessage,
   } = useMonitoring();
 
@@ -189,7 +188,7 @@ export const Monitoring = (props: MonitoringProps) => {
 
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
-                  {!permissionError && (
+                  {!permissionErrorMessage && (
                     <EuiFlexItem key="add-model" grow={false}>
                       <Link to={routerPaths.registerModel}>
                         <EuiButtonEmpty color="primary" iconType="plusInCircle">
@@ -209,7 +208,7 @@ export const Monitoring = (props: MonitoringProps) => {
             <EuiSpacer size="m" />
           </>
         )}
-        {!permissionError && pageStatus !== 'empty' && (
+        {!permissionErrorMessage && pageStatus !== 'empty' && (
           <>
             <EuiFlexGroup gutterSize={useNewPageHeader ? 's' : 'l'}>
               <EuiFlexItem>
@@ -231,7 +230,7 @@ export const Monitoring = (props: MonitoringProps) => {
             <EuiSpacer size="m" />
           </>
         )}
-        {permissionError ? (
+        {permissionErrorMessage ? (
           <EuiCallOut
             color='danger'
             iconType='alert'
