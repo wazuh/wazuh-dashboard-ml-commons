@@ -13,7 +13,9 @@ import {
   EuiSpacer,
   EuiText,
   EuiTitle,
-  EuiToolTip,
+  EuiPopover,
+  EuiCopy,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import {
   InstallationProgress,
@@ -36,6 +38,7 @@ export const DeploymentStatus = ({
   onErrorDuringDeployment,
   showCheckDeploymentButton = false,
 }: DeploymentStatusProps) => {
+  const [openErrorPopoverKey, setOpenErrorPopoverKey] = React.useState<string | null>(null);
   // Helper function to map installation states to UI states
   const mapToUIStatus = (executionState: ExecutionState): StepStatus => {
     if (executionState === ExecutionState.PENDING) {
@@ -92,11 +95,42 @@ export const DeploymentStatus = ({
               <EuiText size="s">{step.stepName}</EuiText>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {uiStatus === StepStatus.ERROR && step?.error ? (
-                  <EuiToolTip content={step.error.message}>
-                    <div style={{ cursor: 'pointer' }}>
-                      <StepIcon status={uiStatus} />
-                    </div>
-                  </EuiToolTip>
+                  <EuiPopover
+                    isOpen={openErrorPopoverKey === key}
+                    closePopover={() => setOpenErrorPopoverKey(null)}
+                    anchorPosition="rightCenter"
+                    button={
+                      <div
+                        style={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          setOpenErrorPopoverKey((current) => (current === key ? null : key))
+                        }
+                        aria-label="Show error details"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setOpenErrorPopoverKey((current) => (current === key ? null : key));
+                          }
+                        }}
+                      >
+                        <StepIcon status={uiStatus} />
+                      </div>
+                    }
+                  >
+                    <EuiText size="s">
+                      <p style={{ maxWidth: 320 }}>{step.error.message}</p>
+                    </EuiText>
+                    <EuiSpacer size="s" />
+                    <EuiCopy textToCopy={step.error.message}>
+                      {(copy) => (
+                        <EuiButtonEmpty size="s" iconType="copyClipboard" onClick={copy}>
+                          Copy message
+                        </EuiButtonEmpty>
+                      )}
+                    </EuiCopy>
+                  </EuiPopover>
                 ) : (
                   <StepIcon status={uiStatus} />
                 )}
