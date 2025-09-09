@@ -14,7 +14,7 @@ import { DataSourceContext } from '../../contexts';
 import { ModelDeployStatus } from './types';
 import { DATA_SOURCE_FETCHING_ID, DataSourceId, getDataSourceId } from '../../utils/data_source';
 import { getUseCases } from '../../dashboard-assistant/services/ml-use-cases.service';
-import { PermissionMLError } from "../../dashboard-assistant/modules/common/domain/errors/permission-ml-error";
+import { PermissionMLError } from "../../dashboard-assistant/modules/common/domain/errors";
 
 interface Params {
   nameOrId?: string;

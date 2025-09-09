@@ -12,8 +12,7 @@ import { AgentOpenSearchMapper } from '../mapper/agent-opensearch-mapper';
 import { AgentOpenSearchResponseDto } from '../dtos/agent-opensearch-response-dto';
 import { AgentOpenSearchResponseCreateDto } from '../dtos/agent-opensearch-response-create-dto';
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
-import { PermissionMLConfigError } from "../../../domain/errors/permission-ml-config-error";
-import { PermissionMLAgentError } from "../../../../model/domain/errors/permission-ml-agent-error";
+import { PermissionMLConfigError, PermissionMLAgentError } from "../../../domain/errors";
 
 export class AgentOpenSearchRepository implements AgentRepository {
   constructor(
