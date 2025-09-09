@@ -31,7 +31,7 @@ export interface ModelSearchResponse {
 }
 
 export class Model {
-  public search(query: {
+  public async search(query: {
     sort?: ModelSearchSort[];
     from: number;
     size: number;
@@ -42,7 +42,7 @@ export class Model {
   }): Promise<ModelSearchResponse> {
     const { extraQuery, dataSourceId, ...restQuery } = query;
     try {
-      return InnerHttpProvider.getHttp().get<ModelSearchResponse>(
+      const response = await InnerHttpProvider.getHttp().get<ModelSearchResponse>(
         MODEL_API_ENDPOINT,
         {
           query: extraQuery
@@ -54,6 +54,7 @@ export class Model {
             : { ...restQuery, data_source_id: dataSourceId },
         },
       );
+      return response;
     } catch (error) {
       // If this is a permissions error against .plugins-ml-model, abort with tagged error.
       if (isPermissionErrorLike((error as any)?.body)) {

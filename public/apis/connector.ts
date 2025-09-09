@@ -25,13 +25,13 @@ interface GetAllInternalConnectorResponse {
 }
 
 export class Connector {
-  public getAll({
+  public async getAll({
     dataSourceId,
   }: {
     dataSourceId?: string;
   }): Promise<GetAllConnectorResponse> {
     try {
-      return InnerHttpProvider.getHttp().get<GetAllConnectorResponse>(
+      const response = await InnerHttpProvider.getHttp().get<GetAllConnectorResponse>(
         CONNECTOR_API_ENDPOINT,
         {
           query: {
@@ -39,6 +39,7 @@ export class Connector {
           },
         },
       );
+      return response;
     } catch (error) {
       // If this is a permissions error against .plugins-ml-connector, abort with custom error.
       if (isPermissionErrorLike((error as any)?.body)) {
