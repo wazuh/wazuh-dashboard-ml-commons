@@ -100,14 +100,6 @@ const fetchDeployedModels = async (
         return MODEL_STATE.partiallyLoaded;
     }
   });
-  let externalConnectorsData: GetAllConnectorResponse;
-  try {
-    externalConnectorsData = await APIProvider.getAPI('connector').getAll({
-      dataSourceId: params.dataSourceId,
-    });
-  } catch (_e) {
-    externalConnectorsData = { data: [], total_connectors: 0 };
-  }
   const result = await APIProvider.getAPI('model').search({
     from: (params.currentPage - 1) * params.pageSize,
     size: params.pageSize,
@@ -129,6 +121,7 @@ const fetchDeployedModels = async (
             }))
           : [],
     }),
+  const externalConnectorsData = await APIProvider.getAPI('connector').getAll({
     dataSourceId: params.dataSourceId,
   });
 
