@@ -124,61 +124,61 @@ const ModelRegisterComponent = ({
 
   return (
     <>
-      <div style={{ minHeight: '100vh', display: 'flex' }}>
-        <EuiFlexGroup
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          style={{ minHeight: '100vh', width: '100%' }}
-        >
-          <EuiFlexItem grow={false} style={{ maxWidth: config.maxWidth || '600px', width: '100%' }}>
-            <EuiPanel paddingSize="l">
-              <EuiTitle size="l">
-                <h2>{config.title}</h2>
-              </EuiTitle>
+      <EuiFlexGroup
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        gutterSize="none"
+        style={{ width: '100%' }}
+        className="model-register-form"
+      >
+        <EuiFlexItem grow={false} style={{ maxWidth: config.maxWidth || '600px', width: '100%' }}>
+          <EuiPanel paddingSize="l">
+            <EuiTitle size="l">
+              <h2>{config.title}</h2>
+            </EuiTitle>
 
-              <EuiSpacer size="s" />
+            <EuiSpacer size="s" />
 
-              <EuiText color="subdued">
-                <p>
-                  {config.description}{' '}
-                  <EuiLink href="#" target="_blank">
-                    {config.learnMoreText}
-                  </EuiLink>
-                </p>
-              </EuiText>
+            <EuiText color="subdued">
+              <p>
+                {config.description}{' '}
+                <EuiLink href="#" target="_blank">
+                  {config.learnMoreText}
+                </EuiLink>
+              </p>
+            </EuiText>
 
-              <EuiSpacer size="l" />
+            <EuiSpacer size="l" />
 
-              <ModelForm
-                onChange={handleFormChange}
-                onValidationChange={handleValidationChange}
-                disabled={disabled}
-              />
+            <ModelForm
+              onChange={handleFormChange}
+              onValidationChange={handleValidationChange}
+              disabled={disabled}
+            />
 
-              <EuiSpacer size="xl" />
+            <EuiSpacer size="xl" />
 
-              <EuiFlexGroup justifyContent="flexEnd" gutterSize="m">
-                <EuiFlexItem grow={false}>
-                  <EuiButtonEmpty onClick={onCancel} disabled={isInstalling || isDeployed}>
-                    {config.buttons.cancel}
-                  </EuiButtonEmpty>
-                </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiButton
-                    fill
-                    onClick={startModelDeployment}
-                    disabled={!isFormValid || isInstalling || isDeployed}
-                    isLoading={isInstalling}
-                  >
-                    {isInstalling ? 'Deploying...' : config.buttons.deploy}
-                  </EuiButton>
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiPanel>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </div>
+            <EuiFlexGroup justifyContent="flexEnd" gutterSize="m">
+              <EuiFlexItem grow={false}>
+                <EuiButtonEmpty onClick={onCancel} disabled={isInstalling || isDeployed}>
+                  {config.buttons.cancel}
+                </EuiButtonEmpty>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiButton
+                  fill
+                  onClick={startModelDeployment}
+                  disabled={!isFormValid || isInstalling || isDeployed}
+                  isLoading={isInstalling}
+                >
+                  {isInstalling ? 'Deploying...' : config.buttons.deploy}
+                </EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiPanel>
+        </EuiFlexItem>
+      </EuiFlexGroup>
 
       {isDeploymentVisible && (
         <EuiFlyout onClose={onCancel} size="s" type="push">
