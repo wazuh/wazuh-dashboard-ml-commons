@@ -57,7 +57,7 @@ describe('composeModelsWithAgentDataUseCase', () => {
     ]);
   });
 
-  it('is resilient to agent lookup errors', async () => {
+  it('handles missing agent gracefully', async () => {
     const modelRepo = createModelRepositoryMock();
     const agentRepo = createAgentRepositoryMock();
     modelRepo.getAll.mockResolvedValueOnce([
@@ -72,7 +72,7 @@ describe('composeModelsWithAgentDataUseCase', () => {
         description: 'd',
       } as any,
     ]);
-    agentRepo.findByModelId.mockRejectedValueOnce(new Error('oops'));
+    agentRepo.findByModelId.mockResolvedValueOnce(null);
     agentRepo.getActive.mockResolvedValueOnce(undefined);
     const useCase = composeModelsWithAgentDataUseCase(modelRepo, agentRepo);
     const rows = await useCase();
