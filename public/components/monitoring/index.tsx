@@ -162,6 +162,7 @@ export const Monitoring = (props: MonitoringProps) => {
         recordsCount={pagination?.totalRecords}
         application={application}
         useNewPageHeader={useNewPageHeader}
+        showRefreshInterval={!permissionErrorMessage}
       />
       <EuiPanel>
         {!useNewPageHeader && (
