@@ -12,7 +12,7 @@ import {
   EuiText,
   EuiFilterGroup,
   EuiButtonEmpty,
-  EuiCallOut,
+  EuiEmptyPrompt,
 } from '@elastic/eui';
 import React, { useState, useRef, useCallback } from 'react';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -232,15 +232,16 @@ export const Monitoring = (props: MonitoringProps) => {
           </>
         )}
         {permissionErrorMessage ? (
-          <EuiCallOut
-            color='danger'
+          <EuiEmptyPrompt
+            iconColor='danger'
             iconType='alert'
-            title='Insufficient permissions to view AI models.'
-          >
-            <p>
-              <small>{permissionErrorMessage}</small>
-            </p>
-          </EuiCallOut>
+            title={<EuiText size="m">Insufficient permissions to view AI models.</EuiText>}
+            body={
+              <EuiText size="s">
+                {permissionErrorMessage}
+              </EuiText>
+            }
+          />
         ) : (
           <ModelDeploymentTable
             noTable={pageStatus === 'empty'}
