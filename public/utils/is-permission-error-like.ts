@@ -1,3 +1,8 @@
+/*
+ * Copyright Wazuh Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export const isPermissionErrorLike = (err: any): boolean => {
   const status = err?.status ?? err?.statusCode ?? err?.response?.status;
   const body = String(err?.body || '').toLowerCase();

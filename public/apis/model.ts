@@ -7,7 +7,7 @@ import { MODEL_API_ENDPOINT } from '../../server/routes/constants';
 import { MODEL_STATE, ModelSearchSort } from '../../common';
 import { InnerHttpProvider } from './inner_http_provider';
 import { isPermissionErrorLike } from '../utils/is-permission-error-like';
-import { PermissionMLModelError } from "../dashboard-assistant/modules/model/domain/errors";
+import { PermissionMLModelError } from '../dashboard-assistant/modules/model/domain/errors';
 
 export interface ModelSearchItem {
   id: string;
@@ -52,7 +52,7 @@ export class Model {
                 data_source_id: dataSourceId,
               }
             : { ...restQuery, data_source_id: dataSourceId },
-        },
+        }
       );
       return response;
     } catch (error) {

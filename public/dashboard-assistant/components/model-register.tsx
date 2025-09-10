@@ -137,9 +137,7 @@ const ModelRegisterComponent = ({
             <EuiSpacer size="s" />
 
             <EuiText color="subdued">
-              <p>
-                {config.description}
-              </p>
+              <p>{config.description}</p>
             </EuiText>
 
             <EuiSpacer size="l" />

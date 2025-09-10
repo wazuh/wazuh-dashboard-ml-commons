@@ -1,5 +1,5 @@
 /*
- * Copyright OpenSearch Contributors
+ * Copyright Wazuh Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,7 +12,7 @@ import { AgentOpenSearchMapper } from '../mapper/agent-opensearch-mapper';
 import { AgentOpenSearchResponseDto } from '../dtos/agent-opensearch-response-dto';
 import { AgentOpenSearchResponseCreateDto } from '../dtos/agent-opensearch-response-create-dto';
 import { OpenSearchResponseDto } from '../../../../common/infrastructure/opensearch/dtos/opensearch-response-dto';
-import { PermissionMLConfigError, PermissionMLAgentError } from "../../../domain/errors";
+import { PermissionMLConfigError, PermissionMLAgentError } from '../../../domain/errors';
 
 export class AgentOpenSearchRepository implements AgentRepository {
   constructor(

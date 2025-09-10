@@ -7,8 +7,8 @@ import {
   CONNECTOR_API_ENDPOINT,
   INTERNAL_CONNECTOR_API_ENDPOINT,
 } from '../../server/routes/constants';
-import { PermissionMLConnectorError } from "../dashboard-assistant/modules/connector/domain/errors";
-import { isPermissionErrorLike } from "../utils/is-permission-error-like";
+import { PermissionMLConnectorError } from '../dashboard-assistant/modules/connector/domain/errors';
+import { isPermissionErrorLike } from '../utils/is-permission-error-like';
 import { InnerHttpProvider } from './inner_http_provider';
 
 export interface GetAllConnectorResponse {
@@ -37,7 +37,7 @@ export class Connector {
           query: {
             data_source_id: dataSourceId,
           },
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -56,7 +56,7 @@ export class Connector {
         query: {
           data_source_id: dataSourceId,
         },
-      },
+      }
     );
   }
 }

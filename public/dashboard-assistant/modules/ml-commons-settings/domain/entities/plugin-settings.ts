@@ -1,5 +1,5 @@
 /*
- * Copyright OpenSearch Contributors
+ * Copyright Wazuh Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 

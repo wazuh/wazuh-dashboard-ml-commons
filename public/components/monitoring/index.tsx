@@ -233,14 +233,10 @@ export const Monitoring = (props: MonitoringProps) => {
         )}
         {permissionErrorMessage ? (
           <EuiEmptyPrompt
-            iconColor='danger'
-            iconType='alert'
+            iconColor="danger"
+            iconType="alert"
             title={<EuiText size="m">Insufficient permissions to view AI models.</EuiText>}
-            body={
-              <EuiText size="s">
-                {permissionErrorMessage}
-              </EuiText>
-            }
+            body={<EuiText size="s">{permissionErrorMessage}</EuiText>}
           />
         ) : (
           <ModelDeploymentTable
