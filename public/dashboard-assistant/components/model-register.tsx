@@ -9,7 +9,6 @@ import {
   EuiButtonEmpty,
   EuiTitle,
   EuiText,
-  EuiLink,
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
@@ -17,7 +16,6 @@ import {
   EuiFlyout,
   EuiFlyoutHeader,
   EuiFlyoutBody,
-  EuiGlobalToastList,
 } from '@elastic/eui';
 import { ModelForm } from '.';
 import { DeploymentStatus } from '.';
@@ -29,7 +27,6 @@ import { useToast } from '../hooks/use-toast';
 interface FormConfig {
   title: string;
   description: string;
-  learnMoreText: string;
   buttons: {
     cancel: string;
     deploy: string;
@@ -83,7 +80,6 @@ const ModelRegisterComponent = ({
     title: 'Register your preferred AI model',
     description:
       "Select and configure the AI model that will power your dashboard assistant's conversational capabilities and data insights",
-    learnMoreText: 'Learn more',
     buttons: {
       cancel: 'Cancel',
       deploy: 'Deploy',
@@ -142,10 +138,7 @@ const ModelRegisterComponent = ({
 
             <EuiText color="subdued">
               <p>
-                {config.description}{' '}
-                <EuiLink href="#" target="_blank">
-                  {config.learnMoreText}
-                </EuiLink>
+                {config.description}
               </p>
             </EuiText>
 

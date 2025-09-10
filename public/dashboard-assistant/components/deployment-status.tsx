@@ -72,7 +72,7 @@ export const DeploymentStatus = ({
       <EuiText size="s" color="subdued">
         Installing and configuring your intelligent dashboard assistant. Please wait while we set up
         the AI components and establish model connections to enable natural language interactions
-        with your data. <EuiLink href="#">Learn more</EuiLink>
+        with your data.
       </EuiText>
 
       <EuiSpacer size="l" />
