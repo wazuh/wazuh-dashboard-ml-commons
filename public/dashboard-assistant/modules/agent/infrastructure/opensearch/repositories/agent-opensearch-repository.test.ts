@@ -181,12 +181,12 @@ describe('AgentOpenSearchRepository', () => {
   });
 
   it('getActive throws a permission error when 403', async () => {
-    proxyHttp.get.mockRejectedValueOnce({ status: 403 });
-    await expect(repo.getActive()).rejects.toThrow('You don’t have the necessary permissions');
+    proxyHttp.get.mockRejectedValueOnce({ response: { status: 403 } });
+    await expect(repo.getActive()).rejects.toThrow(/You don't have the necessary permissions/);
   });
 
   it('getActive returns undefined on non-403 errors (e.g., 404)', async () => {
-    proxyHttp.get.mockRejectedValueOnce({ status: 404 });
+    proxyHttp.get.mockRejectedValueOnce({ response: { status: 404 } });
     await expect(repo.getActive()).resolves.toBeUndefined();
   });
 
