@@ -6,12 +6,18 @@
 import React, { FC, ReactElement } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import { render, RenderOptions } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { DataSourceContextProvider } from '../public/contexts';
+import { ToastProvider } from '../public/dashboard-assistant/hooks/use-toast';
 
-const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <I18nProvider>
-      <DataSourceContextProvider>{children}</DataSourceContextProvider>
+      <MemoryRouter>
+        <DataSourceContextProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </DataSourceContextProvider>
+      </MemoryRouter>
     </I18nProvider>
   );
 };

@@ -19,6 +19,7 @@
     "osd": "node ../../scripts/osd",
     "lint:es": "node ../../scripts/eslint",
     "test:jest": "../../node_modules/.bin/jest --config ./test/jest.config.js",
+    "test:jest:runner": "node scripts/runner test",
     "prepare": "husky install"
   },
   "dependencies": {},

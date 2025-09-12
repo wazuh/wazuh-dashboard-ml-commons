@@ -39,6 +39,10 @@ export interface PreviewModel {
     name?: string;
     description?: string;
   };
+  version?: string;
+  agentId?: string;
+  inUse?: boolean;
+  createdAt?: string;
 }
 
 interface Props {
@@ -133,12 +137,44 @@ export const PreviewPanel = ({ onClose, model, dataSourceId }: Props) => {
                 {connector ? 'External' : 'Local'}
               </EuiDescriptionListDescription>
             </EuiFlexItem>
+            {model.version && (
+              <EuiFlexItem>
+                <EuiDescriptionListTitle>Version</EuiDescriptionListTitle>
+                <EuiDescriptionListDescription>{model.version}</EuiDescriptionListDescription>
+              </EuiFlexItem>
+            )}
+            {typeof model.inUse !== 'undefined' && (
+              <EuiFlexItem>
+                <EuiDescriptionListTitle>In use</EuiDescriptionListTitle>
+                <EuiDescriptionListDescription>
+                  {model.inUse ? 'Yes' : 'No'}
+                </EuiDescriptionListDescription>
+              </EuiFlexItem>
+            )}
           </EuiFlexGroup>
           <EuiSpacer size="m" />
           <EuiDescriptionListTitle>Model ID</EuiDescriptionListTitle>
           <EuiDescriptionListDescription>
             <CopyableText text={id} iconLeft={false} tooltipText="Copy model ID" />
           </EuiDescriptionListDescription>
+          {model.agentId && (
+            <>
+              <EuiSpacer size="s" />
+              <EuiDescriptionListTitle>Agent ID</EuiDescriptionListTitle>
+              <EuiDescriptionListDescription>
+                <CopyableText text={model.agentId} iconLeft={false} tooltipText="Copy agent ID" />
+              </EuiDescriptionListDescription>
+            </>
+          )}
+          {model.createdAt && (
+            <>
+              <EuiSpacer size="s" />
+              <EuiDescriptionListTitle>Created</EuiDescriptionListTitle>
+              <EuiDescriptionListDescription>
+                {new Date(model.createdAt).toLocaleString()}
+              </EuiDescriptionListDescription>
+            </>
+          )}
         </EuiDescriptionList>
         {connector ? (
           <ConnectorDetails

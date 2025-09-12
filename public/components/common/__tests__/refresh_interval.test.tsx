@@ -9,7 +9,7 @@ import { render, screen } from '../../../../test/test_utils';
 import { RefreshInterval } from '../refresh_interval';
 
 async function setup({ minInterval = 3000, onRefresh = jest.fn() }) {
-  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime, delay: null });
   // Set minimum interval 3000ms(3s)
   render(<RefreshInterval onRefresh={onRefresh} minInterval={minInterval} />);
   // open popover

@@ -4,7 +4,6 @@
  */
 
 import React from 'react';
-import { I18nProvider } from '@osd/i18n/react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { EuiPage, EuiPageBody } from '@elastic/eui';
 import { useObservable } from 'react-use';
@@ -21,10 +20,10 @@ import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/
 import { DataPublicPluginStart } from '../../../../src/plugins/data/public';
 import type { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import type { DataSourcePluginSetup } from '../../../../src/plugins/data_source/public';
-import { DataSourceContextProvider } from '../contexts/data_source_context';
 
 import { GlobalBreadcrumbs } from './global_breadcrumbs';
 import { DataSourceTopNavMenu } from './data_source_top_nav_menu';
+import { Providers } from './providers';
 
 interface MlCommonsPluginAppDeps {
   basename: string;
@@ -63,51 +62,44 @@ export const MlCommonsPluginApp = ({
 }: MlCommonsPluginAppDeps) => {
   const dataSourceEnabled = !!dataSource;
   const useNewPageHeader = useObservable(uiSettingsClient.get$('home:useNewHomePage'));
+
   return (
-    <I18nProvider>
-      <DataSourceContextProvider
-        initialValue={{
-          dataSourceEnabled,
-        }}
-      >
-        <>
-          <EuiPage>
-            <EuiPageBody component="main">
-              <Switch>
-                {ROUTES.map(({ path, Component, exact }) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    render={() => (
-                      <Component
-                        http={http}
-                        notifications={notifications}
-                        chrome={chrome}
-                        data={data}
-                        navigation={navigation}
-                        useNewPageHeader={useNewPageHeader}
-                        application={application}
-                      />
-                    )}
-                    exact={exact ?? false}
+    <Providers initialValue={{ dataSourceEnabled }}>
+      <EuiPage>
+        <EuiPageBody component="main">
+          <Switch>
+            {ROUTES.map(({ path, Component, exact }) => (
+              <Route
+                key={path}
+                path={path}
+                render={() => (
+                  <Component
+                    http={http}
+                    notifications={notifications}
+                    chrome={chrome}
+                    data={data}
+                    navigation={navigation}
+                    useNewPageHeader={useNewPageHeader}
+                    application={application}
                   />
-                ))}
-                <Redirect from={routerPaths.root} to={routerPaths.overview} />
-              </Switch>
-            </EuiPageBody>
-          </EuiPage>
-          {/* Breadcrumbs will contains dynamic content in new page header, should be provided by each page self*/}
-          {!useNewPageHeader && <GlobalBreadcrumbs chrome={chrome} basename={basename} />}
-          {dataSourceEnabled && (
-            <DataSourceTopNavMenu
-              notifications={notifications}
-              dataSourceManagement={dataSourceManagement}
-              setActionMenu={setActionMenu}
-              savedObjects={savedObjects}
-            />
-          )}
-        </>
-      </DataSourceContextProvider>
-    </I18nProvider>
+                )}
+                exact={exact ?? false}
+              />
+            ))}
+            <Redirect from={routerPaths.root} to={routerPaths.overview} />
+          </Switch>
+        </EuiPageBody>
+      </EuiPage>
+      {/* Breadcrumbs will contains dynamic content in new page header, should be provided by each page self*/}
+      {!useNewPageHeader && <GlobalBreadcrumbs chrome={chrome} basename={basename} />}
+      {dataSourceEnabled && (
+        <DataSourceTopNavMenu
+          notifications={notifications}
+          dataSourceManagement={dataSourceManagement}
+          setActionMenu={setActionMenu}
+          savedObjects={savedObjects}
+        />
+      )}
+    </Providers>
   );
 };

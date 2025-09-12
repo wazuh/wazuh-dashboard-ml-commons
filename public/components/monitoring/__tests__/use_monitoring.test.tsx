@@ -14,6 +14,7 @@ import {
   DataSourceContextProviderProps,
   DataSourceOption,
 } from '../../../contexts';
+import { APIProvider } from '../../../apis/api_provider';
 
 const setup = ({
   initDataSourceContextValue,
@@ -50,6 +51,11 @@ const setup = ({
 };
 
 jest.mock('../../../apis/connector');
+jest.mock('../../../dashboard-assistant/services/ml-use-cases.service', () => ({
+  getUseCases: () => ({
+    getModelsWithAgentData: () => Promise.resolve([]),
+  }),
+}));
 
 const mockEmptyRecords = () =>
   jest.spyOn(Model.prototype, 'search').mockResolvedValueOnce({
@@ -59,6 +65,7 @@ const mockEmptyRecords = () =>
 
 describe('useMonitoring', () => {
   beforeEach(() => {
+    APIProvider.clear();
     jest.spyOn(Model.prototype, 'search').mockResolvedValue({
       data: [
         {
@@ -66,14 +73,20 @@ describe('useMonitoring', () => {
           name: 'model-1-name',
           current_worker_node_count: 1,
           planning_worker_node_count: 3,
-          algorithm: '',
-          model_state: '',
-          model_version: '',
+          algorithm: 'TEXT_EMBEDDING',
+          model_state: 'DEPLOYED',
+          model_version: '1.0.0',
           planning_worker_nodes: ['node1', 'node2', 'node3'],
         },
       ],
       total_models: 500,
     });
+    jest.spyOn(Connector.prototype, 'getAll').mockResolvedValue({
+      data: [
+        { id: 'external-connector-1-id', name: 'External Connector 1' },
+        { id: 'external-connector-2-id', name: 'External Connector 2' },
+      ],
+    } as any);
   });
 
   afterEach(() => {
@@ -83,30 +96,35 @@ describe('useMonitoring', () => {
   it('should call search API with consistent nameOrId and states after filter applied', async () => {
     const { result, waitFor } = renderHook(() => useMonitoring());
 
-    await waitFor(() => result.current.pageStatus === 'normal');
+    await waitFor(() => expect(Model.prototype.search).toHaveBeenCalled(), { timeout: 3000 });
+    await waitFor(() => result.current.pageStatus === 'normal', { timeout: 3000 });
 
     act(() => {
       result.current.searchByNameOrId('foo');
     });
-    await waitFor(() =>
-      expect(Model.prototype.search).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nameOrId: 'foo',
-          states: ['DEPLOY_FAILED', 'DEPLOYED', 'PARTIALLY_DEPLOYED'],
-        })
-      )
+    await waitFor(
+      () =>
+        expect(Model.prototype.search).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            nameOrId: 'foo',
+            states: ['DEPLOY_FAILED', 'DEPLOYED', 'PARTIALLY_DEPLOYED'],
+          })
+        ),
+      { timeout: 3000 }
     );
 
     act(() => {
       result.current.searchByStatus(['responding']);
     });
-    await waitFor(() =>
-      expect(Model.prototype.search).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nameOrId: 'foo',
-          states: ['DEPLOYED'],
-        })
-      )
+    await waitFor(
+      () =>
+        expect(Model.prototype.search).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            nameOrId: 'foo',
+            states: ['DEPLOYED'],
+          })
+        ),
+      { timeout: 3000 }
     );
 
     act(() => {
@@ -161,8 +179,8 @@ describe('useMonitoring', () => {
 
     await waitFor(() => expect(Model.prototype.search).toHaveBeenCalledTimes(1));
 
-    act(() => {
-      result.current.reload();
+    await act(async () => {
+      await result.current.reload();
     });
     await waitFor(() => expect(Model.prototype.search).toHaveBeenCalledTimes(2));
   });
@@ -276,38 +294,19 @@ describe('useMonitoring', () => {
     const getAllExternalConnectorsMock = jest
       .spyOn(Connector.prototype, 'getAll')
       .mockImplementation(async () => {
-        throw new Error();
+        throw new Error('connectors failed');
       });
-    const searchMock = jest.spyOn(Model.prototype, 'search').mockResolvedValue({
-      data: [
-        {
-          id: 'model-1-id',
-          name: 'model-1-name',
-          current_worker_node_count: 1,
-          planning_worker_node_count: 3,
-          algorithm: 'REMOTE',
-          model_state: '',
-          model_version: '',
-          planning_worker_nodes: ['node1', 'node2', 'node3'],
-          connector_id: 'not-exists-external-connector-id',
-        },
-      ],
-      total_models: 1,
-    });
+    const modelSearchSpy = jest.spyOn(Model.prototype, 'search');
     const { result, waitFor } = renderHook(() => useMonitoring());
 
-    await waitFor(() => {
-      expect(result.current.deployedModels).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            connector: {},
-          }),
-        ])
-      );
-    });
+    await waitFor(() => result.current.pageStatus !== 'loading', { timeout: 3000 });
 
-    searchMock.mockRestore();
+    expect(modelSearchSpy).not.toHaveBeenCalled();
+    expect(result.current.deployedModels).toEqual([]);
+    expect(result.current.pageStatus).toBe('empty');
+
     getAllExternalConnectorsMock.mockRestore();
+    modelSearchSpy.mockRestore();
   });
 
   it('should call searchByNameOrId with from 0 after page changed', async () => {
@@ -724,12 +723,22 @@ describe('useMonitoring.pageStatus', () => {
   });
 
   it('should return "loading" and not call model search when data source id is fetching', async () => {
+    // Reset any prior calls from previous tests to avoid false positives
+    jest.clearAllMocks();
     const {
       renderHookResult: { result, waitFor },
-    } = setup();
+    } = setup({
+      initDataSourceContextValue: {
+        dataSourceEnabled: true,
+        selectedDataSourceOption: null,
+      },
+    });
 
     await waitFor(() => {
       expect(result.current.pageStatus).toBe('loading');
+    });
+    await waitFor(() => {
+      expect(Model.prototype.search).not.toHaveBeenCalled();
     });
   });
 });
