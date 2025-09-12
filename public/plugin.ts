@@ -19,6 +19,10 @@ import {
   MlCommonsPluginPluginSetupDependencies,
 } from './types';
 import { PLUGIN_NAME, PLUGIN_ID } from '../common';
+import { setHttpClient, setProxyHttpClient } from './dashboard-assistant/services/common';
+import { WindowFetchHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/window-fetch-http-client';
+import { ProxyHttpClient } from './dashboard-assistant/modules/common/http/infrastructure/proxy-http-client';
+import type { HttpClient } from './dashboard-assistant/modules/common/http/domain/entities/http-client';
 
 export class MlCommonsPluginPlugin
   implements Plugin<MlCommonsPluginPluginSetup, MlCommonsPluginPluginStart> {
@@ -79,8 +83,14 @@ export class MlCommonsPluginPlugin
   }
 
   public start(core: CoreStart): MlCommonsPluginPluginStart {
+    const httpClient: HttpClient = new WindowFetchHttpClient();
+    setHttpClient(httpClient);
+    setProxyHttpClient(new ProxyHttpClient(httpClient));
     return {};
   }
 
-  public stop() {}
+  public stop() {
+    setHttpClient(undefined);
+    setProxyHttpClient(undefined);
+  }
 }

@@ -73,9 +73,9 @@ export const useFetcher = <TParams extends any[], TResponse>(
     [forceUpdate, fetcher]
   );
 
-  const reload = useCallback(() => {
+  const reload = useCallback(async () => {
     if (!isDoNotFetch(paramsRef.current)) {
-      loadData(paramsRef.current);
+      await loadData(paramsRef.current);
     }
   }, [loadData]);
 

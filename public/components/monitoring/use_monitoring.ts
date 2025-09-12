@@ -9,9 +9,12 @@ import { APIProvider } from '../../apis/api_provider';
 import { GetAllConnectorResponse } from '../../apis/connector';
 import { DO_NOT_FETCH, useFetcher } from '../../hooks/use_fetcher';
 import { MODEL_STATE } from '../../../common';
+import { ModelStatus as AgentModelStatus } from '../../dashboard-assistant/modules/model/domain/enums/model-status';
 import { DataSourceContext } from '../../contexts';
 import { ModelDeployStatus } from './types';
 import { DATA_SOURCE_FETCHING_ID, DataSourceId, getDataSourceId } from '../../utils/data_source';
+import { getUseCases } from '../../dashboard-assistant/services/ml-use-cases.service';
+import { PermissionMLError } from '../../dashboard-assistant/modules/common/domain/errors';
 
 interface Params {
   nameOrId?: string;
@@ -97,14 +100,10 @@ const fetchDeployedModels = async (
         return MODEL_STATE.partiallyLoaded;
     }
   });
-  let externalConnectorsData: GetAllConnectorResponse;
-  try {
-    externalConnectorsData = await APIProvider.getAPI('connector').getAll({
-      dataSourceId: params.dataSourceId,
-    });
-  } catch (_e) {
-    externalConnectorsData = { data: [], total_connectors: 0 };
-  }
+  const externalConnectorsData = await APIProvider.getAPI('connector').getAll({
+    dataSourceId: params.dataSourceId,
+  });
+
   const result = await APIProvider.getAPI('model').search({
     from: (params.currentPage - 1) * params.pageSize,
     size: params.pageSize,
@@ -128,6 +127,33 @@ const fetchDeployedModels = async (
     }),
     dataSourceId: params.dataSourceId,
   });
+
+  // Enrich with agent/inUse/version/createdAt/status using assistant use cases
+  // Note: getModelsComposed returns all models; merge by ID for current page
+  let modelAgentDataMap: Record<
+    string,
+    {
+      agentId?: string;
+      inUse?: boolean;
+      version?: string;
+      createdAt?: string;
+      status?: string;
+    }
+  > = {};
+  const composedModelsWithAgentData = await getUseCases().getModelsWithAgentData();
+  modelAgentDataMap = composedModelsWithAgentData.reduce<typeof modelAgentDataMap>(
+    (acc, modelWithAgentData) => {
+      acc[modelWithAgentData.id] = {
+        agentId: modelWithAgentData.agentId,
+        inUse: modelWithAgentData.inUse,
+        version: modelWithAgentData.version,
+        createdAt: modelWithAgentData.createdAt,
+        status: modelWithAgentData.status,
+      };
+      return acc;
+    },
+    {}
+  );
   const externalConnectorMap = externalConnectorsData.data.reduce<{
     [key: string]: {
       id: string;
@@ -154,6 +180,20 @@ const fetchDeployedModels = async (
         algorithm,
         ...rest
       }) => {
+        const combinedAgentData = modelAgentDataMap[id] || {};
+        // derive agent status using composed data when available
+        const composedStatus = combinedAgentData.status?.toLowerCase();
+        let agentState: AgentModelStatus | undefined;
+        if (combinedAgentData.agentId === undefined) {
+          agentState = AgentModelStatus.INACTIVE;
+        } else if (composedStatus === 'active') {
+          agentState = AgentModelStatus.ACTIVE;
+        } else if (composedStatus === 'inactive') {
+          agentState = AgentModelStatus.INACTIVE;
+        } else if (composedStatus === 'error' || composedStatus === 'failed') {
+          agentState = AgentModelStatus.ERROR;
+        }
+
         return {
           id,
           name,
@@ -164,6 +204,11 @@ const fetchDeployedModels = async (
               ? planningCount - workerCount
               : undefined,
           planningWorkerNodes,
+          version: combinedAgentData.version,
+          createdAt: combinedAgentData.createdAt,
+          agentId: combinedAgentData.agentId,
+          inUse: combinedAgentData.inUse,
+          agent_state: agentState,
           connector: rest.connector_id
             ? externalConnectorMap[rest.connector_id] || {}
             : rest.connector,
@@ -184,7 +229,7 @@ export const useMonitoring = () => {
     connector: [],
     dataSourceId: getDataSourceId(dataSourceEnabled, selectedDataSourceOption),
   });
-  const { data, loading, reload } = useFetcher(
+  const { data, loading, reload, error } = useFetcher(
     fetchDeployedModels,
     typeof params.dataSourceId === 'symbol'
       ? DO_NOT_FETCH
@@ -313,6 +358,12 @@ export const useMonitoring = () => {
     }));
   }, [params, data]);
 
+  const permissionErrorMessage: string | undefined = useMemo(() => {
+    if (error instanceof PermissionMLError) {
+      return error.message;
+    }
+  }, [error]);
+
   return {
     params,
     pageStatus,
@@ -329,5 +380,6 @@ export const useMonitoring = () => {
     searchByConnector,
     resetSearch,
     handleTableChange,
+    permissionErrorMessage,
   };
 };

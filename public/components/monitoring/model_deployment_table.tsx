@@ -16,12 +16,17 @@ import {
   EuiHealth,
   EuiSpacer,
   EuiLink,
-  EuiToolTip,
   EuiCopy,
   EuiText,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiIcon,
 } from '@elastic/eui';
 
 import { MODEL_STATE } from '../../../common';
+import { LONGDASH } from '../../constants';
+import type { ModelStatus } from '../../dashboard-assistant/modules/model/domain/enums/model-status';
+import { AgentStatus } from '../../dashboard-assistant/components/agent-status';
 
 export interface ModelDeploymentTableSort {
   field: 'name' | 'model_state' | 'id';
@@ -41,6 +46,11 @@ export interface ModelDeploymentItem {
   planningNodesCount: number | undefined;
   notRespondingNodesCount: number | undefined;
   planningWorkerNodes: string[];
+  version?: string;
+  agentId?: string;
+  agent_state?: ModelStatus;
+  inUse?: boolean;
+  createdAt?: string;
   connector?: {
     id?: string;
     name?: string;
@@ -61,6 +71,9 @@ export interface ModelDeploymentTableProps {
   onChange: (criteria: ModelDeploymentTableCriteria) => void;
   onViewDetail?: (modelDeploymentItem: ModelDeploymentItem) => void;
   onResetSearchClick?: () => void;
+  onUseModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
+  onTestModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
+  onDeleteModel?: (modelDeploymentItem: ModelDeploymentItem) => void;
 }
 
 export const ModelDeploymentTable = ({
@@ -72,6 +85,9 @@ export const ModelDeploymentTable = ({
   onChange,
   onViewDetail,
   onResetSearchClick,
+  onUseModel,
+  onTestModel,
+  onDeleteModel,
 }: ModelDeploymentTableProps) => {
   const columns = useMemo(
     () => [
@@ -81,6 +97,33 @@ export const ModelDeploymentTable = ({
         width: '26.13%',
         sortable: true,
         truncateText: true,
+      },
+      {
+        field: 'agentId',
+        name: 'Agent ID',
+        width: '18%',
+        truncateText: true,
+        render: (agentId: string | undefined) => (
+          <>
+            <EuiCopy
+              textToCopy={agentId}
+              beforeMessage="Copy agent ID"
+              anchorClassName="ml-modelModelIdCell"
+            >
+              {(copy) => (
+                <EuiSmallButtonIcon
+                  aria-label="Copy ID to clipboard"
+                  color="text"
+                  iconType="copy"
+                  onClick={copy}
+                />
+              )}
+            </EuiCopy>
+            <EuiText className="eui-textTruncate ml-modelModelIdText" size="s">
+              {agentId}
+            </EuiText>
+          </>
+        ),
       },
       {
         field: 'id',
@@ -99,12 +142,12 @@ export const ModelDeploymentTable = ({
         truncateText: true,
         textOnly: true,
         render: (_id: string, modelDeploymentItem: ModelDeploymentItem) => {
-          return modelDeploymentItem.connector?.name || '\u2014';
+          return modelDeploymentItem.connector?.name || LONGDASH;
         },
       },
       {
         field: 'model_state',
-        name: 'Status',
+        name: 'Model Status',
         width: '14%',
         sortable: true,
         truncateText: true,
@@ -117,7 +160,7 @@ export const ModelDeploymentTable = ({
             respondingNodesCount === undefined ||
             notRespondingNodesCount === undefined
           ) {
-            return '\u2014';
+            return LONGDASH;
           }
           if (respondingNodesCount === 0) {
             return (
@@ -139,6 +182,13 @@ export const ModelDeploymentTable = ({
             </EuiHealth>
           );
         },
+      },
+      {
+        field: 'agent_state',
+        name: 'Agent Status',
+        width: '14%',
+        truncateText: true,
+        render: (status: ModelStatus) => <AgentStatus status={status} />,
       },
       {
         field: 'id',
@@ -169,27 +219,55 @@ export const ModelDeploymentTable = ({
         ),
       },
       {
-        field: 'id',
-        name: 'Action',
+        field: 'inUse',
+        name: 'In use',
+        width: '10%',
+        render: (inUse: boolean | undefined) =>
+          inUse ? (
+            <EuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+              <EuiFlexItem grow={false}>
+                <EuiIcon type={'check'} color={'success'} size="m" />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          ) : (
+            LONGDASH
+          ),
+      },
+      {
+        name: 'Actions',
         align: 'right' as const,
-        width: '5.87%',
-        render: (id: string, modelDeploymentItem: ModelDeploymentItem) => {
-          return (
-            <EuiToolTip content="View status details">
-              <EuiSmallButtonIcon
-                onClick={() => {
-                  onViewDetail?.(modelDeploymentItem);
-                }}
-                role="button"
-                aria-label="view detail"
-                iconType="inspect"
-              />
-            </EuiToolTip>
-          );
-        },
+        width: '12%',
+        actions: [
+          {
+            name: 'Use model',
+            description: 'Use model',
+            icon: 'plusInCircle',
+            onClick: (item: ModelDeploymentItem) => onUseModel?.(item),
+            enabled: (item: ModelDeploymentItem) => !!item.agentId && !item.inUse,
+          },
+          {
+            name: 'View status details',
+            description: 'View status details',
+            icon: 'inspect',
+            onClick: (item: ModelDeploymentItem) => onViewDetail?.(item),
+          },
+          {
+            name: 'Test model connection',
+            description: 'Test model connection',
+            icon: 'play',
+            onClick: (item: ModelDeploymentItem) => onTestModel?.(item),
+          },
+          {
+            name: 'Delete model',
+            description: 'Delete model',
+            icon: 'trash',
+            color: 'danger',
+            onClick: (item: ModelDeploymentItem) => onDeleteModel?.(item),
+          },
+        ],
       },
     ],
-    [onViewDetail]
+    [onViewDetail, onUseModel, onTestModel, onDeleteModel]
   );
   const sorting = useMemo(() => ({ sort }), [sort]);
 
@@ -211,7 +289,12 @@ export const ModelDeploymentTable = ({
     (criteria: Criteria<ModelDeploymentItem>) => {
       onChange({
         ...(criteria.page
-          ? { pagination: { currentPage: criteria.page.index + 1, pageSize: criteria.page.size } }
+          ? {
+              pagination: {
+                currentPage: criteria.page.index + 1,
+                pageSize: criteria.page.size,
+              },
+            }
           : {}),
         ...(criteria.sort ? { sort: criteria.sort as ModelDeploymentTableSort } : {}),
       });

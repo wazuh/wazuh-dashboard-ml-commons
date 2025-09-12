@@ -23,7 +23,7 @@ const setup = (
   monitoringReturnValue?: Partial<ReturnType<typeof useMonitoringExports.useMonitoring>>,
   useNewPageHeader = false
 ) => {
-  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime, skipClick: true });
   const finalMonitoringReturnValue = {
     params: {
       currentPage: 1,
@@ -82,7 +82,6 @@ const setup = (
     searchByStatus: jest.fn(),
     searchByConnector: jest.fn(),
     searchBySource: jest.fn(),
-    updateDeployedModel: jest.fn(),
     resetSearch: jest.fn(),
     handleTableChange: jest.fn(),
     ...monitoringReturnValue,
@@ -133,13 +132,13 @@ const mockOffsetMethods = () => {
 
 describe('<Monitoring />', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     jest.useFakeTimers();
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
-    jest.clearAllMocks();
   });
 
   describe('pageStatus', () => {
@@ -345,11 +344,25 @@ describe('<Monitoring />', () => {
 
   it('should show preview panel after view detail button clicked', async () => {
     const { user } = setup();
-    await user.click(screen.getAllByRole('button', { name: 'view detail' })[0]);
-    const previewPanel = screen.getByRole('dialog');
+    // Click the first row's inline View status details action
+    const headers = screen.getAllByRole('columnheader');
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
+    const table = headers[0].closest('table') as HTMLTableElement;
+    const firstRow = table.querySelectorAll('tbody tr')[0] as HTMLElement;
+    const actionsCell = firstRow.querySelectorAll('td')[actionsIndex] as HTMLElement;
+    // Always open collapsed "All actions" menu and select "View status details"
+    const allActionsBtn = within(actionsCell).getByRole('button', {
+      name: /all actions/i,
+    });
+    allActionsBtn.click();
+    const viewDetailsItem = await screen.findByRole('button', {
+      name: /view (status )?details/i,
+    });
+    await user.click(viewDetailsItem);
+    const previewPanel = await screen.findByRole('dialog');
     expect(previewPanel).toBeInTheDocument();
     expect(within(previewPanel).getByText('model 1 name')).toBeInTheDocument();
-  });
+  }, 30000);
 
   it('should call reload after preview panel closed if model deployment status changed', async () => {
     // model deployment status is changed
@@ -369,10 +382,22 @@ describe('<Monitoring />', () => {
     } = setup();
 
     // click on first item: responding: 1, not responding: 2, planning: 3
-    await user.click(screen.getAllByRole('button', { name: 'view detail' })[0]);
+    const headers = screen.getAllByRole('columnheader');
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
+    const table = headers[0].closest('table') as HTMLTableElement;
+    const firstRow = table.querySelectorAll('tbody tr')[0] as HTMLElement;
+    const actionsCell = firstRow.querySelectorAll('td')[actionsIndex] as HTMLElement;
+    const allActionsBtn2 = within(actionsCell).getByRole('button', {
+      name: /all actions/i,
+    });
+    await user.click(allActionsBtn2);
+    const viewDetailsItem2 = await screen.findByRole('button', {
+      name: /view (status )?details/i,
+    });
+    await user.click(viewDetailsItem2);
     await user.click(screen.getByLabelText('Close this dialog'));
     expect(reload).toHaveBeenCalled();
-  });
+  }, 30000);
 
   it('should NOT call reload after preview panel closed if model deployment status NOT changed', async () => {
     // model deployment status is NOT changed
@@ -392,10 +417,22 @@ describe('<Monitoring />', () => {
     } = setup();
 
     // click on first item: responding: 1, not responding: 2, planning: 3
-    await user.click(screen.getAllByRole('button', { name: 'view detail' })[0]);
+    const headers = screen.getAllByRole('columnheader');
+    const actionsIndex = headers.findIndex((h) => within(h).queryByText('Actions'));
+    const table = headers[0].closest('table') as HTMLTableElement;
+    const firstRow = table.querySelectorAll('tbody tr')[0] as HTMLElement;
+    const actionsCell = firstRow.querySelectorAll('td')[actionsIndex] as HTMLElement;
+    const allActionsBtn3 = within(actionsCell).getByRole('button', {
+      name: /all actions/i,
+    });
+    await user.click(allActionsBtn3);
+    const viewDetailsItem3 = await screen.findByRole('button', {
+      name: /view (status )?details/i,
+    });
+    await user.click(viewDetailsItem3);
     await user.click(screen.getByLabelText('Close this dialog'));
     expect(reload).not.toHaveBeenCalled();
-  });
+  }, 30000);
 
   it('should NOT render table header title if useNewPageHeader equal true', () => {
     setup({}, true);

@@ -1,0 +1,5 @@
+.app-wrapper .application > div:has(.model-register-form) {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}

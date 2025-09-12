@@ -19,6 +19,7 @@ export interface MonitoringPageHeaderProps {
   recordsCount?: number;
   setBreadcrumbs: (breadcrumbs: ChromeBreadcrumb[]) => void;
   useNewPageHeader: boolean;
+  showRefreshInterval?: boolean;
 }
 
 export const MonitoringPageHeader = ({
@@ -28,6 +29,7 @@ export const MonitoringPageHeader = ({
   setBreadcrumbs,
   application,
   useNewPageHeader,
+  showRefreshInterval = true,
 }: MonitoringPageHeaderProps) => {
   const { HeaderControl } = navigation.ui;
   const { setAppRightControls } = application;
@@ -71,7 +73,7 @@ export const MonitoringPageHeader = ({
       <EuiSpacer size="xs" />
       <EuiPageHeader
         pageTitle="Overview"
-        rightSideItems={[<RefreshInterval onRefresh={onRefresh} />]}
+        rightSideItems={showRefreshInterval ? [<RefreshInterval onRefresh={onRefresh} />] : []}
       />
       <EuiSpacer size="m" />
     </>
