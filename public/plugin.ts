@@ -38,8 +38,10 @@ export class MlCommonsPluginPlugin
         defaultMessage: 'Review  the status of running AI models.',
       }),
       category: {
-        id: 'opensearch',
-        label: 'OpenSearch Plugins',
+        id: 'explore',
+        label: 'Explore',
+        order: 100,
+        euiIconType: 'search',
       },
       async mount(params: AppMountParameters) {
         // Load application bundle
