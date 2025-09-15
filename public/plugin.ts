@@ -38,10 +38,10 @@ export class MlCommonsPluginPlugin
         defaultMessage: 'Review  the status of running AI models.',
       }),
       category: {
-          id: 'explore',
-          label: 'Explore',
-          order: 100,
-          euiIconType: 'search',
+        id: 'explore',
+        label: 'Explore',
+        order: 100,
+        euiIconType: 'search',
       },
       async mount(params: AppMountParameters) {
         // Load application bundle
