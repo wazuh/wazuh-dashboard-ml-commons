@@ -65,7 +65,7 @@ describe('InstallationProgressManager', () => {
 
     const p = mgr.getProgress();
     expect(p.getSteps()[0].state).toBe(ExecutionState.FAILED);
-    expect(p.getSteps()[0].message).toBe('boom-msg');
+    expect(p.getSteps()[0].message).toBe('boom-msg Additional details: boom');
     expect(p.getSteps()[0].error).toBeInstanceOf(Error);
     expect(p.hasFailedSteps()).toBe(true);
     expect(p.getFailedSteps().length).toBe(1);

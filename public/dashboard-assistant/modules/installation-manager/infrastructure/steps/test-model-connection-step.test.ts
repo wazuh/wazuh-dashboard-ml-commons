@@ -44,7 +44,26 @@ describe('TestModelConnectionStep', () => {
     const step = new TestModelConnectionStep();
     const ctx = new InstallationContext();
     ctx.set('modelId', 'm-1');
-    await expect(step.execute(req, ctx)).rejects.toThrow('Failed to connect to model');
+    await expect(step.execute(req, ctx)).rejects.toThrow(/Test Model Connection failed while validating the model connection/);
     expect(step.getFailureMessage()).toMatch(/Failed to test model connection/);
+  });
+
+  it('enriches errors with possible causes when API key is invalid', async () => {
+    const apiError = new Error('Unauthorized');
+    (apiError as { status?: number }).status = 401;
+
+    ((global as unknown) as {
+      __mockUseCases: import('../../../../services/__mocks__').MockUseCases;
+    }).__mockUseCases = {
+      validateModelConnection: jest.fn().mockRejectedValue(apiError),
+    };
+
+    const step = new TestModelConnectionStep();
+    const ctx = new InstallationContext();
+    ctx.set('modelId', 'm-1');
+
+    await expect(step.execute(req, ctx)).rejects.toThrow(
+      /Possible causes: Verify the API key; it may be incorrect or lack permissions\./
+    );
   });
 });

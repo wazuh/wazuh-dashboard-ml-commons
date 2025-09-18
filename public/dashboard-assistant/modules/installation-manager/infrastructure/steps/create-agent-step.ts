@@ -13,6 +13,7 @@ import {
   InstallationAIAssistantStep,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { StepError } from '../utils/step-error';
 
 export class CreateAgentStep extends InstallationAIAssistantStep {
   constructor() {
@@ -62,10 +63,28 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const agent = await getUseCases().createAgent(
-      this.createAgentDto(request, context.get('modelId'))
-    );
-    context.set('agentId', agent.id);
+    const details: Record<string, unknown> = {
+      provider: request.selected_provider,
+    };
+
+    if (context.has('modelId')) {
+      details.modelId = context.get('modelId');
+    }
+
+    try {
+      const dto = this.createAgentDto(request, context.get('modelId'));
+      details.agentName = dto.name;
+      const agent = await getUseCases().createAgent(dto);
+      details.agentId = agent?.id;
+      context.set('agentId', agent.id);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'creating the assistant agent',
+        cause: error,
+        details,
+      });
+    }
   }
 
   public getSuccessMessage(): string {

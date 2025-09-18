@@ -10,6 +10,7 @@ import {
   InstallationAIAssistantStep,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { StepError } from '../utils/step-error';
 
 export class CreateModelStep extends InstallationAIAssistantStep {
   constructor() {
@@ -31,8 +32,27 @@ export class CreateModelStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const model = await getUseCases().createModel(this.buildDto(request, context));
-    context.set('modelId', model.id);
+    const details: Record<string, unknown> = {
+      provider: request.selected_provider,
+    };
+
+    if (context.has('connectorId')) {
+      details.connectorId = context.get('connectorId');
+    }
+
+    try {
+      const dto = this.buildDto(request, context);
+      const model = await getUseCases().createModel(dto);
+      details.modelId = model?.id;
+      context.set('modelId', model.id);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'creating the ML Commons model',
+        cause: error,
+        details,
+      });
+    }
   }
 
   getSuccessMessage(): string {

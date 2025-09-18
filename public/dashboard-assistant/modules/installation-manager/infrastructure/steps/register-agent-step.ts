@@ -9,6 +9,7 @@ import {
   InstallationAIAssistantStep,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { StepError } from '../utils/step-error';
 
 export class RegisterAgentStep extends InstallationAIAssistantStep {
   constructor() {
@@ -19,8 +20,24 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const agentId = context.get<string>('agentId');
-    await getUseCases().useAgent(agentId);
+    const details: Record<string, unknown> = {};
+
+    if (context.has('agentId')) {
+      details.agentId = context.get('agentId');
+    }
+
+    try {
+      const agentId = context.get<string>('agentId');
+      details.agentId = agentId;
+      await getUseCases().useAgent(agentId);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'registering the assistant agent for usage',
+        cause: error,
+        details,
+      });
+    }
   }
 
   public getSuccessMessage(): string {

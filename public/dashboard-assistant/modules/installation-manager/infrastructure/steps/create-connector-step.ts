@@ -11,6 +11,7 @@ import {
   InstallAIDashboardAssistantDto,
 } from '../../domain';
 import { getUseCases } from '../../../../services/ml-use-cases.service';
+import { StepError } from '../utils/step-error';
 
 export class CreateConnectorStep extends InstallationAIAssistantStep {
   constructor() {
@@ -41,8 +42,26 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const connector = await getUseCases().createConnector(this.buildDto(request));
-    context.set('connectorId', connector.id);
+    const details: Record<string, unknown> = {
+      provider: request.selected_provider,
+      endpoint: request.api_url,
+      modelId: request.model_id,
+    };
+
+    try {
+      const dto = this.buildDto(request);
+      details.connectorName = dto.name;
+      const connector = await getUseCases().createConnector(dto);
+      details.connectorId = connector?.id;
+      context.set('connectorId', connector.id);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'creating the ML Commons connector',
+        cause: error,
+        details,
+      });
+    }
   }
 
   getSuccessMessage(): string {

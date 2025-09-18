@@ -4,6 +4,7 @@
  */
 
 import type { HttpClient } from '../domain/entities/http-client';
+import { HttpError } from './http-error';
 
 export class WindowFetchHttpClient implements HttpClient {
   private defaultHeaders = { 'osd-xsrf': 'kibana' };
@@ -28,8 +29,7 @@ export class WindowFetchHttpClient implements HttpClient {
 
     return window.fetch(url, options).then(async (response) => {
       if (!response.ok) {
-        const error = new Error(`HTTP error! status: ${response.status}`);
-        (error as any).response = response;
+        const error = await HttpError.create(response, options as RequestInit & { method: string }, url);
         throw error;
       }
       return response.json();

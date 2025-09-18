@@ -48,9 +48,13 @@ export class InstallationManager implements IInstallationManager {
     } catch (error) {
       const progress = progressManager.getProgress();
       const failedSteps = progress.getFailedSteps();
+      const firstFailedStep = failedSteps[0];
+      const stepContext = firstFailedStep ? `during step "${firstFailedStep.stepName}"` : 'at an unknown step';
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
       return {
         success: false,
-        message: `Installation failed: ${error}`,
+        message: `Installation failed ${stepContext}: ${errorMessage}`,
         progress,
         data: context.toObject(),
         errors: failedSteps.map((step) => ({
