@@ -9,10 +9,10 @@ import { InstallationProgress } from './installation-progress';
 import type { InstallAIDashboardAssistantDto } from '../types/install-ai-dashboard-assistant-dto';
 import type { InstallationContext } from './installation-context';
 
-type RollbackError = {
+interface RollbackError {
   step: string;
   message: string;
-};
+}
 
 export class InstallationProgressManager {
   private readonly progress: InstallationProgress;

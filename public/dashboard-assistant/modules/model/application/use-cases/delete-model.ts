@@ -10,4 +10,3 @@ export const deleteModelUseCase = (modelRepository: ModelRepository) => async (
 ): Promise<void> => {
   await modelRepository.delete(modelId);
 };
-

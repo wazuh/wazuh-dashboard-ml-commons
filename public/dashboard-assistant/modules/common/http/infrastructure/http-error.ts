@@ -20,15 +20,13 @@ export class HttpError extends Error {
   public static async create(
     response: Response,
     options: RequestInit & { method: string },
-    url: string,
+    url: string
   ): Promise<HttpError> {
     const method = options.method.toUpperCase();
     const sanitizedUrl = this.sanitizeUrl(url);
 
     const statusText = response.statusText?.trim();
-    const statusSummary = statusText
-      ? `${response.status} ${statusText}`
-      : `${response.status}`;
+    const statusSummary = statusText ? `${response.status} ${statusText}` : `${response.status}`;
 
     const message = this.buildFailureMessage({
       method,
@@ -56,9 +54,9 @@ export class HttpError extends Error {
   }): string {
     const { method, url, statusSummary } = params;
 
-    const messageParts = [
-      `HTTP ${method} ${url} failed with status ${statusSummary}`,
-    ].filter(Boolean);
+    const messageParts = [`HTTP ${method} ${url} failed with status ${statusSummary}`].filter(
+      Boolean
+    );
 
     return messageParts.join('. ');
   }
@@ -77,9 +75,7 @@ export class HttpError extends Error {
       });
 
       if (!url.startsWith('http')) {
-        return (
-          `${parsed.pathname}${parsed.search}${parsed.hash}` || parsed.pathname
-        );
+        return `${parsed.pathname}${parsed.search}${parsed.hash}` || parsed.pathname;
       }
 
       return parsed.toString();
@@ -94,26 +90,25 @@ export class HttpError extends Error {
     }
 
     if (Array.isArray(value)) {
-      return value.map(item => this.sanitizeStructuredValue(item));
+      return value.map((item) => this.sanitizeStructuredValue(item));
     }
 
     if (typeof value === 'object') {
-      return Object.entries(value as Record<string, unknown>).reduce<
-        Record<string, unknown>
-      >((acc, [key, entryValue]) => {
-        if (typeof entryValue !== 'string' || !SENSITIVE_KEY_PATTERN.test(key)) {
+      return Object.entries(value as Record<string, unknown>).reduce<Record<string, unknown>>(
+        (acc, [key, entryValue]) => {
+          if (typeof entryValue !== 'string' || !SENSITIVE_KEY_PATTERN.test(key)) {
             acc[key] = this.sanitizeStructuredValue(entryValue);
-        }
-        return acc;
-      }, {});
+          }
+          return acc;
+        },
+        {}
+      );
     }
 
     return value;
   }
 
-  private static sanitizeRequestBody(
-    body?: BodyInit | null,
-  ): string | undefined {
+  private static sanitizeRequestBody(body?: BodyInit | null): string | undefined {
     if (!body) {
       return undefined;
     }
@@ -124,9 +119,7 @@ export class HttpError extends Error {
         const sanitized = this.sanitizeStructuredValue(parsed);
         return JSON.stringify(sanitized);
       } catch (error) {
-        return body.length > MAX_BODY_LENGTH
-          ? `${body.slice(0, MAX_BODY_LENGTH)}...`
-          : body;
+        return body.length > MAX_BODY_LENGTH ? `${body.slice(0, MAX_BODY_LENGTH)}...` : body;
       }
     }
 

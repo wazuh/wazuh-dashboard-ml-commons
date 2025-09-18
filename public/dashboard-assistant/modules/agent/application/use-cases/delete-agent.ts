@@ -10,4 +10,3 @@ export const deleteAgentUseCase = (agentRepository: AgentRepository) => async (
 ): Promise<void> => {
   await agentRepository.delete(agentId);
 };
-

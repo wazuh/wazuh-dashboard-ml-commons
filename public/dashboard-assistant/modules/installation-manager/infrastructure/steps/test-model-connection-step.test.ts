@@ -44,7 +44,9 @@ describe('TestModelConnectionStep', () => {
     const step = new TestModelConnectionStep();
     const ctx = new InstallationContext();
     ctx.set('modelId', 'm-1');
-    await expect(step.execute(req, ctx)).rejects.toThrow(/"Test Model Connection" step failed while validating the model connection/);
+    await expect(step.execute(req, ctx)).rejects.toThrow(
+      /"Test Model Connection" step failed while validating the model connection/
+    );
     expect(step.getFailureMessage()).toMatch(/Failed to test model connection/);
   });
 

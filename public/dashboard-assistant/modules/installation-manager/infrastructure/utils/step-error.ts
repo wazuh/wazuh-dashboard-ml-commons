@@ -97,7 +97,9 @@ export class StepError extends Error {
     }
   }
 
-  private static sanitizeDetails(details?: Record<string, unknown>): Record<string, unknown> | undefined {
+  private static sanitizeDetails(
+    details?: Record<string, unknown>
+  ): Record<string, unknown> | undefined {
     if (!details) {
       return undefined;
     }
@@ -123,9 +125,7 @@ export class StepError extends Error {
       return undefined;
     }
 
-    const trimmed = possibleCauses
-      .map((cause) => cause.trim())
-      .filter((cause) => cause.length > 0);
+    const trimmed = possibleCauses.map((cause) => cause.trim()).filter((cause) => cause.length > 0);
 
     if (trimmed.length === 0) {
       return undefined;

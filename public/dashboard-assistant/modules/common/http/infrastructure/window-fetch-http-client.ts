@@ -29,7 +29,11 @@ export class WindowFetchHttpClient implements HttpClient {
 
     return window.fetch(url, options).then(async (response) => {
       if (!response.ok) {
-        const error = await HttpError.create(response, options as RequestInit & { method: string }, url);
+        const error = await HttpError.create(
+          response,
+          options as RequestInit & { method: string },
+          url
+        );
         throw error;
       }
       return response.json();

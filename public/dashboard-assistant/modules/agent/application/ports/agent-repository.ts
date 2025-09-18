@@ -7,9 +7,7 @@ import { CreateRepository, DeleteRepository } from '../../../common/domain/entit
 import { Agent } from '../../domain/entities/agent';
 import { CreateAgentDto } from '../dtos/create-agent-dto';
 
-export interface AgentRepository
-  extends CreateRepository<Agent, CreateAgentDto>,
-    DeleteRepository {
+export interface AgentRepository extends CreateRepository<Agent, CreateAgentDto>, DeleteRepository {
   execute(id: string, parameters: any): Promise<any>;
   getActive(): Promise<string | undefined>;
   register(agentId: string): Promise<void>;
