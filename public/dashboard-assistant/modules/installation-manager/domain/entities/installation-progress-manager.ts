@@ -6,11 +6,20 @@
 import { ExecutionState, StepResultState } from '../enums';
 import { InstallationAIAssistantStep } from './installation-ai-assistant-step';
 import { InstallationProgress } from './installation-progress';
+import type { InstallAIDashboardAssistantDto } from '../types/install-ai-dashboard-assistant-dto';
+import type { InstallationContext } from './installation-context';
+
+type RollbackError = {
+  step: string;
+  message: string;
+};
 
 export class InstallationProgressManager {
   private readonly progress: InstallationProgress;
   // Prevent concurrent executions
   private inProgress = false;
+  private completedSteps: InstallationAIAssistantStep[] = [];
+  private rollbackErrors: RollbackError[] = [];
 
   constructor(
     steps: InstallationAIAssistantStep[],
@@ -39,6 +48,8 @@ export class InstallationProgressManager {
 
   public async runStep(
     step: InstallationAIAssistantStep,
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
     executor: () => Promise<void>
   ): Promise<void> {
     if (this.inProgress) {
@@ -51,16 +62,23 @@ export class InstallationProgressManager {
 
     this.inProgress = true;
     this.progress.startStep(i);
+    this.rollbackErrors = [];
     try {
       await executor();
+      this.completedSteps.push(step);
       this.succeedStep(i, step);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
+      await this.rollbackSteps(step, request, context, error);
       this.failStep(i, step, error);
       throw error;
     } finally {
       this.inProgress = false;
     }
+  }
+
+  public getRollbackErrors(): RollbackError[] | undefined {
+    return this.rollbackErrors.length > 0 ? [...this.rollbackErrors] : undefined;
   }
 
   private succeedStep(stepIndex: number, step: InstallationAIAssistantStep): void {
@@ -74,6 +92,36 @@ export class InstallationProgressManager {
   private notifyProgress(): void {
     if (this.onProgressChange) {
       this.onProgressChange(this.getProgress());
+    }
+  }
+
+  private async rollbackSteps(
+    failedStep: InstallationAIAssistantStep,
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    failure: Error
+  ): Promise<void> {
+    const stepsToRollback = [...this.completedSteps].reverse();
+
+    await this.invokeRollback(failedStep, request, context, failure);
+    for (const step of stepsToRollback) {
+      await this.invokeRollback(step, request, context, failure);
+    }
+
+    this.completedSteps = [];
+  }
+
+  private async invokeRollback(
+    step: InstallationAIAssistantStep,
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    failure: Error
+  ): Promise<void> {
+    try {
+      await step.rollback(request, context, failure);
+    } catch (error) {
+      const normalizedError = error instanceof Error ? error : new Error(String(error));
+      this.rollbackErrors.push({ step: step.getName(), message: normalizedError.message });
     }
   }
 }

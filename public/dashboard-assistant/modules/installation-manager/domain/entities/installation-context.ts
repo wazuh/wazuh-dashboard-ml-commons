@@ -21,6 +21,10 @@ export class InstallationContext {
     return this.context.has(key);
   }
 
+  public delete(key: string): void {
+    this.context.delete(key);
+  }
+
   public clear(): void {
     this.context.clear();
   }

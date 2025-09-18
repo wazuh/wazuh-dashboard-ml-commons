@@ -62,4 +62,26 @@ export class CreateModelStep extends InstallationAIAssistantStep {
   getFailureMessage(): string {
     return 'Failed to create model. Please check the configuration and try again.';
   }
+
+  public override async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    if (!context.has('modelId')) {
+      return;
+    }
+
+    const modelId = context.get<string>('modelId');
+    try {
+      await getUseCases().deleteModel(modelId);
+      context.delete('modelId');
+    } catch (error) {
+      throw new Error(
+        `Failed to rollback model creation for modelId="${modelId}": ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
 }

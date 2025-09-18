@@ -115,4 +115,12 @@ export class TestModelConnectionStep extends InstallationAIAssistantStep {
   public getFailureMessage(): string {
     return 'Failed to test model connection. Please check the model configuration and try again.';
   }
+
+  public override async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    _context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    // This step only validates connectivity and does not create resources.
+  }
 }

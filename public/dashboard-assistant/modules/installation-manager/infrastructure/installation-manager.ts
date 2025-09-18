@@ -36,7 +36,7 @@ export class InstallationManager implements IInstallationManager {
     const context = new InstallationContext();
     try {
       for (const step of steps) {
-        await progressManager.runStep(step, () => step.execute(request, context));
+        await progressManager.runStep(step, request, context, () => step.execute(request, context));
       }
 
       return {
@@ -62,6 +62,7 @@ export class InstallationManager implements IInstallationManager {
           message: step.message || 'Unknown error',
           details: step.error,
         })),
+        rollbackErrors: progressManager.getRollbackErrors(),
       };
     }
   }

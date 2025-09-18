@@ -94,4 +94,26 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
   public getFailureMessage(): string {
     return 'Failed to create agent. Please check the configuration and try again.';
   }
+
+  public override async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    if (!context.has('agentId')) {
+      return;
+    }
+
+    const agentId = context.get<string>('agentId');
+    try {
+      await getUseCases().deleteAgent(agentId);
+      context.delete('agentId');
+    } catch (error) {
+      throw new Error(
+        `Failed to rollback agent creation for agentId="${agentId}": ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
 }

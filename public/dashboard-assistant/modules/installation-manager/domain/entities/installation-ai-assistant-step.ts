@@ -22,4 +22,9 @@ export abstract class InstallationAIAssistantStep {
   ): Promise<void>;
   abstract getSuccessMessage(): string;
   abstract getFailureMessage(): string;
+  abstract rollback(
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    error: Error
+  ): Promise<void>;
 }

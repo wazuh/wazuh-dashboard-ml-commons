@@ -71,4 +71,26 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
   getFailureMessage(): string {
     return 'Failed to create connector. Please check the configuration and try again.';
   }
+
+  public override async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    if (!context.has('connectorId')) {
+      return;
+    }
+
+    const connectorId = context.get<string>('connectorId');
+    try {
+      await getUseCases().deleteConnector(connectorId);
+      context.delete('connectorId');
+    } catch (error) {
+      throw new Error(
+        `Failed to rollback connector creation for connectorId="${connectorId}": ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
 }

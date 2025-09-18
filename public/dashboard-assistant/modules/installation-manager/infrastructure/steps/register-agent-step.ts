@@ -47,4 +47,12 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
   public getFailureMessage(): string {
     return 'Failed to register agent. Please check the configuration and try again.';
   }
+
+  public override async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    _context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    // Registration step does not persist reversible data beyond targeting the active agent.
+  }
 }
