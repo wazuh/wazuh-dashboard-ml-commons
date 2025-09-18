@@ -102,7 +102,7 @@ describe('WindowFetchHttpClient', () => {
   });
 
   it('propagates HTTP errors with contextual information attached', async () => {
-    expect.assertions(5);
+    expect.assertions(6);
     const errorPayload = { message: 'boom' };
     const mockResponse: JsonResponse = {
       ok: false,
@@ -126,9 +126,10 @@ describe('WindowFetchHttpClient', () => {
       expect((error as Error).message).toContain(
         'HTTP DELETE /x failed with status 500 Internal Server Error'
       );
-      expect((error as Error).message).toContain('Response body: {"message":"boom"}');
       expect((error as { response?: JsonResponse }).response).toBe(mockResponse);
       expect((error as { request?: { method: string } }).request?.method).toBe('DELETE');
+      expect((error as { status?: number }).status).toBe(500);
+      expect((error as { statusText?: string }).statusText).toBe('Internal Server Error');
     }
   });
 });
