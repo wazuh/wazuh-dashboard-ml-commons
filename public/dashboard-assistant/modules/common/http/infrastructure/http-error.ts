@@ -11,7 +11,6 @@ export class HttpError extends Error {
   public status?: number;
   public statusText?: string;
   public request?: { method: string; url: string; body?: string };
-  public responseBodyOmitted?: boolean;
 
   private constructor(message: string) {
     super(message);
@@ -25,7 +24,6 @@ export class HttpError extends Error {
   ): Promise<HttpError> {
     const method = options.method.toUpperCase();
     const sanitizedUrl = this.sanitizeUrl(url);
-    const hasResponseBody = await this.hasMeaningfulBody(response);
 
     const statusText = response.statusText?.trim();
     const statusSummary = statusText
@@ -36,7 +34,6 @@ export class HttpError extends Error {
       method,
       url: sanitizedUrl,
       statusSummary,
-      hasResponseBody,
     });
 
     const error = new HttpError(message);
@@ -48,9 +45,6 @@ export class HttpError extends Error {
       url: sanitizedUrl,
       body: this.sanitizeRequestBody(options.body ?? undefined),
     };
-    if (hasResponseBody) {
-      error.responseBodyOmitted = true;
-    }
 
     return error;
   }
@@ -59,15 +53,11 @@ export class HttpError extends Error {
     method: string;
     url: string;
     statusSummary: string;
-    hasResponseBody: boolean;
   }): string {
-    const { method, url, statusSummary, hasResponseBody } = params;
+    const { method, url, statusSummary } = params;
 
     const messageParts = [
       `HTTP ${method} ${url} failed with status ${statusSummary}`,
-      hasResponseBody
-        ? 'Response body omitted due to security policy'
-        : undefined,
     ].filter(Boolean);
 
     return messageParts.join('. ');
@@ -95,15 +85,6 @@ export class HttpError extends Error {
       return parsed.toString();
     } catch (error) {
       return url;
-    }
-  }
-
-  private static async hasMeaningfulBody(response: Response): Promise<boolean> {
-    try {
-      const body = await response.clone().text();
-      return Boolean(body.trim());
-    } catch (error) {
-      return false;
     }
   }
 
