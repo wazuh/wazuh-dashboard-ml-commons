@@ -13,7 +13,12 @@ class TestStep extends InstallationAIAssistantStep {
   constructor(
     name: string,
     private readonly successMsg: string = 'ok',
-    private readonly failureMsg: string = 'fail'
+    private readonly failureMsg: string = 'fail',
+    private readonly onRollback?: (
+      request: InstallAIDashboardAssistantDto,
+      context: InstallationContext,
+      error: Error
+    ) => Promise<void> | void
   ) {
     super({ name });
   }
@@ -27,11 +32,13 @@ class TestStep extends InstallationAIAssistantStep {
     return this.failureMsg;
   }
   async rollback(
-    _request: InstallAIDashboardAssistantDto,
-    _context: InstallationContext,
-    _error: Error
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    error: Error
   ): Promise<void> {
-    // no-op for tests
+    if (this.onRollback) {
+      await this.onRollback(request, context, error);
+    }
   }
 }
 
@@ -86,6 +93,41 @@ describe('InstallationProgressManager', () => {
     expect(p.getSteps()[0].error).toBeInstanceOf(Error);
     expect(p.hasFailedSteps()).toBe(true);
     expect(p.getFailedSteps().length).toBe(1);
+  });
+
+  it('invokes rollbacks for failed and completed steps and collects rollback errors', async () => {
+    const rollbackOrder: string[] = [];
+    const steps = [
+      new TestStep('S1', 'ok', 'fail', async () => {
+        rollbackOrder.push('S1');
+      }),
+      new TestStep('S2', 'ok', 'fail', async () => {
+        rollbackOrder.push('S2');
+        throw new Error('S2 rollback failed');
+      }),
+      new TestStep('S3', 'ok', 'boom', async () => {
+        rollbackOrder.push('S3');
+      }),
+    ];
+    const mgr = new InstallationProgressManager(steps);
+
+    await mgr.runStep(steps[0], request, createContext(), async () => {
+      /* success */
+    });
+    await mgr.runStep(steps[1], request, createContext(), async () => {
+      /* success */
+    });
+
+    await expect(
+      mgr.runStep(steps[2], request, createContext(), async () => {
+        throw new Error('boom');
+      })
+    ).rejects.toThrow('boom');
+
+    expect(rollbackOrder).toEqual(['S3', 'S2', 'S1']);
+    expect(mgr.getRollbackErrors()).toEqual([
+      { step: 'S2', message: 'S2 rollback failed' },
+    ]);
   });
 
   it('prevents concurrent step execution', async () => {
