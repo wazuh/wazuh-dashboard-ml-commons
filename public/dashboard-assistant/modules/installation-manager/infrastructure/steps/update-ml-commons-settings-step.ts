@@ -59,7 +59,7 @@ export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
     return 'Failed to update ML Commons settings. Please check the configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     _context: InstallationContext,
     _error: Error

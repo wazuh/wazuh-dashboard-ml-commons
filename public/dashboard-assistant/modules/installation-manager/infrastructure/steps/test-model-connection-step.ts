@@ -48,7 +48,8 @@ const extractStatusCode = (error: unknown): number | undefined => {
 const derivePossibleCauses = (error: unknown, modelId?: string): string[] => {
   const causes = new Set<string>();
   const status = extractStatusCode(error);
-  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+  const message =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
 
   if (status === 401 || status === 403) {
     causes.add('Verify the API key; it may be incorrect or lack permissions.');
@@ -64,7 +65,9 @@ const derivePossibleCauses = (error: unknown, modelId?: string): string[] => {
 
   const indicatesNetworkIssue =
     !status &&
-    (error instanceof TypeError || message.includes('failed to fetch') || message.includes('network'));
+    (error instanceof TypeError ||
+      message.includes('failed to fetch') ||
+      message.includes('network'));
 
   if (indicatesNetworkIssue) {
     causes.add('Check the API URL for typos and ensure the endpoint is reachable.');
@@ -116,7 +119,7 @@ export class TestModelConnectionStep extends InstallationAIAssistantStep {
     return 'Failed to test model connection. Please check the model configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     _context: InstallationContext,
     _error: Error

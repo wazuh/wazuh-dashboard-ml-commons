@@ -63,7 +63,7 @@ export class CreateModelStep extends InstallationAIAssistantStep {
     return 'Failed to create model. Please check the configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
     _error: Error

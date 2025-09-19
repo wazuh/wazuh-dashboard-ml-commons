@@ -72,7 +72,7 @@ export class CreateConnectorStep extends InstallationAIAssistantStep {
     return 'Failed to create connector. Please check the configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
     _error: Error

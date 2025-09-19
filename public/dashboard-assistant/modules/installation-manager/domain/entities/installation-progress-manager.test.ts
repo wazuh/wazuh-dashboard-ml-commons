@@ -125,9 +125,7 @@ describe('InstallationProgressManager', () => {
     ).rejects.toThrow('boom');
 
     expect(rollbackOrder).toEqual(['S3', 'S2', 'S1']);
-    expect(mgr.getRollbackErrors()).toEqual([
-      { step: 'S2', message: 'S2 rollback failed' },
-    ]);
+    expect(mgr.getRollbackErrors()).toEqual([{ step: 'S2', message: 'S2 rollback failed' }]);
   });
 
   it('prevents concurrent step execution', async () => {

@@ -34,11 +34,10 @@ describe('InstallDashboardAssistantResponse', () => {
 
   it('failure() should accept rollbacks to describe reverted steps', () => {
     const progress = new InstallationProgress();
-    const res = InstallDashboardAssistantResponse.failure(
-      'Failed with rollbacks',
-      progress,
-      ['Create Connector', 'Persist ML Commons settings']
-    );
+    const res = InstallDashboardAssistantResponse.failure('Failed with rollbacks', progress, [
+      'Create Connector',
+      'Persist ML Commons settings',
+    ]);
 
     expect(res.rollbacks).toEqual(['Create Connector', 'Persist ML Commons settings']);
   });

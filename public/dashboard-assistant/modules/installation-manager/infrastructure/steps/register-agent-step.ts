@@ -48,7 +48,7 @@ export class RegisterAgentStep extends InstallationAIAssistantStep {
     return 'Failed to register agent. Please check the configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     _context: InstallationContext,
     _error: Error

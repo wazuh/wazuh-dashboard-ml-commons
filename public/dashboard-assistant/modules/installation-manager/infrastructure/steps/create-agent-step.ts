@@ -95,7 +95,7 @@ export class CreateAgentStep extends InstallationAIAssistantStep {
     return 'Failed to create agent. Please check the configuration and try again.';
   }
 
-  public override async rollback(
+  public async rollback(
     _request: InstallAIDashboardAssistantDto,
     context: InstallationContext,
     _error: Error
