@@ -18,6 +18,7 @@ export interface InstallationResult {
     [key: string]: any;
   };
   errors?: InstallationError[];
+  rollbacks?: Array<{ step: string }>;
   rollbackErrors?: Array<{
     step: string;
     message: string;

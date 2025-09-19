@@ -70,7 +70,7 @@ jest.mock('../../modules/installation-manager/hooks/use-assistant-installation',
         reset: jest.fn(),
         isLoading: false,
         error,
-        result: { success: false },
+        result: { success: false, rollbacks: ['Create Agent', 'Create Connector'] },
         modelData: undefined,
         progress,
         isSuccess: false,
@@ -97,5 +97,10 @@ describe('ModelRegister', () => {
     await waitFor(() => {
       expect(screen.queryByText('Model deployed successfully.')).not.toBeInTheDocument();
     });
+
+    expect(await screen.findByText(/Rollback summary/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Reverted steps: Create Agent, Create Connector/i)
+    ).toBeInTheDocument();
   });
 });

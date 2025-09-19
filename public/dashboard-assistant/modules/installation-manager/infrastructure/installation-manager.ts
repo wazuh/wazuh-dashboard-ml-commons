@@ -64,6 +64,7 @@ export class InstallationManager implements IInstallationManager {
           message: step.message || 'Unknown error',
           details: step.error,
         })),
+        rollbacks: progressManager.getRollbacks(),
         rollbackErrors: progressManager.getRollbackErrors(),
       };
     }

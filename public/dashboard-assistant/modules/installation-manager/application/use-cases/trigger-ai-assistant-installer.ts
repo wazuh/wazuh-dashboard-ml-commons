@@ -17,10 +17,19 @@ export const triggerAIAssistantInstaller = (
   try {
     const result = await installationOrchestrator.execute(request);
 
+    if (result.success) {
+      return {
+        success: true,
+        message: result.message,
+        data: result.data,
+      };
+    }
+
     return {
-      success: true,
-      message: 'Dashboard assistant installed successfully',
+      success: false,
+      message: result.message,
       data: result.data,
+      rollbacks: result.rollbacks?.map((rollback) => rollback.step),
     };
   } catch (error) {
     return {

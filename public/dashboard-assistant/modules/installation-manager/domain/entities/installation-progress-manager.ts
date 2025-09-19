@@ -14,12 +14,17 @@ interface RollbackError {
   message: string;
 }
 
+interface RollbackAction {
+  step: string;
+}
+
 export class InstallationProgressManager {
   private readonly progress: InstallationProgress;
   // Prevent concurrent executions
   private inProgress = false;
   private completedSteps: InstallationAIAssistantStep[] = [];
   private rollbackErrors: RollbackError[] = [];
+  private rollbacks: RollbackAction[] = [];
 
   constructor(
     steps: InstallationAIAssistantStep[],
@@ -63,6 +68,7 @@ export class InstallationProgressManager {
     this.inProgress = true;
     this.progress.startStep(i);
     this.rollbackErrors = [];
+    this.rollbacks = [];
     try {
       await executor();
       this.completedSteps.push(step);
@@ -79,6 +85,10 @@ export class InstallationProgressManager {
 
   public getRollbackErrors(): RollbackError[] | undefined {
     return this.rollbackErrors.length > 0 ? [...this.rollbackErrors] : undefined;
+  }
+
+  public getRollbacks(): RollbackAction[] | undefined {
+    return this.rollbacks.length > 0 ? [...this.rollbacks] : undefined;
   }
 
   private succeedStep(stepIndex: number, step: InstallationAIAssistantStep): void {
@@ -119,6 +129,7 @@ export class InstallationProgressManager {
   ): Promise<void> {
     try {
       await step.rollback(request, context, failure);
+      this.rollbacks.push({ step: step.getName() });
     } catch (error) {
       const normalizedError = error instanceof Error ? error : new Error(String(error));
       this.rollbackErrors.push({ step: step.getName(), message: normalizedError.message });
