@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '../../../../test/test_utils';
-import { ExecutionState } from '../../modules/installation-manager/domain';
 
 jest.mock('../model-form', () => {
+  const _React = jest.requireActual<typeof import('react')>('react');
+
   const MockModelForm = ({ onChange, onValidationChange }: any) => {
-    useEffect(() => {
+    _React.useEffect(() => {
       onChange?.({
         modelProvider: 'OpenAI',
         model: 'gpt-4o',
@@ -20,7 +21,7 @@ jest.mock('../model-form', () => {
       onValidationChange?.(true);
     }, [onChange, onValidationChange]);
 
-    return <div data-testid="mock-model-form" />;
+    return _React.createElement('div', { 'data-testid': 'mock-model-form' });
   };
 
   return {
@@ -30,6 +31,11 @@ jest.mock('../model-form', () => {
 });
 
 jest.mock('../../modules/installation-manager/hooks/use-assistant-installation', () => {
+  const React = jest.requireActual<typeof import('react')>('react');
+  const { ExecutionState } = jest.requireActual<
+    typeof import('../../modules/installation-manager/domain')
+  >('../../modules/installation-manager/domain');
+
   const failedStep = {
     stepName: 'Create Model',
     state: ExecutionState.FAILED,
@@ -54,9 +60,9 @@ jest.mock('../../modules/installation-manager/hooks/use-assistant-installation',
   return {
     __esModule: true,
     useAssistantInstallation: () => {
-      const [error, setError] = useState<string | undefined>(undefined);
+      const [error, setError] = React.useState<string | undefined>(undefined);
 
-      const install = useCallback(async () => {
+      const install = React.useCallback(async () => {
         setError('Steps: "Create Model" has failed');
       }, []);
 
