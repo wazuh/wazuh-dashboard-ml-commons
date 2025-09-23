@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -50,7 +50,7 @@ const ModelRegisterComponent = ({
   onDeployed,
 }: ModelRegisterProps) => {
   const [isDeployed, setIsDeployed] = useState(false);
-  const { addSuccessToast, addErrorToast } = useToast();
+  const { addSuccessToast, addErrorToast, addInfoToast } = useToast();
   const {
     install: startInstallationProcess,
     setModel,
@@ -58,7 +58,9 @@ const ModelRegisterComponent = ({
     error: installationError,
     progress: installationProgress,
     isSuccess: isInstallationSuccessful,
+    result: installationResult,
   } = useAssistantInstallation();
+  const lastRollbackKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (installationError) {
@@ -67,7 +69,19 @@ const ModelRegisterComponent = ({
         `${installationError}. Rolling back current installation. Please, verify data provided and try again.`
       );
     }
-  }, [addErrorToast, addSuccessToast, installationError]);
+  }, [addErrorToast, installationError]);
+
+  useEffect(() => {
+    if (installationError && installationResult?.rollbacks?.length) {
+      const rollbackSummary = installationResult.rollbacks.join(', ');
+      if (lastRollbackKeyRef.current !== rollbackSummary) {
+        addInfoToast('Rollback summary', `Reverted steps: ${rollbackSummary}`);
+        lastRollbackKeyRef.current = rollbackSummary;
+      }
+    } else if (!installationError) {
+      lastRollbackKeyRef.current = null;
+    }
+  }, [addInfoToast, installationError, installationResult]);
 
   useEffect(() => {
     if (isInstallationSuccessful) {

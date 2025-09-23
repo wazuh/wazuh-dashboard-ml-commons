@@ -96,6 +96,7 @@ export const DeploymentStatus = ({
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {uiStatus === StepStatus.ERROR && step?.error ? (
                   <EuiPopover
+                    panelStyle={{ wordBreak: 'break-word' }}
                     isOpen={openErrorPopoverKey === key}
                     closePopover={() => setOpenErrorPopoverKey(null)}
                     anchorPosition="rightCenter"

@@ -10,6 +10,7 @@ import {
   InstallationAIAssistantStep,
   InstallAIDashboardAssistantDto,
 } from '../../domain';
+import { StepError } from '../utils/step-error';
 
 export class CreateModelStep extends InstallationAIAssistantStep {
   constructor() {
@@ -31,8 +32,27 @@ export class CreateModelStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const model = await getUseCases().createModel(this.buildDto(request, context));
-    context.set('modelId', model.id);
+    const details: Record<string, unknown> = {
+      provider: request.selected_provider,
+    };
+
+    if (context.has('connectorId')) {
+      details.connectorId = context.get('connectorId');
+    }
+
+    try {
+      const dto = this.buildDto(request, context);
+      const model = await getUseCases().createModel(dto);
+      details.modelId = model?.id;
+      context.set('modelId', model.id);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'creating the ML Commons model',
+        cause: error,
+        details,
+      });
+    }
   }
 
   getSuccessMessage(): string {
@@ -41,5 +61,27 @@ export class CreateModelStep extends InstallationAIAssistantStep {
 
   getFailureMessage(): string {
     return 'Failed to create model. Please check the configuration and try again.';
+  }
+
+  public async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    if (!context.has('modelId')) {
+      return;
+    }
+
+    const modelId = context.get<string>('modelId');
+    try {
+      await getUseCases().deleteModel(modelId);
+      context.delete('modelId');
+    } catch (error) {
+      throw new Error(
+        `Failed to rollback model creation for modelId="${modelId}": ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
 }

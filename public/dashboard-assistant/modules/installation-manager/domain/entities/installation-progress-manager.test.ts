@@ -5,13 +5,20 @@
 
 import { InstallationProgressManager } from './installation-progress-manager';
 import { InstallationAIAssistantStep } from './installation-ai-assistant-step';
-import { ExecutionState, StepResultState } from '../enums';
+import { ExecutionState } from '../enums';
+import type { InstallAIDashboardAssistantDto } from '../types/install-ai-dashboard-assistant-dto';
+import { InstallationContext } from './installation-context';
 
 class TestStep extends InstallationAIAssistantStep {
   constructor(
     name: string,
     private readonly successMsg: string = 'ok',
-    private readonly failureMsg: string = 'fail'
+    private readonly failureMsg: string = 'fail',
+    private readonly onRollback?: (
+      request: InstallAIDashboardAssistantDto,
+      context: InstallationContext,
+      error: Error
+    ) => Promise<void> | void
   ) {
     super({ name });
   }
@@ -24,9 +31,26 @@ class TestStep extends InstallationAIAssistantStep {
   getFailureMessage(): string {
     return this.failureMsg;
   }
+  async rollback(
+    request: InstallAIDashboardAssistantDto,
+    context: InstallationContext,
+    error: Error
+  ): Promise<void> {
+    if (this.onRollback) {
+      await this.onRollback(request, context, error);
+    }
+  }
 }
 
 describe('InstallationProgressManager', () => {
+  const request: InstallAIDashboardAssistantDto = {
+    selected_provider: 'test-provider',
+    model_id: 'test-model',
+    api_url: 'https://example.org',
+    api_key: 'secret',
+  };
+  const createContext = () => new InstallationContext();
+
   it('initializes progress with provided steps in PENDING state', () => {
     const steps = [new TestStep('Step 1'), new TestStep('Step 2')];
     const mgr = new InstallationProgressManager(steps);
@@ -42,7 +66,7 @@ describe('InstallationProgressManager', () => {
     const onProgressChange = jest.fn();
     const mgr = new InstallationProgressManager(steps, onProgressChange);
 
-    await mgr.runStep(steps[0], async () => {
+    await mgr.runStep(steps[0], request, createContext(), async () => {
       /* success */
     });
 
@@ -58,7 +82,7 @@ describe('InstallationProgressManager', () => {
     const mgr = new InstallationProgressManager(steps);
 
     await expect(
-      mgr.runStep(steps[0], async () => {
+      mgr.runStep(steps[0], request, createContext(), async () => {
         throw new Error('boom');
       })
     ).rejects.toThrow('boom');
@@ -71,14 +95,52 @@ describe('InstallationProgressManager', () => {
     expect(p.getFailedSteps().length).toBe(1);
   });
 
+  it('invokes rollbacks for failed and completed steps and collects rollback errors', async () => {
+    const rollbackOrder: string[] = [];
+    const steps = [
+      new TestStep('S1', 'ok', 'fail', async () => {
+        rollbackOrder.push('S1');
+      }),
+      new TestStep('S2', 'ok', 'fail', async () => {
+        rollbackOrder.push('S2');
+        throw new Error('S2 rollback failed');
+      }),
+      new TestStep('S3', 'ok', 'boom', async () => {
+        rollbackOrder.push('S3');
+      }),
+    ];
+    const mgr = new InstallationProgressManager(steps);
+
+    await mgr.runStep(steps[0], request, createContext(), async () => {
+      /* success */
+    });
+    await mgr.runStep(steps[1], request, createContext(), async () => {
+      /* success */
+    });
+
+    await expect(
+      mgr.runStep(steps[2], request, createContext(), async () => {
+        throw new Error('boom');
+      })
+    ).rejects.toThrow('boom');
+
+    expect(rollbackOrder).toEqual(['S3', 'S2', 'S1']);
+    expect(mgr.getRollbackErrors()).toEqual([{ step: 'S2', message: 'S2 rollback failed' }]);
+  });
+
   it('prevents concurrent step execution', async () => {
     const steps = [new TestStep('S1')];
     const mgr = new InstallationProgressManager(steps);
 
     let resolveExec!: () => void;
-    const running = mgr.runStep(steps[0], () => new Promise<void>((res) => (resolveExec = res)));
+    const running = mgr.runStep(
+      steps[0],
+      request,
+      createContext(),
+      () => new Promise<void>((res) => (resolveExec = res))
+    );
 
-    await expect(mgr.runStep(steps[0], async () => {})).rejects.toThrow();
+    await expect(mgr.runStep(steps[0], request, createContext(), async () => {})).rejects.toThrow();
 
     resolveExec();
     await running;
@@ -88,13 +150,13 @@ describe('InstallationProgressManager', () => {
     const steps = [new TestStep('S1'), new TestStep('S2')];
     const mgr = new InstallationProgressManager(steps);
 
-    await mgr.runStep(steps[0], async () => {});
-    await mgr.runStep(steps[1], async () => {});
+    await mgr.runStep(steps[0], request, createContext(), async () => {});
+    await mgr.runStep(steps[1], request, createContext(), async () => {});
 
     const p = mgr.getProgress();
 
     expect(p.isFinished()).toBe(true);
-    await expect(mgr.runStep(steps[0], async () => {})).rejects.toThrow();
+    await expect(mgr.runStep(steps[0], request, createContext(), async () => {})).rejects.toThrow();
   });
 
   it('reset returns all steps to PENDING and clears result/message/error', async () => {
@@ -103,9 +165,9 @@ describe('InstallationProgressManager', () => {
     const mgr = new InstallationProgressManager(steps, onProgressChange);
 
     // Make one success and one failure
-    await mgr.runStep(steps[0], async () => {});
+    await mgr.runStep(steps[0], request, createContext(), async () => {});
     await expect(
-      mgr.runStep(steps[1], async () => {
+      mgr.runStep(steps[1], request, createContext(), async () => {
         throw new Error('x');
       })
     ).rejects.toThrow('x');

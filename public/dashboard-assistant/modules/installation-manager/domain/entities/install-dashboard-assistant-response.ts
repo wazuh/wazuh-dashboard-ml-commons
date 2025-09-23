@@ -14,6 +14,7 @@ export interface IInstallDashboardAssistantResponse {
     modelId?: string;
     agentId?: string;
   };
+  rollbacks?: string[];
 }
 
 export class InstallDashboardAssistantResponse implements IInstallDashboardAssistantResponse {
@@ -27,6 +28,7 @@ export class InstallDashboardAssistantResponse implements IInstallDashboardAssis
     modelId?: string;
   };
   public error?: string;
+  public rollbacks?: string[];
 
   private constructor(params: {
     success: boolean;
@@ -34,6 +36,7 @@ export class InstallDashboardAssistantResponse implements IInstallDashboardAssis
     progress: InstallationProgress;
     agentId?: string;
     error?: string;
+    rollbacks?: string[];
   }) {
     this.success = params.success;
     this.message = params.message;
@@ -42,6 +45,7 @@ export class InstallDashboardAssistantResponse implements IInstallDashboardAssis
       agentId: params.agentId,
     };
     this.error = params.error;
+    this.rollbacks = params.rollbacks;
   }
 
   public static success(
@@ -58,13 +62,15 @@ export class InstallDashboardAssistantResponse implements IInstallDashboardAssis
 
   public static failure(
     error: string,
-    progress: InstallationProgress
+    progress: InstallationProgress,
+    rollbacks?: string[]
   ): InstallDashboardAssistantResponse {
     return new InstallDashboardAssistantResponse({
       success: false,
       message: error,
       progress,
       error,
+      rollbacks,
     });
   }
 

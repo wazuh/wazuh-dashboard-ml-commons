@@ -11,6 +11,7 @@ import {
   InstallAIDashboardAssistantDto,
 } from '../../domain';
 import { getUseCases } from '../../../../services/ml-use-cases.service';
+import { StepError } from '../utils/step-error';
 
 export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
   constructor() {
@@ -32,8 +33,22 @@ export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
     request: InstallAIDashboardAssistantDto,
     context: InstallationContext
   ): Promise<void> {
-    const dto = this.buildDto(request);
-    await getUseCases().persistMlCommonsSettings(dto);
+    const details: Record<string, unknown> = {
+      provider: request.selected_provider,
+    };
+
+    try {
+      const dto = this.buildDto(request);
+      details.endpointsRegex = dto.endpoints_regex;
+      await getUseCases().persistMlCommonsSettings(dto);
+    } catch (error) {
+      throw StepError.create({
+        stepName: this.getName(),
+        action: 'updating ML Commons settings in the cluster',
+        cause: error,
+        details,
+      });
+    }
   }
 
   getSuccessMessage(): string {
@@ -42,5 +57,13 @@ export class UpdateMlCommonsSettingsStep extends InstallationAIAssistantStep {
 
   getFailureMessage(): string {
     return 'Failed to update ML Commons settings. Please check the configuration and try again.';
+  }
+
+  public async rollback(
+    _request: InstallAIDashboardAssistantDto,
+    _context: InstallationContext,
+    _error: Error
+  ): Promise<void> {
+    // Current implementation does not persist auxiliary data to revert; nothing to rollback.
   }
 }
