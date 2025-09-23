@@ -16,6 +16,7 @@ describe('InstallDashboardAssistantResponse', () => {
     expect(res.progress).toBe(progress);
     expect(res.data?.agentId).toBe('agent-123');
     expect(res.error).toBeUndefined();
+    expect(res.rollbacks).toBeUndefined();
   });
 
   it('failure() should create a failed response with error and progress', () => {
@@ -28,6 +29,17 @@ describe('InstallDashboardAssistantResponse', () => {
     expect(res.progress).toBe(progress);
     expect(res.error).toBe(error);
     expect(res.data?.agentId).toBeUndefined();
+    expect(res.rollbacks).toBeUndefined();
+  });
+
+  it('failure() should accept rollbacks to describe reverted steps', () => {
+    const progress = new InstallationProgress();
+    const res = InstallDashboardAssistantResponse.failure('Failed with rollbacks', progress, [
+      'Create Connector',
+      'Persist ML Commons settings',
+    ]);
+
+    expect(res.rollbacks).toEqual(['Create Connector', 'Persist ML Commons settings']);
   });
 
   it('inProgress() should create an in-progress response with progress', () => {

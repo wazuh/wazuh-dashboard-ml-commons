@@ -63,7 +63,8 @@ export function useAssistantInstallation() {
 
       return InstallDashboardAssistantResponse.failure(
         response.message ?? 'Installation failed',
-        lastProgress
+        lastProgress,
+        response.rollbacks
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
