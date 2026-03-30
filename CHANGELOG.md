@@ -2,7 +2,7 @@
 
 All notable changes to the Wazuh ML Commons project will be documented in this file.
 
-## Wazuh dashboard v5.0.0 - OpenSearch Dashboards 3.3.0 - Revision 06
+## Wazuh dashboard v5.0.0 - OpenSearch Dashboards 3.3.0 - Revision 07
 
 ### Added
 
