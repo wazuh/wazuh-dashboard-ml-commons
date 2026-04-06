@@ -502,8 +502,6 @@ update_branch_reference_defaults() {
   local files=(
     "${REPO_PATH}/.github/workflows/5_builderpackage_ml_commons_plugin.yml"
     "${REPO_PATH}/.github/workflows/5_builderprecompiled_base-dev-environment.yml"
-    "${REPO_PATH}/.github/workflows/unit-tests-workflow.yml"
-    "${REPO_PATH}/.github/workflows/lint-workflow.yml"
   )
   local f
   for f in "${files[@]}"; do
@@ -512,12 +510,7 @@ update_branch_reference_defaults() {
       continue
     fi
     log "Replacing branch refs main with ${bump_string} in $f (where applicable)"
-    sed_inplace "s/^\\([[:space:]]*default:[[:space:]]*\\)main\\([[:space:]]*\\)$/\\1${bump_string}\\2/" "$f"
     sed_inplace "s/^\\([[:space:]]*default:[[:space:]]*'\\)main'\\([[:space:]]*\\)$/\\1${bump_string}'\\2/" "$f"
-    sed_inplace "s/^\\([[:space:]]*default:[[:space:]]*\"\\)main\"\\([[:space:]]*\\)$/\\1${bump_string}\"\\2/" "$f"
-    sed_inplace "s/^\\([[:space:]]*OPENSEARCH_DASHBOARDS_VERSION:[[:space:]]*\\)main\\([[:space:]]*\\)$/\\1${bump_string}\\2/" "$f"
-    sed_inplace "s/^\\([[:space:]]*OPENSEARCH_DASHBOARDS_VERSION:[[:space:]]*'\\)main'\\([[:space:]]*\\)$/\\1${bump_string}'\\2/" "$f"
-    sed_inplace "s/^\\([[:space:]]*OPENSEARCH_DASHBOARDS_VERSION:[[:space:]]*\"\\)main\"\\([[:space:]]*\\)$/\\1${bump_string}\"\\2/" "$f"
   done
 }
 
