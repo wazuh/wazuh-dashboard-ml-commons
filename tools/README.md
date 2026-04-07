@@ -50,6 +50,7 @@ This script automates the process of updating the version and stage in the Wazuh
    - `VERSION.json`: Changes the `version` and `stage` fields.
    - `package.json`: Changes the `version` and `revision` fields inside the `wazuh` object.
    - `.github/workflows/5_builderpackage_ml_commons_plugin.yml`: Updates the default value of the `reference` input.
+  - `.github/workflows/5_builderprecompiled_base-dev-environment.yml`: Updates the default value of the `reference` input.
    - `docker/imposter/wazuh-config.yml`: Updates the specFile URL with the new version.
    - `docker/imposter/api-info/api_info.json`: Updates the API version information.
 5. **Handles branch reference replacements**:
