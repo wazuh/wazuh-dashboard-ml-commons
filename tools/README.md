@@ -7,7 +7,7 @@ This script automates the process of updating the version and stage in the Wazuh
 ### Usage
 
 ```bash
-./repository_bumper.sh --version VERSION --stage STAGE [--tag] [--help]
+./repository_bumper.sh --version VERSION --stage STAGE [--tag] [--set-as-main] [--help]
 ```
 
 #### Parameters
@@ -23,6 +23,9 @@ This script automates the process of updating the version and stage in the Wazuh
 - `--tag`
   Generate a tag version format.
 
+- `--set-as-main`
+  Enables main branch mode: version values are updated while branch references pointing to `main` are preserved.
+
 - `--help`
   Shows help and exits.
 
@@ -31,6 +34,7 @@ This script automates the process of updating the version and stage in the Wazuh
 ```bash
 ./repository_bumper.sh --version 4.6.0 --stage alpha0
 ./repository_bumper.sh --version 4.6.0 --stage beta1
+./repository_bumper.sh --version 5.1.0 --stage alpha1 --set-as-main
 ./repository_bumper.sh --tag --stage alpha1
 ./repository_bumper.sh --tag
 ```
@@ -45,10 +49,14 @@ This script automates the process of updating the version and stage in the Wazuh
 4. **Updates the files**:
    - `VERSION.json`: Changes the `version` and `stage` fields.
    - `package.json`: Changes the `version` and `revision` fields inside the `wazuh` object.
-   - `.github/workflows/4_builderpackage_ml_commons_plugin.yml`: Updates the default value of the `reference` input.
+   - `.github/workflows/5_builderpackage_ml_commons_plugin.yml`: Updates the default value of the `reference` input.
+  - `.github/workflows/5_builderprecompiled_base-dev-environment.yml`: Updates the default value of the `reference` input.
    - `docker/imposter/wazuh-config.yml`: Updates the specFile URL with the new version.
    - `docker/imposter/api-info/api_info.json`: Updates the API version information.
-5. **Logs all actions** to a log file in the `tools` directory.
+5. **Handles branch reference replacements**:
+   - If `--set-as-main` is used, branch references to `main` are preserved.
+   - Otherwise, `main` references in supported workflows are replaced with the target version.
+6. **Logs all actions** to a log file in the `tools` directory.
 
 ### Notes
 
@@ -61,6 +69,8 @@ This script automates the process of updating the version and stage in the Wazuh
 - `CHANGELOG.md`
 - `VERSION.json`
 - `package.json`
+- `.github/workflows/5_builderpackage_ml_commons_plugin.yml` (only when not using `--set-as-main`)
+- `.github/workflows/5_builderprecompiled_base-dev-environment.yml` (only when not using `--set-as-main`)
 
 ### Log
 
