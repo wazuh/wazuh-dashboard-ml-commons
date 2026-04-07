@@ -70,8 +70,6 @@ This script automates the process of updating the version and stage in the Wazuh
 - `package.json`
 - `.github/workflows/5_builderpackage_ml_commons_plugin.yml` (only when not using `--set-as-main`)
 - `.github/workflows/5_builderprecompiled_base-dev-environment.yml` (only when not using `--set-as-main`)
-- `.github/workflows/unit-tests-workflow.yml` (only when not using `--set-as-main`)
-- `.github/workflows/lint-workflow.yml` (only when not using `--set-as-main`)
 
 ### Log
 
