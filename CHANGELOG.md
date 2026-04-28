@@ -5,6 +5,7 @@ All notable changes to the Wazuh ML Commons project will be documented in this f
 ## Wazuh dashboard v5.0.0 - OpenSearch Dashboards 3.3.0 - Revision 00
 
 ### Added
+- Test entry for automated merge test [5538]
 
 - Support for Wazuh 5.0.0
 - Added new columns to the models table that lists all model configurations [#6](https://github.com/wazuh/wazuh-dashboard-ml-commons/pull/6)
